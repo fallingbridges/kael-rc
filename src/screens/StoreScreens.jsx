@@ -145,6 +145,57 @@ function MiniApp({ theme, initialTab = 'home', rimColor = '#0d0c0a', rimWidth = 
   )
 }
 
+// Standalone story shot: a designed composition for the "Love gets messy" headline.
+// Not the live app and not editable — curated components telling messy → held, then export.
+function StoryFrame({ frameRef }) {
+  return (
+    <div className="store-frame sf-frame" data-theme="light" ref={frameRef}>
+      <div className="sf-titleblock">
+        <h2 className="sf-title">
+          Love gets <i>messy.</i>
+        </h2>
+        <div className="sf-title-2">Kael helps you through it.</div>
+      </div>
+
+      <div className="sf-card sf-them">
+        <div className="sf-meta">Jay · 11:52 pm</div>
+        <div className="sf-card-body">can we talk tomorrow</div>
+      </div>
+
+      <div className="sf-card sf-you">
+        <div className="sf-card-body">Are we okay??</div>
+        <div className="sf-meta sf-meta-dark">Draft · deleted twice</div>
+      </div>
+
+      <div className="sf-chip sf-chip-1">Anxious</div>
+      <div className="sf-chip sf-chip-2">Overthinking</div>
+      <div className="sf-chip sf-chip-3">Can’t sleep</div>
+
+      <div className="sf-typing" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <div className="sf-kael">
+        <div className="sf-kael-head">
+          <span className="sf-kael-dot" />
+          <span className="sf-kael-name">Kael</span>
+        </div>
+        <p className="sf-kael-msg">
+          Take a breath. A slow reply is not a verdict. Before you type anything back, tell me
+          what you’re afraid it means.
+        </p>
+      </div>
+
+      <div className="sf-pattern">
+        <span className="sf-pattern-dot" />
+        Pattern noticed · the late night spiral
+      </div>
+    </div>
+  )
+}
+
 const SHOTS = [
   { id: 'hero', theme: 'light', initialTab: 'home', hero: true, kael: 'Kael', title: 'Your coach for better relationships.', devScale: 2.3, devTop: 940 },
   { id: 'decode', theme: 'dark', initialTab: 'home', title: 'Decode fights, distance, and mixed signals', devScale: 2.55, devTop: 700 },
@@ -373,6 +424,34 @@ export default function StoreScreens() {
     pushHistory()
     if (targets[id] === 'title') resizeTitle(id, dir * 0.06)
     else resize(id, dir * 0.1)
+  }
+  // Bold / italic the current title selection. execCommand edits the live DOM,
+  // which is exactly what the PNG exporter reads. ⌘B / ⌘I work natively too.
+  // With nothing selected, it toggles the whole headline.
+  function formatTitle(id, cmd) {
+    const frame = refs.current[id]
+    if (!frame) return
+    const sel = window.getSelection()
+    let host = null
+    if (sel && sel.rangeCount && !sel.isCollapsed) {
+      const node = sel.anchorNode
+      const start = node && (node.nodeType === 1 ? node : node.parentElement)
+      const found = start && start.closest('.st-title, .st-logo-name')
+      if (found && frame.contains(found)) host = found
+    }
+    if (host) {
+      host.focus()
+    } else {
+      host = frame.querySelector('.st-title')
+      if (!host) return
+      host.focus()
+      const range = document.createRange()
+      range.selectNodeContents(host)
+      sel.removeAllRanges()
+      sel.addRange(range)
+    }
+    document.execCommand('styleWithCSS', false, false)
+    document.execCommand(cmd, false, null)
   }
   // Vertical drag for the phone / title. Tiny moves stay clicks (interact / edit).
   function startVDrag(id, kind, e) {
@@ -615,6 +694,20 @@ export default function StoreScreens() {
           '--store-serif-w': SERIF_FONTS[serifIdx].weight,
         }}
       >
+        <div className="store-cell" key="story">
+          <div className="store-cell-bar">
+            <span className="scb-name">story · messy</span>
+            <div className="scb-tools">
+              <button className="scb-btn scb-png" onClick={() => download('story')}>PNG</button>
+            </div>
+          </div>
+          <div className="store-stage">
+            <StoreRuler />
+            <div className="store-scaler">
+              <StoryFrame frameRef={(el) => (refs.current.story = el)} />
+            </div>
+          </div>
+        </div>
         {SHOTS.map((shot) => {
           const ap = cfg[shot.id].pops.find((p) => p.pid === active[shot.id]) || null
           return (
@@ -628,6 +721,24 @@ export default function StoreScreens() {
                     </button>
                     <button className="scb-seg" onClick={() => size(shot.id, -1)} title="Smaller">−</button>
                     <button className="scb-seg" onClick={() => size(shot.id, 1)} title="Bigger">+</button>
+                  </span>
+                  <span className="scb-group">
+                    <button
+                      className="scb-seg scb-fmt"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => formatTitle(shot.id, 'bold')}
+                      title="Bold the selected title text (⌘B). Nothing selected bolds the whole line."
+                    >
+                      <b>B</b>
+                    </button>
+                    <button
+                      className="scb-seg scb-fmt"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => formatTitle(shot.id, 'italic')}
+                      title="Italic the selected title text (⌘I). Nothing selected italicizes the whole line."
+                    >
+                      <i>I</i>
+                    </button>
                   </span>
                   <span className="scb-group">
                     <button className="scb-seg" onClick={() => toggleTheme(shot.id)}>

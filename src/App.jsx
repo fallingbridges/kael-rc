@@ -11,6 +11,9 @@ import ComponentLibrary from './screens/ComponentLibrary.jsx'
 import BrandGuide from './screens/BrandGuide.jsx'
 import StoreScreens from './screens/StoreScreens.jsx'
 import Onboarding from './screens/Onboarding.jsx'
+import OnboardingV2 from './screens/OnboardingV2.jsx'
+import OnboardingV3 from './screens/OnboardingV3.jsx'
+import OnboardingV4 from './screens/OnboardingV4.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import { Sparkle, Sun, Moon, Download, Grid } from './components/Icons.jsx'
@@ -253,6 +256,27 @@ export default function App() {
               </button>
               <button
                 className="studio-tab"
+                data-on={studioTab === 'onboarding-v2'}
+                onClick={() => setStudioTab('onboarding-v2')}
+              >
+                Onboarding V2
+              </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'onboarding-v3'}
+                onClick={() => setStudioTab('onboarding-v3')}
+              >
+                Onboarding V3
+              </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'onboarding-v4'}
+                onClick={() => setStudioTab('onboarding-v4')}
+              >
+                Onboarding V4
+              </button>
+              <button
+                className="studio-tab"
                 data-on={studioTab === 'paywall'}
                 onClick={() => setStudioTab('paywall')}
               >
@@ -273,6 +297,12 @@ export default function App() {
                 <BrandGuide />
               ) : studioTab === 'store' ? (
                 <StoreScreens />
+              ) : studioTab === 'onboarding-v2' ? (
+                <OnboardingV2 />
+              ) : studioTab === 'onboarding-v3' ? (
+                <OnboardingV3 />
+              ) : studioTab === 'onboarding-v4' ? (
+                <OnboardingV4 />
               ) : studioTab === 'paywall' ? (
                 <PaywallLab />
               ) : studioTab === 'cards' ? (
