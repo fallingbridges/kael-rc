@@ -21,7 +21,7 @@ import {
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 const cap = (w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w)
 const lines = (str) => (str || '').split('\n')
-const AUTO_KINDS = ['two', 'relcontext', 'age', 'gender']
+const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender']
 
 function hash(str) {
   let h = 2166136261
@@ -33,7 +33,7 @@ function hash(str) {
    pole, right = the named (POSITIVE) pole; the marker sits at axes[key].pos%. */
 const AXIS_META = [
   { key: 'CF', name: 'Closeness', left: 'Free', right: 'Close' },
-  { key: 'AS', name: 'Reassurance', left: 'Settled', right: 'Attuned' },
+  { key: 'AS', name: 'Attunement', left: 'Settled', right: 'Attuned' },
   { key: 'ER', name: 'Expression', left: 'Reserved', right: 'Expressive' },
   { key: 'GH', name: 'Tilt', left: 'Harmony', right: 'Growth' },
 ]
@@ -84,7 +84,7 @@ export default function OnboardingV4({ noanim = false }) {
   const order = (opts, qid) => (hash(seedRef.current + qid) % 2 === 0 ? opts : [opts[1], opts[0]])
 
   /* chrome */
-  const isQuiz = ['two', 'slider', 'statement', 'multi'].includes(s.kind)
+  const isQuiz = ['two', 'single', 'slider', 'statement', 'multi'].includes(s.kind)
   const showHead = !['welcome', 'hero', 'reveal', 'calibration', 'paywall'].includes(s.kind)
   const canBack = i > 0 && s.kind !== 'calibration' && s.kind !== 'paywall'
   /* progress bar derives its blocks from FLOW (via BLOCKS/BLOCK_IDS) so it can never desync from the order */
@@ -174,6 +174,7 @@ function Body(props) {
     case 'relcontext': return <CardList {...props} field="rel" items={REL_CONTEXT} />
     case 'prep': return <Prep {...props} />
     case 'two': return <Choice {...props} />
+    case 'single': return <SingleChoice {...props} />
     case 'slider': return <SliderCard {...props} />
     case 'statement': return <StatementSlider {...props} />
     case 'multi': return <MultiCard {...props} />
@@ -234,7 +235,7 @@ function Welcome({ s }) {
     <div className="ov4-hero ov4-welcome">
       <Illo label="Welcome" ratio="1x1" />
       <h1 className="ov4-hero-title">{lines(s.title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{l}</Fragment>))}</h1>
-      <p className="ov4-hero-sub">{s.sub}</p>
+      <p className="ov4-hero-sub">{s.subEm ? <Emph body={s.sub} em={s.subEm} /> : s.sub}</p>
     </div>
   )
 }
@@ -312,7 +313,7 @@ function Trust() {
       <Badge Icon={ShieldCheck} />
       <span className="ov4-kicker">Before we start</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">Private, secure,<br />and yours alone.</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">No one reads your world but you. Kael is built on attachment theory and real relationship science, never guesswork.</p>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">No one reads your world but you. Which means you can be honest here, even about the messy parts.</p>
     </div>
   )
 }
@@ -385,6 +386,32 @@ function Choice({ s, answers, pickAuto, order }) {
   )
 }
 
+/* block 4 · single-select conflict question — tap one, auto-advances (one pole signal) */
+function SingleChoice({ s, answers, pickAuto }) {
+  const q = QUESTIONS[s.qid]
+  if (!q) return null
+  const sel = answers[s.qid]
+  return (
+    <div className="ov4-choice">
+      <h1 className="ov4-q ov4-quiz-q">{q.prompt}</h1>
+      {q.sub && <p className="ov4-quiz-sub">{q.sub}</p>}
+      <div className="ov4-list" data-locked={Boolean(sel) || undefined}>
+        {q.options.map((o, n) => {
+          const on = sel && sel.name === o.name
+          return (
+            <button key={o.name} className="ov4-card ov4-card-sm" data-on={on || undefined} data-committed={on || undefined}
+              style={{ '--d': `${0.05 * n + 0.06}s` }} onClick={() => pickAuto(s.qid, { name: o.name, pole: o.pole }, 360)}>
+              {o.icon && <span className="ov4-card-ic"><o.icon size={20} weight="duotone" /></span>}
+              <span className="ov4-card-name">{o.name}</span>
+              <span className="ov4-card-check"><Check size={12} weight="bold" /></span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function SliderCard({ s, set }) {
   const q = QUESTIONS[s.qid]
   /* always start at the middle; the screen remounts per question (key={i}), so every
@@ -420,7 +447,7 @@ function StatementSlider({ s, set }) {
     <div className="ov4-choice ov4-sliderwrap ov4-stmtwrap">
       <h1 className="ov4-q ov4-quiz-q">Does this sound like you?</h1>
       <figure className="ov4-stmt">
-        <span className="ov4-stmt-mark"><Quotes size={22} weight="fill" /></span>
+        <span className="ov4-stmt-mark"><Quotes size={28} weight="fill" /></span>
         <blockquote className="ov4-stmt-text">{q.statement}</blockquote>
       </figure>
       <div className="ov4-slider">
@@ -452,13 +479,24 @@ function MultiCard({ s, answers, set }) {
     else np = [...picks, { name: o.name, pole: o.pole }]
     set(s.qid, { picks: np })
   }
+  const grid = q.cols === 2
   return (
     <div className="ov4-choice">
       <h1 className="ov4-q ov4-quiz-q">{q.prompt}</h1>
+      {q.sub && <p className="ov4-quiz-sub">{q.sub}</p>}
       <p className="ov4-multi-hint">Pick up to {max} · {picks.length} chosen</p>
-      <div className="ov4-list">
+      <div className={grid ? 'ov4-mgrid' : 'ov4-list'}>
         {q.options.map((o, n) => {
           const on = has(o.name)
+          if (grid) {
+            return (
+              <button key={o.name} className="ov4-mtile" data-on={on || undefined} data-dim={(!on && full) || undefined} disabled={!on && full}
+                style={{ '--d': `${0.04 * n + 0.06}s` }} onClick={() => toggle(o)}>
+                {o.icon && <span className="ov4-mtile-ic"><o.icon size={20} weight="duotone" /></span>}
+                <span className="ov4-mtile-name">{o.name}</span>
+              </button>
+            )
+          }
           return (
             <button key={o.name} className="ov4-card ov4-card-sm" data-on={on || undefined} data-dim={(!on && full) || undefined} disabled={!on && full}
               style={{ '--d': `${0.035 * n + 0.06}s` }} onClick={() => toggle(o)}>
@@ -475,12 +513,13 @@ function MultiCard({ s, answers, set }) {
 
 function Breather({ s, fillSit }) {
   const b = BREATHERS[s.n] || {}
+  const lg = b.big // credibility breather matches the prep screen's larger title/spacing
   return (
     <div className="ov4-pause">
       <Badge Icon={b.icon || Sparkle} />
       {b.kicker && <span className="ov4-kicker">{b.kicker}</span>}
-      <h1 className="ov4-q ov4-pause-title">{b.title}</h1>
-      <p className="ov4-sub ov4-pause-sub"><Emph body={fillSit(b.body)} em={b.em} /></p>
+      <h1 className={`ov4-q ov4-pause-title${lg ? ' ov4-pause-title-lg' : ''}`}>{b.title}</h1>
+      <p className={`ov4-sub ov4-pause-sub${lg ? ' ov4-pause-sub-lg' : ''}`}><Emph body={fillSit(b.body)} em={b.em} /></p>
     </div>
   )
 }
@@ -600,10 +639,15 @@ function MiniRead({ arch, axes }) {
       </Section>
 
       <Section label="What you value in love">
-        <div className="ov4-vchips">
-          {(b.value?.chips || []).map((c, k) => {
+        <div className="ov4-vgrid">
+          {(b.value?.chips || []).slice(0, 4).map((c, k) => {
             const Ic = VALUE_ICONS[k % VALUE_ICONS.length]
-            return (<span key={k} className="ov4-vchip"><Ic size={15} weight="duotone" />{c}</span>)
+            return (
+              <div key={k} className="ov4-vtile" style={{ '--d': `${0.05 * k + 0.1}s` }}>
+                <span className="ov4-vtile-ic"><Ic size={18} weight="duotone" /></span>
+                <span className="ov4-vtile-name">{c}</span>
+              </div>
+            )
           })}
         </div>
       </Section>
@@ -617,34 +661,31 @@ function MiniRead({ arch, axes }) {
           {growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov4-growth-ic"><ArrowUpRight size={13} weight="bold" /></span>{g}</li>))}
         </ul>
       </Section>
+
+      <div className="ov4-readnote"><ChatsCircle size={16} weight="duotone" /><span>This read gets sharper the more you talk to Kael.</span></div>
     </div>
   )
 }
 
-/* teaser/handoff — the full read lives in the app (not blur-locked; a clean preview) */
-function FullRead() {
-  const items = [
-    { Ic: MapTrifold, t: 'Your pattern, in depth', d: 'The full read, well past the surface.' },
-    { Ic: ShieldCheck, t: 'What you protect, and why', d: 'The fear underneath the habit.' },
-    { Ic: UsersThree, t: 'Who fits you, who clashes', d: 'Your pull across all sixteen.' },
-    { Ic: ArrowUpRight, t: 'The one move that changes it', d: 'Where the growth actually starts.' },
+/* teaser/handoff — editorial table-of-contents for the full read inside the app */
+function FullRead({ arch }) {
+  const bare = arch ? arch.name.replace(/^The\s+/, '') : 'your'
+  const sections = [
+    'Your pattern, in depth',
+    'What you protect, and why',
+    'Who fits you, who clashes',
+    `How the ${bare} grows in love`,
   ]
   return (
     <div className="ov4-read ov4-fullwrap">
-      <div className="ov4-beat-arch">
+      <div className="ov4-fulltoc">
         <span className="ov4-beat-arch-label">The full read</span>
-        <h2 className="ov4-beat-arch-name">This was just the surface.</h2>
-      </div>
-      <div className="ov4-full">
-        <ul className="ov4-full-list">
-          {items.map((it, k) => (
-            <li key={it.t} style={{ '--d': `${0.06 * k + 0.12}s` }}>
-              <span className="ov4-full-ic"><it.Ic size={18} weight="duotone" /></span>
-              <div className="ov4-full-txt"><b>{it.t}</b><span>{it.d}</span></div>
-            </li>
-          ))}
-        </ul>
-        <div className="ov4-full-foot"><LockKey size={14} weight="duotone" />Over 1,000 words, waiting inside Kael</div>
+        <h2 className="ov4-fulltoc-title">The Complete {bare} Read.</h2>
+        <span className="ov4-fulltoc-meta">1,000+ words · 6 chapters</span>
+        <ol className="ov4-fulltoc-list">
+          {sections.map((t, k) => (<li key={t}><b>{String(k + 1).padStart(2, '0')}</b><span>{t}</span></li>))}
+        </ol>
+        <div className="ov4-fulltoc-lock"><LockKey size={14} weight="duotone" />Unlocks inside Kael</div>
       </div>
     </div>
   )
@@ -681,7 +722,7 @@ const JOURNEY = [
   { when: 'Today', Ic: ChatsCircle, t: "Bring Kael the moment you're in", d: 'The spiral, the unread text, the fight. Start where it hurts.' },
   { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to see your moves before you name them.' },
   { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One reaction caught early. You feel the difference.' },
-  { when: 'Day 30', Ic: HeartStraight, t: 'What you walked in with, lighter', d: 'The pattern is still there. It just stops running the show.' },
+  { when: 'Day 30', Ic: HeartStraight, t: 'The pattern stops running you', d: 'You catch it early and choose differently. The old reflex loosens its grip.' },
 ]
 function ThirtyDays() {
   return (

@@ -7554,9 +7554,9 @@ svg {
 
 /* block 3 · quoted statement on an agreement slider */
 .ov4-stmtwrap { gap: 20px; }
-.ov4-stmt { display: flex; flex-direction: column; gap: 9px; margin: 2px 0; padding: 22px 20px; border-radius: 18px; background: color-mix(in srgb, var(--warm-proof) 8%, var(--surface)); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); animation: ov4-pop 0.5s var(--ease) 0.06s both; }
+.ov4-stmt { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; margin: 8px 0; padding: 36px 26px; border-radius: 20px; background: color-mix(in srgb, var(--warm-proof) 8%, var(--surface)); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); animation: ov4-pop 0.5s var(--ease) 0.06s both; }
 .ov4-stmt-mark { color: var(--warm-proof); opacity: 0.7; line-height: 0; }
-.ov4-stmt-text { margin: 0; font-family: var(--title); font-weight: 500; font-size: 21px; line-height: 1.34; letter-spacing: -0.015em; color: var(--ink); text-wrap: pretty; }
+.ov4-stmt-text { margin: 0; font-family: var(--title); font-weight: 500; font-size: 25px; line-height: 1.3; letter-spacing: -0.015em; color: var(--ink); text-wrap: pretty; }
 
 /* the read — axis bars */
 .ov4-miniread { gap: 24px; padding-bottom: 8px; }
@@ -7613,3 +7613,40 @@ svg {
 .ov4-tl-when { font: 700 10.5px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-react); }
 .ov4-tl-txt b { font-family: var(--title); font-weight: 500; font-size: 18px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
 .ov4-tl-d { font-family: var(--serif); font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+
+/* ── refinement round 2 ── */
+
+/* subtitle under a quiz prompt (q17 single + q19 emotions) */
+.ov4-quiz-sub { font: 400 14px var(--sans); line-height: 1.45; color: var(--ink-3); margin-top: -8px; max-width: 34ch; }
+
+/* emotional-weather 2-column tile grid (multi with cols:2) */
+.ov4-mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ov4-mtile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 18px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); cursor: pointer; transition: transform 0.16s var(--ease), border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, opacity 0.2s ease; animation: ov4-rise 0.46s var(--ease) var(--d, 0.06s) backwards; }
+.ov4-mtile:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--ink) 24%, transparent); }
+.ov4-mtile[data-on] { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 4%, var(--surface)); box-shadow: 0 0 0 1px var(--ink); }
+.ov4-mtile[data-dim] { opacity: 0.38; cursor: not-allowed; }
+.ov4-mtile[data-dim]:hover { transform: none; border-color: var(--line-2); }
+.ov4-mtile-ic { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: color-mix(in srgb, var(--warm-proof) 12%, var(--paper)); color: var(--badge-ink); transition: background 0.16s ease, color 0.16s ease; }
+.ov4-mtile[data-on] .ov4-mtile-ic { background: var(--ink); color: var(--paper); }
+.ov4-mtile-name { font: 500 14.5px var(--sans); color: var(--ink); letter-spacing: -0.01em; }
+
+/* value 2x2 tiles on the read */
+.ov4-vgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ov4-vtile { display: flex; flex-direction: column; gap: 8px; padding: 16px 15px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov4-vtile-ic { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--warm-proof) 13%, var(--paper)); color: var(--badge-ink); }
+.ov4-vtile-name { font: 500 14px var(--sans); line-height: 1.3; color: var(--ink); letter-spacing: -0.01em; }
+
+/* "this read gets sharper" grey note */
+.ov4-readnote { display: flex; align-items: center; gap: 10px; padding: 13px 15px; border-radius: 14px; background: color-mix(in srgb, var(--ink) 4%, var(--paper)); border: 1px solid var(--line-2); font: 500 13px var(--sans); line-height: 1.4; color: var(--ink-2); animation: ov4-rise 0.5s var(--ease) 0.2s both; }
+.ov4-readnote svg { flex: 0 0 auto; color: var(--warm-proof); }
+
+/* full-read teaser · editorial contents */
+.ov4-fulltoc { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 7px; padding: 26px 22px; border-radius: 20px; background: color-mix(in srgb, var(--warm-proof) 6%, var(--surface)); border: 1px solid var(--line-2); animation: ov4-pop 0.5s var(--ease) 0.06s both; }
+.ov4-fulltoc-title { font-family: var(--title); font-weight: 500; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); }
+.ov4-fulltoc-meta { font: 600 11px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.ov4-fulltoc-list { list-style: none; width: 100%; display: flex; flex-direction: column; margin-top: 12px; text-align: left; }
+.ov4-fulltoc-list li { display: flex; align-items: baseline; gap: 13px; padding: 13px 4px; font: 500 15px var(--sans); color: var(--ink); }
+.ov4-fulltoc-list li + li { border-top: 1px solid var(--line-2); }
+.ov4-fulltoc-list b { font-family: var(--title); font-weight: 500; font-size: 15px; color: var(--warm-proof); font-variant-numeric: tabular-nums; }
+.ov4-fulltoc-lock { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; font: 600 11.5px var(--sans); letter-spacing: 0.02em; color: var(--badge-ink); }
+.ov4-fulltoc-lock svg { color: var(--warm-proof); }

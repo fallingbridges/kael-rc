@@ -556,16 +556,16 @@ export const QUESTIONS = {
     statement: "I want a love that keeps growing and changing me, more than one that just stays calm.",
     left: { name: 'Not like me', pole: 'H' }, right: { name: 'Exactly me', pole: 'G' } },
 
-  /* Block 4 · Pick what rings true — scored supports (each pick nudges its pole) */
-  q17: { kind: 'multi', block: 4, max: 4, prompt: "When I'm worried about someone I love, I", options: [
-    { name: 'Reach out and talk it through', pole: 'E', icon: ChatCircle },
-    { name: 'Give it space, process alone', pole: 'R', icon: Moon },
-    { name: "Watch for signs we're okay", pole: 'A', icon: Eye },
-    { name: 'Stay steady, trust it passes', pole: 'S', icon: Anchor },
-    { name: 'Want to face it and grow', pole: 'G', icon: Plant },
-    { name: 'Smooth it over, back to good', pole: 'H', icon: Heart },
+  /* Block 4 · one single-select (conflict) + two multi-selects (values, emotions) */
+  q17: { kind: 'single', block: 4, weight: 1.0, prompt: 'When we clash, my instinct is to', sub: 'Go with your gut, not your best behavior.', options: [
+    { name: 'Say it straight', pole: 'E', icon: ChatCircleDots },
+    { name: 'Go quiet, retreat', pole: 'R', icon: Moon },
+    { name: 'Smooth it over fast', pole: 'H', icon: Heart },
+    { name: 'Get to the root of it', pole: 'G', icon: MagnifyingGlass },
+    { name: 'Read every reaction', pole: 'A', icon: Eye },
+    { name: "Trust it'll pass", pole: 'S', icon: Sun },
   ] },
-  q18: { kind: 'multi', block: 4, max: 4, prompt: 'A great relationship is one that', options: [
+  q18: { kind: 'multi', block: 4, max: 3, prompt: 'A great relationship is one that', options: [
     { name: 'Feels like a safe harbor', pole: 'H', icon: House },
     { name: 'Leaves me free to be myself', pole: 'F', icon: Wind },
     { name: 'Keeps opening new depth', pole: 'G', icon: Compass },
@@ -573,13 +573,15 @@ export const QUESTIONS = {
     { name: 'Says the loving thing out loud', pole: 'E', icon: Quotes },
     { name: 'Notices without me explaining', pole: 'A', icon: MagnifyingGlass },
   ] },
-  q19: { kind: 'multi', block: 4, max: 4, prompt: 'What I need most from a partner', options: [
-    { name: 'To stay close and woven into my days', pole: 'C', icon: UsersThree },
-    { name: 'To trust me with real space', pole: 'F', icon: Wind },
-    { name: 'To just know I care, without me spelling it out', pole: 'R', icon: HandHeart },
-    { name: "To not need constant proof we're okay", pole: 'S', icon: ShieldCheck },
-    { name: 'To keep growing right alongside me', pole: 'G', icon: Plant },
-    { name: 'To keep things calm and easy', pole: 'H', icon: House },
+  q19: { kind: 'multi', block: 4, max: 3, cols: 2, prompt: 'On most days, love leaves me feeling', options: [
+    { name: 'Anxious', pole: 'A', icon: Spiral },
+    { name: 'Hopeful', pole: 'G', icon: Sun },
+    { name: 'Lonely', pole: 'C', icon: Moon },
+    { name: 'Peaceful', pole: 'H', icon: Feather },
+    { name: 'Affectionate', pole: 'E', icon: Heart },
+    { name: 'Secure', pole: 'S', icon: Anchor },
+    { name: 'Guarded', pole: 'R', icon: Shield },
+    { name: 'Smothered', pole: 'F', icon: UsersThree },
   ] },
 }
 
@@ -617,6 +619,8 @@ function axisSum(answers, axis) {
     const a = answers[qid]
     if (!a) return
     if (q.kind === 'two' && q.axis === axis && a.pole) {
+      sum += (a.pole === POSITIVE[axis] ? 1 : -1) * (q.weight || 1)
+    } else if (q.kind === 'single' && a.pole && POLE_AXIS[a.pole] === axis) {
       sum += (a.pole === POSITIVE[axis] ? 1 : -1) * (q.weight || 1)
     } else if ((q.kind === 'slider' || q.kind === 'statement') && q.axis === axis) {
       sum += gradedContribution(answers, qid, axis)
@@ -687,7 +691,7 @@ export function echoLine(answers) {
 /* doorway: hottest pole across the multi-select block (used only to phrase copy) */
 export function doorwayPole(answers) {
   const tally = {}
-  ;['q17', 'q18', 'q19'].forEach((id) => {
+  ;['q18', 'q19'].forEach((id) => {
     const a = answers[id]
     if (!a || !Array.isArray(a.picks)) return
     a.picks.forEach((p) => { tally[p.pole] = (tally[p.pole] || 0) + 1 })
@@ -754,6 +758,8 @@ export const BREATHERS = {
   3: { kicker: 'The honest part', title: 'This is the part you usually guard.', body: 'Most people armor over exactly this. Kael holds it up to the light, so the pattern stops running you from the dark.', em: 'to the light', icon: MagnifyingGlass },
   /* after block 4 · what love is for, to you */
   4: { kicker: 'What it adds up to', title: "That's your pattern, showing itself.", body: "Nothing here is a flaw. It's how you learned to stay safe. From here, Kael helps you keep the gift and drop the cost.", em: 'keep the gift', icon: Heart },
+  /* before the result · credibility */
+  5: { kicker: 'The method', title: "This isn't a personality quiz.", body: 'Your answers run through attachment theory and real relationship science, never guesswork.', em: 'real relationship science', icon: Scales, big: true },
 }
 
 export const CALIB_STEPS = [
@@ -774,11 +780,12 @@ export const QUIZ_EYEBROWS = {
   1: 'How you reach for love',
   2: 'What you need to feel safe',
   3: 'How you show up when it counts',
-  4: 'What love is for, to you',
+  4: 'Almost there',
 }
 
 /* ── the flow ── */
 const two = (qid, block) => ({ id: qid, kind: 'two', act: 2, block, qid })
+const single = (qid, block) => ({ id: qid, kind: 'single', act: 2, block, qid })
 const slider = (qid, block) => ({ id: qid, kind: 'slider', act: 2, block, qid })
 const statement = (qid, block) => ({ id: qid, kind: 'statement', act: 2, block, qid })
 const multi = (qid, block) => ({ id: qid, kind: 'multi', act: 2, block, qid })
@@ -794,17 +801,18 @@ export const BEATS = [
 
 export const FLOW = [
   /* ACT 1 · open + get to know you */
-  { id: 'welcome', kind: 'welcome', act: 1, title: 'You showed up. That is the first move.', sub: "Most people sit with this alone for years. You just chose not to, so let's make sense of how you love.", cta: 'Begin' },
+  { id: 'welcome', kind: 'welcome', act: 1, title: 'You showed up. That is the first move.', sub: "Most people sit with this alone for years. You just chose not to, so let's make sense of how you love.", subEm: 'how you love', cta: 'Begin' },
   { id: 'situation', kind: 'situation', act: 1, field: 'situation', title: 'What brings you here?', sub: "Pick what's closest. We start there.", cta: 'Continue' },
   { id: 'situationText', kind: 'situationText', act: 1, field: 'situationText', title: 'Say it in your words.', sub: 'Whatever is on your mind right now. Keep it short.', placeholder: 'In a few words…', cta: 'Continue' },
   { id: 'hero', kind: 'hero', act: 1, title: "There's a you that only love brings out.", em: 'you', sub: "A few honest minutes, and I'll show you how you love, what scares you in it, and what keeps repeating.", cta: 'Show me' },
   { id: 'trust', kind: 'trust', act: 1, cta: 'I value my privacy' },
   /* identity moved up — asked right after the privacy promise, while it's warm, so the reveal payoff runs uninterrupted later */
-  { id: 'name', kind: 'name', act: 1, field: 'name', title: 'What should I call you?', sub: 'Stays between us, only used to sharpen your read.', placeholder: 'Your first name', cta: 'Continue' },
+  { id: 'name', kind: 'name', act: 1, field: 'name', title: 'What should Kael call you?', sub: 'Stays between us, only used to sharpen your read.', placeholder: 'Your first name', cta: 'Continue' },
   { id: 'age', kind: 'age', act: 1, field: 'age', title: 'How old are you, {name}?', sub: 'Closeness and conflict shift across life stages. This keeps your read honest to yours.', cta: 'Continue' },
   { id: 'gender', kind: 'gender', act: 1, field: 'gender', title: 'How do you identify?', sub: 'So Kael speaks to you, not a generic template.', cta: 'Continue' },
-  { id: 'relcontext', kind: 'relcontext', act: 1, field: 'rel', title: 'Where are you right now?', sub: 'It changes what helps. Rebuilding after a breakup asks different things than settling into something new.', cta: 'Continue' },
-  { id: 'prep', kind: 'prep', act: 1, title: "Let's find your love archetype.", sub: 'A read on how you attach, react, protect yourself, and change in love.', cta: 'Start' },
+  { id: 'relcontext', kind: 'relcontext', act: 1, field: 'rel', title: 'Where are you right now?', sub: 'It changes what helps most right now.', cta: 'Continue' },
+  { id: 'prep', kind: 'prep', act: 1, title: "Let's find your love archetype.", sub: 'A 3-minute quiz that reveals how you attach, react, protect yourself, and grow in love.', cta: 'Start' },
+  breather(5),
 
   /* ACT 2 · the quiz — 4 blocks, a breather between each */
   /* block 1 · two ways of loving (anchors) */
@@ -816,8 +824,8 @@ export const FLOW = [
   /* block 3 · does this sound like you? (statement agreement sliders) */
   statement('s_cf', 3), statement('s_as', 3), statement('s_er', 3), statement('s_gh', 3),
   breather(3),
-  /* block 4 · pick what rings true (multi, scored) */
-  multi('q17', 4), multi('q18', 4), multi('q19', 4),
+  /* block 4 · conflict (single, auto-advance) + values + emotional weather (multi) */
+  single('q17', 4), multi('q18', 4), multi('q19', 4),
   breather(4),
 
   { id: 'notif', kind: 'notif', act: 2, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
@@ -825,7 +833,7 @@ export const FLOW = [
 
   /* ACT 3 · the mirror — reveal, then the multi-section read */
   { id: 'reveal', kind: 'reveal', act: 3 },
-  { id: 'miniread', kind: 'miniread', act: 3, cta: 'This is me' },
+  { id: 'miniread', kind: 'miniread', act: 3, cta: 'This sounds like me' },
   { id: 'fullread', kind: 'fullread', act: 3, cta: 'Continue' },
 
   /* ACT 4 · sell — Kael is ready, the 30-day journey, then the archetype paywall */
