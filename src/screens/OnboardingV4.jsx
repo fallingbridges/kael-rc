@@ -1,8 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Books, Star,
-  Heart, HeartStraight, Lightning, ArrowsClockwise, Quotes, Path, Compass,
-  Fingerprint, MapTrifold, ChatsCircle, Anchor, Scales,
+  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star,
+  Heart, HeartStraight, Quotes, Compass,
+  Fingerprint, MapTrifold, ChatsCircle, Anchor,
+  UsersThree, Waveform, Wind, House, HandHeart, ArrowUpRight,
 } from '@phosphor-icons/react'
 import {
   FLOW, QUESTIONS, BLOCK_IDS, BLOCKS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
@@ -28,14 +29,16 @@ function hash(str) {
   return h >>> 0
 }
 
-/* read beats fall back to the old bubbles until the regenerated content lands */
-const BEAT_FALLBACK = { love: 0, value: 0, triggers: 1, respond: 2 }
-function getBeat(read, bkey) {
-  if (read && read.beats && read.beats[bkey]) return read.beats[bkey]
-  const b = (read && read.bubbles ? read.bubbles[BEAT_FALLBACK[bkey]] : '') || (read && read.essence) || ''
-  return { body: b, chips: [] }
-}
-const BEAT_ICON = { love: HeartStraight, value: Star, triggers: Lightning, respond: ArrowsClockwise }
+/* axis bars on the read — human axis name + both pole labels. left = the low-key
+   pole, right = the named (POSITIVE) pole; the marker sits at axes[key].pos%. */
+const AXIS_META = [
+  { key: 'CF', name: 'Closeness', left: 'Free', right: 'Close' },
+  { key: 'AS', name: 'Reassurance', left: 'Settled', right: 'Attuned' },
+  { key: 'ER', name: 'Expression', left: 'Reserved', right: 'Expressive' },
+  { key: 'GH', name: 'Tilt', left: 'Harmony', right: 'Growth' },
+]
+/* small rotating icon set for the "what you value" chips */
+const VALUE_ICONS = [Heart, Anchor, House, Compass, ShieldCheck, Star, HandHeart, Wind]
 
 export default function OnboardingV4({ noanim = false }) {
   const [i, setI] = useState(0)
@@ -75,11 +78,13 @@ export default function OnboardingV4({ noanim = false }) {
   const resolved = useMemo(() => (i >= revealAt ? resolveRead(answers) : null), [i, revealAt, answers])
   const arch = resolved ? resolved.read : null
   const nm = (answers.name || '').trim()
-  const fillSit = (str) => (str || '').replace(/\{SIT\}/g, answers.situationText || SIT_PHRASE[answers.situation] || "what you're carrying")
+  const fillSit = (str) => (str || '')
+    .replace(/\{SIT\}/g, answers.situationText || SIT_PHRASE[answers.situation] || "what you're carrying")
+    .replace(/,?\s*\{name\}/g, nm ? `, ${cap(nm)}` : '')
   const order = (opts, qid) => (hash(seedRef.current + qid) % 2 === 0 ? opts : [opts[1], opts[0]])
 
   /* chrome */
-  const isQuiz = ['two', 'slider', 'multi'].includes(s.kind)
+  const isQuiz = ['two', 'slider', 'statement', 'multi'].includes(s.kind)
   const showHead = !['welcome', 'hero', 'reveal', 'calibration', 'paywall'].includes(s.kind)
   const canBack = i > 0 && s.kind !== 'calibration' && s.kind !== 'paywall'
   /* progress bar derives its blocks from FLOW (via BLOCKS/BLOCK_IDS) so it can never desync from the order */
@@ -90,7 +95,7 @@ export default function OnboardingV4({ noanim = false }) {
   })
 
   /* footer */
-  const footerLabel = s.cta || (['reveal', 'slider', 'multi'].includes(s.kind) ? 'Continue' : null)
+  const footerLabel = s.cta || (['reveal', 'slider', 'statement', 'multi'].includes(s.kind) ? 'Continue' : null)
   const ready = (() => {
     if (s.kind === 'name') return nm.length > 0
     if (s.kind === 'situationText') return (answers.situationText || '').trim().length > 0
@@ -137,7 +142,8 @@ export default function OnboardingV4({ noanim = false }) {
               <div className="ov-body" ref={bodyRef}>
                 <div key={i} data-dir={dir} className="ov-flow ov4-flow">
                   <Body
-                    s={s} answers={answers} arch={arch} nm={nm} set={set} pickAuto={pickAuto}
+                    s={s} answers={answers} arch={arch} axes={resolved ? resolved.axes : null}
+                    nm={nm} set={set} pickAuto={pickAuto}
                     order={order} fillSit={fillSit} onAdvance={next} onBack={back}
                   />
                 </div>
@@ -169,16 +175,19 @@ function Body(props) {
     case 'prep': return <Prep {...props} />
     case 'two': return <Choice {...props} />
     case 'slider': return <SliderCard {...props} />
+    case 'statement': return <StatementSlider {...props} />
     case 'multi': return <MultiCard {...props} />
     case 'breather': return <Breather {...props} />
     case 'calibration': return <Calibration {...props} />
     case 'reveal': return <Reveal {...props} />
-    case 'read': return <Read {...props} />
+    case 'miniread': return <MiniRead {...props} />
+    case 'fullread': return <FullRead {...props} />
     case 'name': return <NameField {...props} />
     case 'age': return <CardList {...props} field="age" items={AGES} />
     case 'gender': return <CardList {...props} field="gender" items={GENDERS} />
     case 'notif': return <Notif {...props} />
-    case 'calibrated': return <Calibrated {...props} />
+    case 'ready': return <Ready {...props} />
+    case 'thirtydays': return <ThirtyDays {...props} />
     default: return null
   }
 }
@@ -297,58 +306,33 @@ function SituationText({ s, answers, set, onBack }) {
   )
 }
 
-function Trust({ s }) {
-  const feats = [
-    { Ic: LockKey, t: 'End-to-end private', d: 'No one reads your conversations but you.' },
-    { Ic: Books, t: 'Evidence based', d: 'Frameworks used by leading therapists.' },
-  ]
+function Trust() {
   return (
-    <div className="ov4-pause">
+    <div className="ov4-pause ov4-trust">
       <Badge Icon={ShieldCheck} />
       <span className="ov4-kicker">Before we start</span>
-      <h1 className="ov4-q ov4-pause-title">Private, secure, and expert-backed.</h1>
-      <p className="ov4-sub ov4-pause-sub">Your world stays yours. Kael is built on attachment theory and real relationship science.</p>
-      <div className="ov4-pausefeats">
-        {feats.map((f) => (
-          <div className="ov4-pausefeat" key={f.t}>
-            <span className="ov4-pausefeat-ic"><f.Ic size={20} weight="duotone" /></span>
-            <div><b>{f.t}</b><span>{f.d}</span></div>
-          </div>
-        ))}
-      </div>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">Private, secure,<br />and yours alone.</h1>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">No one reads your world but you. Kael is built on attachment theory and real relationship science, never guesswork.</p>
     </div>
   )
 }
 
 function Prep({ s }) {
-  const steps = [
-    { Ic: Scales, t: 'Pick what feels truer', d: 'Not better. There are no wrong answers here.' },
-    { Ic: Compass, t: 'Each one maps how you love', d: 'How you connect, how you react, what you reach for.' },
-    { Ic: Fingerprint, t: 'Then you meet your archetype', d: 'One of sixteen, and the read is yours alone.' },
-  ]
   return (
-    <div className="ov4-prep">
-      <div className="ov4-titles ov4-center">
-        <h1 className="ov4-q">{s.title}</h1>
-        <p className="ov4-sub">{s.sub}</p>
-      </div>
-      <ol className="ov4-prep-steps">
-        {steps.map((st, n) => (
-          <li key={st.t} style={{ '--d': `${0.08 * n + 0.16}s` }}>
-            <span className="ov4-prep-stepic"><st.Ic size={20} weight="duotone" /></span>
-            <div className="ov4-prep-txt"><b>{st.t}</b><span>{st.d}</span></div>
-          </li>
-        ))}
-      </ol>
+    <div className="ov4-pause ov4-prep2">
+      <Badge Icon={Fingerprint} />
+      <span className="ov4-kicker">16 love archetypes</span>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{s.title}</h1>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{s.sub}</p>
     </div>
   )
 }
 
-function CardList({ s, answers, pickAuto, field, items }) {
+function CardList({ s, answers, pickAuto, field, items, fillSit }) {
   const sel = answers[field]
   return (
     <>
-      <Header title={s.title} sub={s.sub} />
+      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
       <div className="ov4-list" data-locked={Boolean(sel) || undefined}>
         {items.map((it, n) => {
           const label = typeof it === 'string' ? it : it.name
@@ -422,6 +406,34 @@ function SliderCard({ s, set }) {
           <input className="ov4-range" type="range" min="0" max="100" value={val} aria-label={q.prompt} onChange={(e) => onChange(Number(e.target.value))} />
         </div>
         <p className="ov4-slider-hint">Slide toward whichever fits. There's no wrong spot.</p>
+      </div>
+    </div>
+  )
+}
+
+/* block 3 · a quoted statement rated on an agreement slider (Exactly me ↔ Not like me) */
+function StatementSlider({ s, set }) {
+  const q = QUESTIONS[s.qid]
+  const [val, setVal] = useState(50)
+  const onChange = (v) => { setVal(v); set(s.qid, { value: v, pole: v >= 50 ? q.right.pole : q.left.pole }) }
+  return (
+    <div className="ov4-choice ov4-sliderwrap ov4-stmtwrap">
+      <h1 className="ov4-q ov4-quiz-q">Does this sound like you?</h1>
+      <figure className="ov4-stmt">
+        <span className="ov4-stmt-mark"><Quotes size={22} weight="fill" /></span>
+        <blockquote className="ov4-stmt-text">{q.statement}</blockquote>
+      </figure>
+      <div className="ov4-slider">
+        <div className="ov4-slider-row">
+          <span className="ov4-slider-end">{q.left.name}</span>
+          <span className="ov4-slider-end ov4-slider-end-r">{q.right.name}</span>
+        </div>
+        <div className="ov4-track">
+          <span className="ov4-track-fill" style={{ width: `${val}%` }} />
+          <span className="ov4-track-thumb" style={{ left: `${val}%` }} />
+          <input className="ov4-range" type="range" min="0" max="100" value={val} aria-label={q.statement} onChange={(e) => onChange(Number(e.target.value))} />
+        </div>
+        <p className="ov4-slider-hint">Drag to wherever you land. No wrong answer.</p>
       </div>
     </div>
   )
@@ -525,46 +537,115 @@ function Reveal({ arch }) {
   )
 }
 
-function Dots({ step, n = 4 }) {
+/* a labelled axis bar: human axis name, a track, a marker at axes[key].pos%,
+   and the side the user lands on emphasized */
+function AxisBar({ meta, axis, d }) {
+  if (!axis) return null
+  const onRight = axis.pos >= 50
   return (
-    <div className="ov4-dots">
-      {Array.from({ length: n }).map((_, k) => (<span key={k} data-on={k + 1 <= step || undefined} data-now={k + 1 === step || undefined} />))}
+    <div className="ov4-axis" style={{ '--d': `${d}s` }}>
+      <span className="ov4-axis-name">{meta.name}</span>
+      <div className="ov4-axis-track"><span className="ov4-axis-marker" style={{ left: `${axis.pos}%` }} /></div>
+      <div className="ov4-axis-ends">
+        <span data-on={!onRight || undefined}>{meta.left}</span>
+        <span data-on={onRight || undefined}>{meta.right}</span>
+      </div>
     </div>
   )
 }
 
-/* single-page read — short prose + 5 pointers + a "this is just the surface" close.
-   Falls back to composing from the beats until dedicated read copy lands in READS[code].read */
-function getRead(arch) {
-  if (arch.read && Array.isArray(arch.read.prose)) return arch.read
-  const b = arch.beats || {}
-  const prose = [b.love && b.love.body, b.triggers && b.triggers.body, b.respond && b.respond.body].filter(Boolean)
-  const points = []
-  ;['love', 'triggers', 'respond', 'value'].forEach((k) => { const c = b[k] && b[k].chips; if (c && c[0]) points.push(c[0]) })
-  if (b.value && b.value.chips && b.value.chips[1]) points.push(b.value.chips[1])
-  return { prose, points: points.slice(0, 5) }
+/* a titled section of the read; children supply the section's own visual style */
+function Section({ label, className, children }) {
+  return (
+    <section className={`ov4-sec${className ? ' ' + className : ''}`}>
+      <span className="ov4-sec-label">{label}</span>
+      {children}
+    </section>
+  )
 }
 
-function Read({ arch }) {
+/* the read — axis bars → a mini prose read → chips for love / values / triggers →
+   growth pointers. Each section is styled differently for variety. */
+function MiniRead({ arch, axes }) {
   if (!arch) return null
-  const r = getRead(arch)
+  const b = arch.beats || {}
+  const prose = [b.love && b.love.body, b.respond && b.respond.body].filter(Boolean)
+  const growth = [arch.aspiration, ...(Array.isArray(arch.compare) ? arch.compare.slice(0, 2).map((c) => c.withKael) : [])].filter(Boolean)
   return (
-    <div className="ov4-read">
+    <div className="ov4-read ov4-miniread">
       <div className="ov4-beat-arch">
         <span className="ov4-beat-arch-label">Your archetype</span>
         <h2 className="ov4-beat-arch-name">{arch.name}</h2>
       </div>
-      <div className="ov4-read-prose">
-        {r.prose.map((p, k) => (<p key={k} style={{ '--d': `${0.06 * k + 0.12}s` }}>{p}</p>))}
+
+      {axes && (
+        <section className="ov4-axes">
+          {AXIS_META.map((m, k) => (<AxisBar key={m.key} meta={m} axis={axes[m.key]} d={0.06 * k + 0.1} />))}
+        </section>
+      )}
+
+      <section className="ov4-mini">
+        {prose.map((p, k) => {
+          const m = p.match(/^(.*?[.!?])(\s+)([\s\S]*)$/)
+          const lead = m ? m[1] : p
+          const rest = m ? m[3] : ''
+          const Tag = k === 0 ? 'strong' : 'em' // first beat leads bold, the pivot reads italic
+          return (<p key={k}><Tag>{lead}</Tag>{rest ? ' ' + rest : ''}</p>)
+        })}
+        <span className="ov4-mini-by">— Kael</span>
+      </section>
+
+      <Section label="How you love">
+        <div className="ov4-tagrow">{(b.love?.chips || []).map((c, k) => (<span key={k} className="ov4-tag">{c}</span>))}</div>
+      </Section>
+
+      <Section label="What you value in love">
+        <div className="ov4-vchips">
+          {(b.value?.chips || []).map((c, k) => {
+            const Ic = VALUE_ICONS[k % VALUE_ICONS.length]
+            return (<span key={k} className="ov4-vchip"><Ic size={15} weight="duotone" />{c}</span>)
+          })}
+        </div>
+      </Section>
+
+      <Section label="What activates you">
+        <div className="ov4-tagrow ov4-tagrow-warm">{(b.triggers?.chips || []).map((c, k) => (<span key={k} className="ov4-tag ov4-tag-warm">{c}</span>))}</div>
+      </Section>
+
+      <Section label="What growth looks like for you">
+        <ul className="ov4-growth">
+          {growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov4-growth-ic"><ArrowUpRight size={13} weight="bold" /></span>{g}</li>))}
+        </ul>
+      </Section>
+    </div>
+  )
+}
+
+/* teaser/handoff — the full read lives in the app (not blur-locked; a clean preview) */
+function FullRead() {
+  const items = [
+    { Ic: MapTrifold, t: 'Your pattern, in depth', d: 'The full read, well past the surface.' },
+    { Ic: ShieldCheck, t: 'What you protect, and why', d: 'The fear underneath the habit.' },
+    { Ic: UsersThree, t: 'Who fits you, who clashes', d: 'Your pull across all sixteen.' },
+    { Ic: ArrowUpRight, t: 'The one move that changes it', d: 'Where the growth actually starts.' },
+  ]
+  return (
+    <div className="ov4-read ov4-fullwrap">
+      <div className="ov4-beat-arch">
+        <span className="ov4-beat-arch-label">The full read</span>
+        <h2 className="ov4-beat-arch-name">This was just the surface.</h2>
       </div>
-      {r.points && r.points.length > 0 && (
-        <ul className="ov4-read-points">
-          {r.points.map((pt, k) => (
-            <li key={k} style={{ '--d': `${0.05 * k + 0.3}s` }}><span className="ov4-read-tick"><Check size={11} weight="bold" /></span>{pt}</li>
+      <div className="ov4-full">
+        <ul className="ov4-full-list">
+          {items.map((it, k) => (
+            <li key={it.t} style={{ '--d': `${0.06 * k + 0.12}s` }}>
+              <span className="ov4-full-ic"><it.Ic size={18} weight="duotone" /></span>
+              <div className="ov4-full-txt"><b>{it.t}</b><span>{it.d}</span></div>
+            </li>
           ))}
         </ul>
-      )}
-      <p className="ov4-read-surface">And honestly? This is just the surface.</p>
+        <div className="ov4-full-foot"><LockKey size={14} weight="duotone" />Over 1,000 words, waiting inside Kael</div>
+      </div>
     </div>
   )
 }
@@ -580,64 +661,73 @@ function Notif({ s }) {
   )
 }
 
-/* ── Act 4 — Kael, calibrated to your archetype ── */
-const HELP_ICONS = [ChatsCircle, Lightning, ArrowsClockwise, HeartStraight, Compass]
-function getHelp(arch) {
-  if (Array.isArray(arch.help) && arch.help.length) return arch.help.map((h) => (typeof h === 'string' ? h : h.title || h.line))
-  /* placeholder — replaced by per-archetype generated copy (5 short lines) */
-  return [
-    'Catches your pattern the second it starts',
-    'Helps you say the hard thing, in the moment',
-    "Reads the text you can't read at 2am",
-    "Keeps what you're working on in view",
-    'Tuned to how you love, not generic advice',
-  ]
-}
-function Calibrated({ arch }) {
+/* ── Act 4 — Kael is ready, the 30-day journey, the paywall ── */
+/* a short breather: Kael is calibrated to this archetype, addressed by name */
+function Ready({ arch, nm }) {
   if (!arch) return null
-  const bare = arch.name.replace(/^The\s+/, '')
   const Glyph = arch.glyph
-  const help = getHelp(arch).slice(0, 5)
   return (
-    <div className="ov4-pause ov4-cal">
-      <span className="ov4-cal-glyph"><Glyph size={28} weight="duotone" /></span>
+    <div className="ov4-pause ov4-ready">
+      <span className="ov4-cal-glyph"><Glyph size={30} weight="duotone" /></span>
       <span className="ov4-kicker">Calibrated to you</span>
-      <h1 className="ov4-q ov4-pause-title">Kael, tuned to the {bare}.</h1>
-      <ul className="ov4-cal-list">
-        {help.map((h, k) => {
-          const Ic = HELP_ICONS[k % HELP_ICONS.length]
-          return (
-            <li key={k} style={{ '--d': `${0.06 * k + 0.16}s` }}>
-              <span className="ov4-cal-ic"><Ic size={17} weight="duotone" /></span>{h}
-            </li>
-          )
-        })}
-      </ul>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{nm ? `Kael is ready, ${cap(nm)}.` : 'Kael is ready.'}</h1>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Tuned to how you love, what scares you, and the pattern you walked in with. Not a generic coach. Yours.</p>
     </div>
   )
 }
 
+/* a warm editorial timeline — the relationship journey, not a habit tracker */
+const JOURNEY = [
+  { when: 'Today', Ic: ChatsCircle, t: "Bring Kael the moment you're in", d: 'The spiral, the unread text, the fight. Start where it hurts.' },
+  { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to see your moves before you name them.' },
+  { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One reaction caught early. You feel the difference.' },
+  { when: 'Day 30', Ic: HeartStraight, t: 'What you walked in with, lighter', d: 'The pattern is still there. It just stops running the show.' },
+]
+function ThirtyDays() {
+  return (
+    <div className="ov4-thirty">
+      <div className="ov4-titles ov4-center">
+        <span className="ov4-kicker">The road ahead</span>
+        <h1 className="ov4-q ov4-pause-title-lg">Your 30 days with Kael.</h1>
+      </div>
+      <ol className="ov4-timeline">
+        {JOURNEY.map((m, k) => (
+          <li key={m.when} style={{ '--d': `${0.1 * k + 0.18}s` }}>
+            <span className="ov4-tl-ic"><m.Ic size={18} weight="duotone" /></span>
+            <div className="ov4-tl-txt">
+              <span className="ov4-tl-when">{m.when}</span>
+              <b>{m.t}</b>
+              <span className="ov4-tl-d">{m.d}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
+const PAY_ICONS = [ChatsCircle, MapTrifold, HeartStraight]
 function Paywall({ arch, onClose }) {
   const [plan, setPlan] = useState('annual')
   const aname = arch ? arch.name : 'your archetype'
-  const bare = aname.replace(/^The\s+/, '')
-  const feats = [
-    { Ic: MapTrifold, t: `The full ${bare} read`, s: 'What you protect, and the move that changes it.' },
-    { Ic: ChatsCircle, t: 'Here when the spiral hits', s: 'A response built for how you love.' },
-    { Ic: Anchor, t: 'Watch yourself change', s: "The texts you didn't send." },
-  ]
+  /* per-archetype feature rows + promise, straight from READS (on-voice for this type) */
+  const feats = (arch && Array.isArray(arch.features) ? arch.features : []).slice(0, 3)
   return (
     <>
       <div className="ov-body ov4-paybody">
         <span className="ov4-pay-kicker">You met {aname}</span>
         <h1 className="ov4-pay-title">Now let's change how you love.</h1>
+        {arch?.aspiration && <p className="ov4-pay-sub">{arch.aspiration}</p>}
         <div className="ov4-pay-feats">
-          {feats.map((f) => (
-            <div className="ov4-pay-feat" key={f.t}>
-              <span className="ov4-pay-feat-ic"><f.Ic size={19} weight="duotone" /></span>
-              <div><b>{f.t}</b><span>{f.s}</span></div>
-            </div>
-          ))}
+          {feats.map((f, k) => {
+            const Ic = PAY_ICONS[k % PAY_ICONS.length]
+            return (
+              <div className="ov4-pay-feat" key={f.h}>
+                <span className="ov4-pay-feat-ic"><Ic size={19} weight="duotone" /></span>
+                <div><b>{f.h}</b><span>{f.l}</span></div>
+              </div>
+            )
+          })}
         </div>
         <div className="ov4-plans">
           <button className="ov4-plan" data-on={plan === 'annual' || undefined} onClick={() => setPlan('annual')}>

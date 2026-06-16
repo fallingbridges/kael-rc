@@ -7542,3 +7542,74 @@ svg {
 .ov4-plan-r b { font: 600 17px var(--sans); color: var(--ink); }
 .ov4-plan-r span { font: 400 11px var(--sans); color: var(--ink-3); margin-left: 1px; }
 .ov4-payfoot { padding-top: 8px; }
+.ov4-pay-sub { font-family: var(--serif); font-size: 15px; line-height: 1.5; color: var(--ink-2); max-width: 30ch; margin: -2px auto 2px; animation: ov4-rise 0.5s var(--ease) 0.18s both; }
+
+/* ── V4 refinement pass: bigger breather titles, statement slider, the read,
+   the full-read teaser, the 30-day timeline ── */
+
+/* bigger title/sub so trust · prep · ready · 30-days carry the screen alone */
+.ov4-pause-title-lg { font-size: 33px; line-height: 1.1; }
+.ov4-pause-sub-lg { font-size: 16.5px; max-width: 30ch; }
+.ov4-eyebrow { max-width: 66%; text-align: right; line-height: 1.3; }
+
+/* block 3 · quoted statement on an agreement slider */
+.ov4-stmtwrap { gap: 20px; }
+.ov4-stmt { display: flex; flex-direction: column; gap: 9px; margin: 2px 0; padding: 22px 20px; border-radius: 18px; background: color-mix(in srgb, var(--warm-proof) 8%, var(--surface)); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); animation: ov4-pop 0.5s var(--ease) 0.06s both; }
+.ov4-stmt-mark { color: var(--warm-proof); opacity: 0.7; line-height: 0; }
+.ov4-stmt-text { margin: 0; font-family: var(--title); font-weight: 500; font-size: 21px; line-height: 1.34; letter-spacing: -0.015em; color: var(--ink); text-wrap: pretty; }
+
+/* the read — axis bars */
+.ov4-miniread { gap: 24px; padding-bottom: 8px; }
+.ov4-axes { display: flex; flex-direction: column; gap: 16px; }
+.ov4-axis { display: flex; flex-direction: column; gap: 7px; animation: ov4-rise 0.5s var(--ease) var(--d, 0.1s) both; }
+.ov4-axis-name { font: 600 10.5px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--badge-ink); }
+.ov4-axis-track { position: relative; height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.ov4-axis-marker { position: absolute; top: 50%; width: 18px; height: 18px; border-radius: 50%; background: var(--warm-proof); border: 3px solid var(--surface); box-shadow: 0 3px 10px -3px color-mix(in srgb, var(--warm-proof) 70%, transparent); transform: translate(-50%, -50%); transition: left 0.6s var(--ease); }
+.ov4-axis-ends { display: flex; justify-content: space-between; font: 500 12.5px var(--sans); color: var(--ink-3); }
+.ov4-axis-ends span[data-on] { color: var(--ink); font-weight: 700; }
+
+/* the read — mini prose box */
+.ov4-mini { display: flex; flex-direction: column; gap: 10px; padding: 22px 20px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); animation: ov4-pop 0.5s var(--ease) 0.1s both; }
+.ov4-mini p { font-family: var(--serif); font-size: 16.5px; line-height: 1.55; color: var(--ink); text-wrap: pretty; }
+.ov4-mini strong { font-weight: 600; color: var(--ink); }
+.ov4-mini em { font-style: italic; color: var(--ink); }
+.ov4-mini-by { align-self: flex-end; font: 600 11px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-proof); margin-top: 2px; }
+
+/* the read — sections + chips */
+.ov4-sec { display: flex; flex-direction: column; gap: 11px; animation: ov4-rise 0.5s var(--ease) both; }
+.ov4-sec-label { font: 600 10.5px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+.ov4-tagrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.ov4-tag-warm { background: color-mix(in srgb, var(--warm-react) 10%, var(--paper)); border-color: color-mix(in srgb, var(--warm-react) 24%, transparent); color: color-mix(in srgb, var(--warm-react) 72%, var(--ink)); }
+.ov4-vchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ov4-vchip { display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px 8px 11px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); font: 500 13px var(--sans); color: var(--ink); }
+.ov4-vchip svg { flex: 0 0 auto; color: var(--warm-proof); }
+
+/* the read — growth pointers */
+.ov4-growth { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.ov4-growth li { display: flex; align-items: flex-start; gap: 11px; font-family: var(--serif); font-size: 15.5px; line-height: 1.45; color: var(--ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov4-growth-ic { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px; display: grid; place-items: center; border-radius: 7px; background: color-mix(in srgb, var(--warm-proof) 16%, var(--paper)); color: var(--badge-ink); }
+
+/* full-read teaser (handoff to the app — a clean preview, never blur-locked) */
+.ov4-fullwrap { gap: 18px; }
+.ov4-full { display: flex; flex-direction: column; padding: 6px 18px 16px; border-radius: 20px; background: color-mix(in srgb, var(--warm-proof) 7%, var(--surface)); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20,18,14,0.04); }
+/* center the read/teaser heading block (so multi-line titles like the full-read teaser center) */
+.ov4-beat-arch { text-align: center; }
+.ov4-full-list { list-style: none; display: flex; flex-direction: column; }
+.ov4-full-list li { display: flex; align-items: center; gap: 13px; padding: 14px 0; animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov4-full-list li + li { border-top: 1px solid var(--line-2); }
+.ov4-full-ic { flex: 0 0 auto; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: color-mix(in srgb, var(--warm-proof) 13%, var(--paper)); color: var(--badge-ink); }
+.ov4-full-txt b { display: block; font: 600 14.5px var(--sans); color: var(--ink); letter-spacing: -0.01em; }
+.ov4-full-txt span { font: 400 12.5px var(--sans); line-height: 1.4; color: var(--ink-3); }
+.ov4-full-foot { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 6px; padding-top: 13px; border-top: 1px solid var(--line-2); font: 600 11.5px var(--sans); letter-spacing: 0.02em; color: var(--badge-ink); }
+.ov4-full-foot svg { color: var(--warm-proof); }
+
+/* the 30-day journey — warm editorial timeline (a relationship journey, not a tracker) */
+.ov4-thirty { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 24px; }
+.ov4-timeline { list-style: none; position: relative; display: flex; flex-direction: column; gap: 22px; padding: 22px 18px; border-radius: 22px; background: color-mix(in srgb, var(--warm-proof) 6%, var(--paper)); border: 1px solid var(--line-2); }
+.ov4-timeline::before { content: ''; position: absolute; left: 38px; top: 44px; bottom: 44px; width: 2px; background: linear-gradient(to bottom, color-mix(in srgb, var(--warm-proof) 50%, transparent), color-mix(in srgb, var(--warm-react) 38%, transparent)); }
+.ov4-timeline li { position: relative; display: flex; align-items: flex-start; gap: 16px; animation: ov4-rise 0.55s var(--ease) var(--d) both; }
+.ov4-tl-ic { flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 15%, var(--paper)); color: var(--warm-proof); position: relative; z-index: 1; }
+.ov4-tl-txt { display: flex; flex-direction: column; gap: 2px; padding-top: 1px; }
+.ov4-tl-when { font: 700 10.5px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-react); }
+.ov4-tl-txt b { font-family: var(--title); font-weight: 500; font-size: 18px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
+.ov4-tl-d { font-family: var(--serif); font-size: 14px; line-height: 1.45; color: var(--ink-2); }

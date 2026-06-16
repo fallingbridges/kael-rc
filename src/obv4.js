@@ -514,52 +514,50 @@ export const ECHO = {
 
 /* ── the instrument ── */
 export const QUESTIONS = {
-  /* Block 1 · Two ways of loving */
-  q1: { axis: 'CF', kind: 'two', block: 1, prompt: 'When something good happens, the first thing I want is', options: [
+  /* Block 1 · Two ways of loving — the anchors (heaviest weight, also break ties) */
+  q1: { axis: 'CF', kind: 'two', block: 1, weight: 1.5, prompt: 'When something good happens, the first thing I want is', options: [
     { name: 'Share it with someone close', pole: 'C', icon: ChatCircle },
     { name: 'Sit with it a while myself', pole: 'F', icon: Moon },
   ] },
-  q2: { axis: 'ER', kind: 'two', block: 1, prompt: 'My love is loudest in', options: [
+  q2: { axis: 'ER', kind: 'two', block: 1, weight: 1.5, prompt: 'My love is loudest in', options: [
     { name: 'Words and affection', pole: 'E', icon: Quotes },
     { name: 'Showing up and doing', pole: 'R', icon: HandHeart },
   ] },
-  q3: { axis: 'GH', kind: 'two', block: 1, prompt: 'The relationship I want feels most like', options: [
+  q3: { axis: 'GH', kind: 'two', block: 1, weight: 1.5, prompt: 'The relationship I want feels most like', options: [
     { name: 'A journey that keeps opening', pole: 'G', icon: Compass },
     { name: 'A calm place to return to', pole: 'H', icon: House },
   ] },
-  q4: { axis: 'AS', kind: 'two', block: 1, prompt: 'When the mood between us shifts, I', options: [
+  q4: { axis: 'AS', kind: 'two', block: 1, weight: 1.5, prompt: 'When the mood between us shifts, I', options: [
     { name: 'Catch it right away', pole: 'A', icon: Waveform },
     { name: 'Take the day as it comes', pole: 'S', icon: Sun },
   ] },
   /* Block 2 · How often (Rarely ↔ Frequently sliders, non-pathological) */
-  qf1: { axis: 'CF', kind: 'slider', block: 2, prompt: "How often do you crave a whole day that's just yours?",
+  qf1: { axis: 'CF', kind: 'slider', block: 2, weight: 0.8, prompt: "How often do you crave a whole day that's just yours?",
     left: { name: 'Rarely', pole: 'C' }, right: { name: 'Frequently', pole: 'F' } },
-  qf2: { axis: 'AS', kind: 'slider', block: 2, prompt: 'How often do you sense how someone feels before they say it?',
+  qf2: { axis: 'AS', kind: 'slider', block: 2, weight: 0.8, prompt: 'How often do you sense how someone feels before they say it?',
     left: { name: 'Rarely', pole: 'S' }, right: { name: 'Frequently', pole: 'A' } },
-  qf3: { axis: 'ER', kind: 'slider', block: 2, prompt: 'How often do you put what you feel straight into words?',
+  qf3: { axis: 'ER', kind: 'slider', block: 2, weight: 0.8, prompt: 'How often do you put what you feel straight into words?',
     left: { name: 'Rarely', pole: 'R' }, right: { name: 'Frequently', pole: 'E' } },
-  qf4: { axis: 'GH', kind: 'slider', block: 2, prompt: 'How often does a calm, settled stretch feel just right?',
+  qf4: { axis: 'GH', kind: 'slider', block: 2, weight: 0.8, prompt: 'How often does a calm, settled stretch feel just right?',
     left: { name: 'Rarely', pole: 'G' }, right: { name: 'Frequently', pole: 'H' } },
 
-  /* Block 3 · Closer in (Q12 slider) */
-  q12: { axis: 'GH', kind: 'slider', block: 3, prompt: 'When love gets steady, underneath I feel',
-    left: { name: 'Safe to rest', pole: 'H', icon: Moon },
-    right: { name: 'Ready to deepen', pole: 'G', icon: ArrowUpRight } },
-  q13: { axis: 'CF', kind: 'two', block: 3, prompt: 'Closeness, for me', options: [
-    { name: 'Where I feel most myself', pole: 'C', icon: HeartStraight },
-    { name: 'Best with room to breathe', pole: 'F', icon: Wind },
-  ] },
-  q14: { axis: 'ER', kind: 'two', block: 3, prompt: "When something's bothering me, I", options: [
-    { name: 'Bring it up directly', pole: 'E', icon: ChatCircleDots },
-    { name: 'Work it out in my own head first', pole: 'R', icon: Handshake },
-  ] },
-  q15: { axis: 'AS', kind: 'two', block: 3, prompt: 'In a relationship, I tend to', options: [
-    { name: 'Read the weather closely', pole: 'A', icon: Eye },
-    { name: "Assume we're fine", pole: 'S', icon: Smiley },
-  ] },
+  /* Block 3 · Does this sound like you? — quoted statements on an agreement slider.
+     left "Not like me" = the opposite pole · right "Exactly me" = the named pole. */
+  s_cf: { axis: 'CF', kind: 'statement', block: 3, weight: 1.0,
+    statement: "I'm happiest when the person I love is woven right into my everyday life.",
+    left: { name: 'Not like me', pole: 'F' }, right: { name: 'Exactly me', pole: 'C' } },
+  s_as: { axis: 'AS', kind: 'statement', block: 3, weight: 1.0,
+    statement: "I pick up on the smallest shift in someone's mood, often before they do.",
+    left: { name: 'Not like me', pole: 'S' }, right: { name: 'Exactly me', pole: 'A' } },
+  s_er: { axis: 'ER', kind: 'statement', block: 3, weight: 1.0,
+    statement: "When I feel love, I say it out loud. I don't keep it quiet.",
+    left: { name: 'Not like me', pole: 'R' }, right: { name: 'Exactly me', pole: 'E' } },
+  s_gh: { axis: 'GH', kind: 'statement', block: 3, weight: 1.0,
+    statement: "I want a love that keeps growing and changing me, more than one that just stays calm.",
+    left: { name: 'Not like me', pole: 'H' }, right: { name: 'Exactly me', pole: 'G' } },
 
-  /* Block 4 · Pick what rings true (texture only — never sets the type) */
-  q17: { kind: 'multi', block: 4, max: 3, prompt: "When I'm worried about someone I love, I", options: [
+  /* Block 4 · Pick what rings true — scored supports (each pick nudges its pole) */
+  q17: { kind: 'multi', block: 4, max: 4, prompt: "When I'm worried about someone I love, I", options: [
     { name: 'Reach out and talk it through', pole: 'E', icon: ChatCircle },
     { name: 'Give it space, process alone', pole: 'R', icon: Moon },
     { name: "Watch for signs we're okay", pole: 'A', icon: Eye },
@@ -567,7 +565,7 @@ export const QUESTIONS = {
     { name: 'Want to face it and grow', pole: 'G', icon: Plant },
     { name: 'Smooth it over, back to good', pole: 'H', icon: Heart },
   ] },
-  q18: { kind: 'multi', block: 4, max: 3, prompt: 'A great relationship is one that', options: [
+  q18: { kind: 'multi', block: 4, max: 4, prompt: 'A great relationship is one that', options: [
     { name: 'Feels like a safe harbor', pole: 'H', icon: House },
     { name: 'Leaves me free to be myself', pole: 'F', icon: Wind },
     { name: 'Keeps opening new depth', pole: 'G', icon: Compass },
@@ -575,48 +573,98 @@ export const QUESTIONS = {
     { name: 'Says the loving thing out loud', pole: 'E', icon: Quotes },
     { name: 'Notices without me explaining', pole: 'A', icon: MagnifyingGlass },
   ] },
+  q19: { kind: 'multi', block: 4, max: 4, prompt: 'What I need most from a partner', options: [
+    { name: 'To stay close and woven into my days', pole: 'C', icon: UsersThree },
+    { name: 'To trust me with real space', pole: 'F', icon: Wind },
+    { name: 'To just know I care, without me spelling it out', pole: 'R', icon: HandHeart },
+    { name: "To not need constant proof we're okay", pole: 'S', icon: ShieldCheck },
+    { name: 'To keep growing right alongside me', pole: 'G', icon: Plant },
+    { name: 'To keep things calm and easy', pole: 'H', icon: House },
+  ] },
 }
 
 /* BLOCK_IDS is derived from FLOW after it is defined (see below), so the
    progress bar can never drift from the actual question order. */
 
-/* scored items per axis: two-choice (±1 each) + sliders (graded toward right pole) */
+/* ── scoring (weighted instrument) ──
+   Anchors (block-1 two-choice, ±1.5) are the diagnostic backbone and also break
+   ties. How-often sliders (±0.8) and statement sliders (±1.0) are graded supports.
+   Each multi pick nudges its pole by +0.4. A full-tilt support (≤1.0) can never
+   out-vote an anchor (1.5). Ties resolve internally to the anchor — no tiebreaker
+   screens. The intense archetypes must be earned (dramatic-safety, below). */
+const clampN = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 const NEG = { CF: 'F', AS: 'S', ER: 'R', GH: 'H' }
-const AXIS_TWO = { CF: ['q1', 'q13'], AS: ['q4', 'q15'], ER: ['q2', 'q14'], GH: ['q3'] }
-const AXIS_SLIDERS = { CF: ['qf1'], AS: ['qf2'], ER: ['qf3'], GH: ['q12', 'qf4'] }
+const ANCHOR = { CF: 'q1', AS: 'q4', ER: 'q2', GH: 'q3' }
+const MULTI_W = 0.4   // per picked option, toward that option's pole
+const TIE_EPS = 0.15  // |sum| at or below this is a near-tie → the anchor decides
+/* a barely-Growth intense type softens to its calmer neighbor (flip G→H) */
+const DRAMATIC_FALLBACK = { CAEG: 'CAEH', FAEG: 'FAEH', FARG: 'FARH' }
+const DRAMATIC_MIN = 0.6
 
-/* ── scoring ── */
-/* a slider contributes toward POSITIVE by (value-50)/25, signed by which end is the + pole */
-function sliderContribution(answers, qid, axis) {
+/* graded slider/statement contribution toward the axis + pole, in [-w, +w] */
+function gradedContribution(answers, qid, axis) {
   const a = answers[qid]
   if (!a || typeof a.value !== 'number') return 0
   const q = QUESTIONS[qid]
-  const delta = (a.value - 50) / 25 // -2..+2 toward the right end
+  const delta = ((a.value - 50) / 50) * (q.weight || 1) // -w..+w toward the right end
   return q.right.pole === POSITIVE[axis] ? delta : -delta
 }
 
-/* signed sum per axis; positive = toward the + pole */
+/* signed sum per axis across every scored item; positive = toward the + pole */
 function axisSum(answers, axis) {
   let sum = 0
-  ;(AXIS_TWO[axis] || []).forEach((id) => {
-    const a = answers[id]
-    if (a && a.pole) sum += a.pole === POSITIVE[axis] ? 1 : -1
+  Object.entries(QUESTIONS).forEach(([qid, q]) => {
+    const a = answers[qid]
+    if (!a) return
+    if (q.kind === 'two' && q.axis === axis && a.pole) {
+      sum += (a.pole === POSITIVE[axis] ? 1 : -1) * (q.weight || 1)
+    } else if ((q.kind === 'slider' || q.kind === 'statement') && q.axis === axis) {
+      sum += gradedContribution(answers, qid, axis)
+    } else if (q.kind === 'multi' && Array.isArray(a.picks)) {
+      a.picks.forEach((p) => {
+        if (POLE_AXIS[p.pole] === axis) sum += (p.pole === POSITIVE[axis] ? 1 : -1) * MULTI_W
+      })
+    }
   })
-  ;(AXIS_SLIDERS[axis] || []).forEach((id) => { sum += sliderContribution(answers, id, axis) })
   return sum
+}
+
+/* max attainable magnitude per axis (deterministic items + multi headroom) → bars */
+const AXIS_MAX = (() => {
+  const m = {}
+  AXES.forEach((axis) => {
+    let det = 0
+    Object.values(QUESTIONS).forEach((q) => {
+      if ((q.kind === 'two' || q.kind === 'slider' || q.kind === 'statement') && q.axis === axis) det += (q.weight || 1)
+    })
+    m[axis] = det + 1.2
+  })
+  return m
+})()
+
+/* the anchor pole the user actually chose on this axis (the silent tie-breaker) */
+function anchorPole(answers, axis) {
+  const a = answers[ANCHOR[axis]]
+  return a && a.pole ? a.pole : NEG[axis]
 }
 
 export function resolve(answers) {
   const axes = {}
   AXES.forEach((axis) => {
     const sum = axisSum(answers, axis)
-    const onLine = Math.abs(sum) < 1
-    /* ties resolve silently (no tiebreaker screens): default to the - pole (F/S/R/H) */
-    const letter = sum > 0 ? POSITIVE[axis] : NEG[axis]
+    let letter
+    if (sum > TIE_EPS) letter = POSITIVE[axis]
+    else if (sum < -TIE_EPS) letter = NEG[axis]
+    else letter = anchorPole(answers, axis) // near-tie → the anchor decides, silently
     const mag = Math.abs(sum)
-    axes[axis] = { letter, sum, band: mag >= 3 ? 'strong' : mag >= 1.5 ? 'clear' : 'leaning', onLine }
+    const pos = clampN(50 + (sum / AXIS_MAX[axis]) * 50, 6, 94)
+    axes[axis] = { letter, sum, pos, band: mag >= 2 ? 'strong' : mag >= 1 ? 'clear' : 'leaning', onLine: mag <= TIE_EPS }
   })
-  const code = axes.CF.letter + axes.AS.letter + axes.ER.letter + axes.GH.letter
+  let code = axes.CF.letter + axes.AS.letter + axes.ER.letter + axes.GH.letter
+  /* dramatic-archetype safety: a weak Growth win can't mint an intense type */
+  if (DRAMATIC_FALLBACK[code] && axes.GH.letter === 'G' && axes.GH.sum < DRAMATIC_MIN) {
+    code = DRAMATIC_FALLBACK[code]
+  }
   return { code, axes }
 }
 
@@ -636,10 +684,10 @@ export function echoLine(answers) {
   return best ? ECHO[best.pole] : ECHO.H
 }
 
-/* doorway: hottest pole across the multi-select texture block (never sets type) */
+/* doorway: hottest pole across the multi-select block (used only to phrase copy) */
 export function doorwayPole(answers) {
   const tally = {}
-  ;['q17', 'q18'].forEach((id) => {
+  ;['q17', 'q18', 'q19'].forEach((id) => {
     const a = answers[id]
     if (!a || !Array.isArray(a.picks)) return
     a.picks.forEach((p) => { tally[p.pole] = (tally[p.pole] || 0) + 1 })
@@ -695,12 +743,17 @@ export const FEATURES = [
   { key: 'shift', icon: TrendUp, title: 'What changes with Kael', sub: 'Same moments. A steadier you in them.', shift: true },
 ]
 
-/* breathers — V2/V3 generic copy, V2 pause design; `em` = the phrase to italicize */
+/* breathers — one per block, each tied to what that segment just revealed:
+   acknowledge the user, build hope, then sell one facet of Kael. `em` = italic phrase. */
 export const BREATHERS = {
-  1: { kicker: 'How this works', title: 'From here, Kael listens differently.', body: 'Not to what you say. To how you respond. That is where the pattern hides.', em: 'how you respond', icon: Ear },
-  2: { kicker: 'A small note', title: 'There is no right amount of any of this.', body: 'Not of closeness, space, or intensity. There is only yours.', em: 'only yours', icon: Wind },
-  3: { kicker: 'The mirror', title: "You can't see your own pattern from the inside.", body: 'It hides in your reactions. The next few hold it up to the light.', em: 'hides in your reactions', icon: MagnifyingGlass },
-  4: { kicker: 'A note', title: 'If some of these feel close to home, that is the pattern showing itself.', body: 'Nothing here is a flaw. It is how you learned to stay safe.', em: 'Nothing here is a flaw', icon: Heart },
+  /* after block 1 · how you reach for love */
+  1: { kicker: 'Already, a shape', title: "There's a pattern in how you reach.", body: "Not better, not worse. Just yours. Kael learns it so it can catch you the moment it shows up.", em: 'Just yours', icon: Ear },
+  /* after block 2 · what you need to feel safe */
+  2: { kicker: 'A small truth', title: 'None of these needs is too much.', body: "Closeness, space, intensity. There's no right amount, only yours, and a love built to fit it. Kael helps you ask for it out loud.", em: 'only yours', icon: Wind },
+  /* after block 3 · how you show up when it counts */
+  3: { kicker: 'The honest part', title: 'This is the part you usually guard.', body: 'Most people armor over exactly this. Kael holds it up to the light, so the pattern stops running you from the dark.', em: 'to the light', icon: MagnifyingGlass },
+  /* after block 4 · what love is for, to you */
+  4: { kicker: 'What it adds up to', title: "That's your pattern, showing itself.", body: "Nothing here is a flaw. It's how you learned to stay safe. From here, Kael helps you keep the gift and drop the cost.", em: 'keep the gift', icon: Heart },
 }
 
 export const CALIB_STEPS = [
@@ -716,17 +769,18 @@ export const CALIB_REVIEWS = [
   "The first one that didn't feel generic.",
 ]
 
-/* dynamic progress eyebrow per quiz segment (goal-gradient + what Kael is mapping) */
+/* progress eyebrow per quiz segment — names what Kael is learning, not a counter */
 export const QUIZ_EYEBROWS = {
-  1: 'Getting to know you',
-  2: 'Warming up · your instincts',
-  3: 'Halfway there · up close',
-  4: 'Almost done · what you reach for',
+  1: 'How you reach for love',
+  2: 'What you need to feel safe',
+  3: 'How you show up when it counts',
+  4: 'What love is for, to you',
 }
 
 /* ── the flow ── */
 const two = (qid, block) => ({ id: qid, kind: 'two', act: 2, block, qid })
 const slider = (qid, block) => ({ id: qid, kind: 'slider', act: 2, block, qid })
+const statement = (qid, block) => ({ id: qid, kind: 'statement', act: 2, block, qid })
 const multi = (qid, block) => ({ id: qid, kind: 'multi', act: 2, block, qid })
 const breather = (n) => ({ id: 'br' + n, kind: 'breather', act: 2, n, cta: 'Continue' })
 
@@ -739,43 +793,44 @@ export const BEATS = [
 ]
 
 export const FLOW = [
-  /* ACT 1 · open in the feeling */
+  /* ACT 1 · open + get to know you */
   { id: 'welcome', kind: 'welcome', act: 1, title: 'You showed up. That is the first move.', sub: "Most people sit with this alone for years. You just chose not to, so let's make sense of how you love.", cta: 'Begin' },
   { id: 'situation', kind: 'situation', act: 1, field: 'situation', title: 'What brings you here?', sub: "Pick what's closest. We start there.", cta: 'Continue' },
   { id: 'situationText', kind: 'situationText', act: 1, field: 'situationText', title: 'Say it in your words.', sub: 'Whatever is on your mind right now. Keep it short.', placeholder: 'In a few words…', cta: 'Continue' },
   { id: 'hero', kind: 'hero', act: 1, title: "There's a you that only love brings out.", em: 'you', sub: "A few honest minutes, and I'll show you how you love, what scares you in it, and what keeps repeating.", cta: 'Show me' },
   { id: 'trust', kind: 'trust', act: 1, cta: 'I value my privacy' },
+  /* identity moved up — asked right after the privacy promise, while it's warm, so the reveal payoff runs uninterrupted later */
+  { id: 'name', kind: 'name', act: 1, field: 'name', title: 'What should I call you?', sub: 'Stays between us, only used to sharpen your read.', placeholder: 'Your first name', cta: 'Continue' },
+  { id: 'age', kind: 'age', act: 1, field: 'age', title: 'How old are you, {name}?', sub: 'Closeness and conflict shift across life stages. This keeps your read honest to yours.', cta: 'Continue' },
+  { id: 'gender', kind: 'gender', act: 1, field: 'gender', title: 'How do you identify?', sub: 'So Kael speaks to you, not a generic template.', cta: 'Continue' },
   { id: 'relcontext', kind: 'relcontext', act: 1, field: 'rel', title: 'Where are you right now?', sub: 'It changes what helps. Rebuilding after a breakup asks different things than settling into something new.', cta: 'Continue' },
-  { id: 'prep', kind: 'prep', act: 1, title: "Let's find how you love.", sub: "These aren't trivia. Each one maps how you show up when someone matters, so your read is yours, not a horoscope.", cta: 'Start' },
+  { id: 'prep', kind: 'prep', act: 1, title: "Let's find your love archetype.", sub: 'A read on how you attach, react, protect yourself, and change in love.', cta: 'Start' },
 
-  /* ACT 2 · the quiz — 4 blocks, sliders grouped, a breather between each block */
-  /* block 1 · two ways of loving */
+  /* ACT 2 · the quiz — 4 blocks, a breather between each */
+  /* block 1 · two ways of loving (anchors) */
   two('q1', 1), two('q2', 1), two('q3', 1), two('q4', 1),
   breather(1),
   /* block 2 · how often (sliders, grouped) */
   slider('qf1', 2), slider('qf2', 2), slider('qf3', 2), slider('qf4', 2),
   breather(2),
-  /* block 3 · closer in */
-  slider('q12', 3), two('q13', 3), two('q14', 3), two('q15', 3),
+  /* block 3 · does this sound like you? (statement agreement sliders) */
+  statement('s_cf', 3), statement('s_as', 3), statement('s_er', 3), statement('s_gh', 3),
   breather(3),
-  /* block 4 · pick what rings true (multi) */
-  multi('q17', 4), multi('q18', 4),
+  /* block 4 · pick what rings true (multi, scored) */
+  multi('q17', 4), multi('q18', 4), multi('q19', 4),
   breather(4),
 
-  /* identity + notif — asked right after the quiz so the reveal → read → sell payoff runs uninterrupted */
-  { id: 'name', kind: 'name', act: 2, field: 'name', title: "Let's make this yours.", sub: 'Stays between us, only used to sharpen your read.', placeholder: 'Your first name', cta: 'Continue' },
-  { id: 'age', kind: 'age', act: 2, field: 'age', title: 'How old are you?', sub: 'Closeness and conflict shift across life stages. This keeps your read honest to yours.', cta: 'Continue' },
-  { id: 'gender', kind: 'gender', act: 2, field: 'gender', title: 'How do you identify?', sub: 'So Kael speaks to you, not a generic template.', cta: 'Continue' },
   { id: 'notif', kind: 'notif', act: 2, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
-
   { id: 'calibration', kind: 'calibration', act: 2, title: 'Finding your archetype.' },
 
-  /* ACT 3 · the mirror — reveal, then a single-page read */
+  /* ACT 3 · the mirror — reveal, then the multi-section read */
   { id: 'reveal', kind: 'reveal', act: 3 },
-  { id: 'read', kind: 'read', act: 3, cta: 'This is me' },
+  { id: 'miniread', kind: 'miniread', act: 3, cta: 'This is me' },
+  { id: 'fullread', kind: 'fullread', act: 3, cta: 'Continue' },
 
-  /* ACT 4 · sell — Kael calibrated to your archetype, then paywall */
-  { id: 'calibrated', kind: 'calibrated', act: 4, cta: 'See my plan' },
+  /* ACT 4 · sell — Kael is ready, the 30-day journey, then the archetype paywall */
+  { id: 'ready', kind: 'ready', act: 4, cta: 'See my 30 days' },
+  { id: 'thirtydays', kind: 'thirtydays', act: 4, cta: 'See my plan' },
   { id: 'paywall', kind: 'paywall', act: 4 },
 ]
 
@@ -786,7 +841,7 @@ export const BLOCK_IDS = FLOW
   .reduce((m, n) => { (m[n.block] = m[n.block] || []).push(n.qid); return m }, {})
 export const BLOCKS = Object.keys(BLOCK_IDS).map(Number).sort((a, b) => a - b)
 
-export const QUIZ_IDS = ['q1','q2','q3','q4','qf1','qf2','qf3','qf4','q12','q13','q14','q15','q17','q18']
+export const QUIZ_IDS = ['q1','q2','q3','q4','qf1','qf2','qf3','qf4','s_cf','s_as','s_er','s_gh','q17','q18','q19']
 export function answeredCount(answers) {
   return QUIZ_IDS.filter((id) => answers && answers[id]).length
 }
