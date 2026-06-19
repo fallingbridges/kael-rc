@@ -63,6 +63,10 @@ import {
   Microphone as PhMic,
   DownloadSimple as PhDownload,
   SquaresFour as PhGrid,
+  Lighthouse as PhLighthouse,
+  Flame as PhFlame,
+  CalendarHeart as PhCalendarHeart,
+  Target as PhTarget,
 } from '@phosphor-icons/react'
 
 /* Wrap a Phosphor icon to honour our { size, sw, weight } API.
@@ -159,6 +163,12 @@ export const Heart = make(PhHeart)
 export const HandHeart = make(PhHandHeart)
 export const Shield = make(PhShield)
 export const Anchor = make(PhAnchor)
+
+/* ---- home: hero + archetype + feed ---- */
+export const Lighthouse = make(PhLighthouse)
+export const Flame = make(PhFlame)
+export const CalendarHeart = make(PhCalendarHeart)
+export const Target = make(PhTarget)
 
 /* ---- theme toggle ---- */
 export const Sun = make(PhSun)

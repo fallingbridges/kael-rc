@@ -64,6 +64,7 @@ function ScreenView({ tab, messages, typing, handlers }) {
         <HomeScreen
           onPrompt={handlers.startFromPrompt}
           onMood={handlers.bringMood}
+          onOpenRead={handlers.goYou}
         />
       )
   }
@@ -172,6 +173,7 @@ export default function App() {
     sendChip,
     goChat: () => setTab('chat'),
     goHome: () => setTab('home'),
+    goYou: () => setTab('you'),
     startFromPrompt,
     bringMood,
     openLesson,

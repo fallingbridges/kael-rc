@@ -1,8 +1,8 @@
 import { Cellular, Wifi, Battery } from './Icons.jsx'
 
-export default function StatusBar() {
+export default function StatusBar({ tone = 'light' }) {
   return (
-    <div className="statusbar">
+    <div className="statusbar" data-tone={tone}>
       <div className="island" />
       <span className="sb-time">9:41</span>
       <span className="sb-right">
