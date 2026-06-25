@@ -436,7 +436,7 @@ export const FLOW = [
   { id: 'age', kind: 'age', act: 1, field: 'age', title: 'How old are you, {name}?', sub: 'Stress and mood shift across life stages. This keeps your read honest to yours.', cta: 'Continue' },
   { id: 'gender', kind: 'gender', act: 1, field: 'gender', title: 'How do you identify?', sub: 'So Kael speaks to you, not a generic template.', cta: 'Continue' },
   { id: 'relcontext', kind: 'relcontext', act: 1, field: 'rel', title: 'What’s weighing most right now?', sub: 'So Kael knows where to start.', cta: 'Continue' },
-  { id: 'prep', kind: 'prep', act: 1, kicker: '16 patterns', title: "Let's find your pattern.", sub: 'A 3-minute read on how you feel, cope, talk to yourself, and recover.', cta: 'Start' },
+  { id: 'prep', kind: 'prep', act: 1, kicker: '16 patterns', title: "Let's find your pattern.", sub: 'A 3-minute quiz on how you feel, cope, talk to yourself, and recover.', cta: 'Start' },
   breather(5),
 
   /* ACT 2 · the quiz — four themed segments, a breather between each */
