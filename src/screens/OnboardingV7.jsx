@@ -1,25 +1,29 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star,
+  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star, Sun,
+  X, Infinity as InfinityIcon,
   Heart, HeartStraight, Quotes, Compass,
-  Fingerprint, ChatsCircle, Anchor, Brain, ChartLineUp,
-  UsersThree, Waveform, Wind, House, HandHeart, ArrowUpRight,
+  Fingerprint, ChatsCircle, Anchor, Brain, ChartLineUp, Flame, Waves,
+  UsersThree, Waveform, Wind, House, HandHeart, ArrowUpRight, PaperPlaneTilt,
 } from '@phosphor-icons/react'
 import {
   FLOW, QUESTIONS, BLOCK_IDS, BLOCKS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
-  REL_CONTEXT, AGES, GENDERS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
+  REL_CONTEXT, AGES, GENDERS, GOALS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
   resolveRead, answeredCount,
-} from '../obv4.js'
+} from '../obv7.js'
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Kael Onboarding V4. Open → quiz (4 thematic segments, breathers on relevant
-   questions) → reveal → read in 4 beats (card + chips) → identity → notification
-   → sell (scratched-surface → aspiration → benefits → with/without transform) →
-   paywall. No tiebreakers (ties resolve silently). V2 design language reused.
+   Kael Onboarding V7 — the merge: V6's balanced 16-question quiz + axis-bar
+   reveal, plus V5's best bits grafted on — a personalized read that echoes your
+   own answers back ({SIT}/{BODY}/{REACH}), a "how Kael helps" line per beat, and
+   the live chat-demo + method-row breathers. No separate full read; the read is
+   the read. Identity is collected after the reveal so the front stays light.
    ────────────────────────────────────────────────────────────────────────── */
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 const cap = (w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w)
+const lowerFirst = (w) => (w ? w.charAt(0).toLowerCase() + w.slice(1) : w)
+const proseList = (arr) => { const a = (arr || []).filter(Boolean); if (!a.length) return ''; if (a.length === 1) return a[0]; if (a.length === 2) return `${a[0]} and ${a[1]}`; return `${a.slice(0, -1).join(', ')}, and ${a[a.length - 1]}` }
 const lines = (str) => (str || '').split('\n')
 const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender']
 
@@ -32,15 +36,17 @@ function hash(str) {
 /* axis bars on the read — human axis name + both pole labels. left = the low-key
    pole, right = the named (POSITIVE) pole; the marker sits at axes[key].pos%. */
 const AXIS_META = [
-  { key: 'CF', name: 'Closeness', left: 'Free', right: 'Close' },
-  { key: 'AS', name: 'Attunement', left: 'Settled', right: 'Attuned' },
-  { key: 'ER', name: 'Expression', left: 'Reserved', right: 'Expressive' },
-  { key: 'GH', name: 'Tilt', left: 'Harmony', right: 'Growth' },
+  { key: 'MIND', name: 'Your mind', left: 'Quiet', right: 'Racing' },
+  { key: 'ENERGY', name: 'Your energy', left: 'Steady', right: 'Running low' },
+  { key: 'VOICE', name: 'Inner voice', left: 'Kind', right: 'Critical' },
+  { key: 'COPE', name: 'How you cope', left: 'Faces it', right: 'Numbs it' },
 ]
 /* small rotating icon set for the "what you value" chips */
 const VALUE_ICONS = [Heart, Anchor, House, Compass, ShieldCheck, Star, HandHeart, Wind]
+/* an icon per quiz segment, shown in the eyebrow */
+const BLOCK_ICONS = { 1: Brain, 2: Flame, 3: Quotes, 4: Waves }
 
-export default function OnboardingV4({ noanim = false }) {
+export default function OnboardingV7({ noanim = false }) {
   const [i, setI] = useState(0)
   const [dir, setDir] = useState(1)
   const [answers, setA] = useState({})
@@ -78,9 +84,14 @@ export default function OnboardingV4({ noanim = false }) {
   const resolved = useMemo(() => (i >= revealAt ? resolveRead(answers) : null), [i, revealAt, answers])
   const arch = resolved ? resolved.read : null
   const nm = (answers.name || '').trim()
+  const ph = resolved ? resolved.phrases : null
   const fillSit = (str) => (str || '')
-    .replace(/\{SIT\}/g, answers.situationText || SIT_PHRASE[answers.situation] || "what you're carrying")
+    .replace(/\{SIT\}/g, (ph && ph.SIT) || answers.situationText || SIT_PHRASE[answers.situation] || "what you're carrying")
+    .replace(/\{BODY\}/g, (ph && ph.BODY) || 'the tension you carry')
+    .replace(/\{REACH\}/g, (ph && ph.REACH) || 'something to take the edge off')
     .replace(/,?\s*\{name\}/g, nm ? `, ${cap(nm)}` : '')
+    // a filled-in phrase can land at the start of a sentence — recapitalize there
+    .replace(/([.!?]\s+)([a-z])/g, (_, pre, ch) => pre + ch.toUpperCase())
   const order = (opts, qid) => (hash(seedRef.current + qid) % 2 === 0 ? opts : [opts[1], opts[0]])
 
   /* chrome */
@@ -95,21 +106,24 @@ export default function OnboardingV4({ noanim = false }) {
   })
 
   /* footer */
-  const footerLabel = s.cta || (['reveal', 'slider', 'statement', 'multi'].includes(s.kind) ? 'Continue' : null)
+  let footerLabel = s.cta || (['reveal', 'slider', 'statement', 'multi'].includes(s.kind) ? 'Continue' : null)
+  // optional multis (e4/c4): the CTA reads "None of these" until something is picked, then "Continue"
+  if (s.kind === 'multi') footerLabel = (answers[s.qid]?.picks?.length > 0) ? 'Continue' : 'None of these'
   const ready = (() => {
     if (s.kind === 'name') return nm.length > 0
     if (s.kind === 'situationText') return (answers.situationText || '').trim().length > 0
-    if (s.kind === 'multi') return Array.isArray(answers[s.qid]?.picks) && answers[s.qid].picks.length > 0
+    if (s.kind === 'multi') return true // optional — never force a pick
     if (s.kind === 'situation') return Boolean(answers.situation)
+    if (s.kind === 'goals') return Array.isArray(answers.goal) && answers.goal.length > 0
     return true
   })()
   const showFooter = !AUTO_KINDS.concat(['calibration', 'paywall']).includes(s.kind) && Boolean(footerLabel)
   const ctaText = footerLabel
 
   return (
-    <div className={`lib-page ov-page ov4-page${noanim ? ' ov-noanim' : ''}`}>
+    <div className={`lib-page ov-page ov4-page ov6-page ov7-page${noanim ? ' ov-noanim' : ''}`}>
       <div className="ob-devbar">
-        <span className="ob-dev-title">Onboarding V4 · {i + 1}/{total} · {s.id}</span>
+        <span className="ob-dev-title">Onboarding V7 · {i + 1}/{total} · {s.id}</span>
         <div className="ob-dev-controls">
           <button className="ob-dev-btn" onClick={() => go(i - 1)} disabled={i === 0}>Prev</button>
           <button className="ob-dev-btn" onClick={() => go(i + 1)} disabled={last}>Next</button>
@@ -129,7 +143,15 @@ export default function OnboardingV4({ noanim = false }) {
                 <header className="ov-head">
                   <div className="ov-head-row">
                     <button className="ov-back" data-hide={!canBack || undefined} onClick={back} aria-label="Back"><ArrowLeft size={20} /></button>
-                    {isQuiz && <span className="ov4-eyebrow">{QUIZ_EYEBROWS[s.block] || 'Getting to know you'}</span>}
+                    {isQuiz && (() => {
+                      const EyeIc = BLOCK_ICONS[s.block]
+                      return (
+                        <span className="ov4-eyebrow">
+                          {EyeIc && <EyeIc size={13} weight="bold" />}
+                          {QUIZ_EYEBROWS[s.block] || 'Getting to know you'}
+                        </span>
+                      )
+                    })()}
                   </div>
                   {isQuiz && (
                     <div className="ov4-segbar">
@@ -170,6 +192,7 @@ function Body(props) {
     case 'hero': return <Hero {...props} />
     case 'situation': return <SituationList {...props} />
     case 'situationText': return <SituationText {...props} />
+    case 'goals': return <Goals {...props} />
     case 'trust': return <Trust {...props} />
     case 'relcontext': return <CardList {...props} field="rel" items={REL_CONTEXT} />
     case 'prep': return <Prep {...props} />
@@ -182,7 +205,6 @@ function Body(props) {
     case 'calibration': return <Calibration {...props} />
     case 'reveal': return <Reveal {...props} />
     case 'miniread': return <MiniRead {...props} />
-    case 'fullread': return <FullRead {...props} />
     case 'name': return <NameField {...props} />
     case 'age': return <CardList {...props} field="age" items={AGES} />
     case 'gender': return <CardList {...props} field="gender" items={GENDERS} />
@@ -244,7 +266,7 @@ function Welcome({ s }) {
 function Hero({ s }) {
   return (
     <div className="ov4-hero ov4-hero-type">
-      <span className="ov4-hero-kicker">Now, a promise</span>
+      <span className="ov4-hero-kicker">{s.kicker || 'Now, a promise'}</span>
       <h1 className="ov4-hero-title ov4-hero-title-lg">
         {lines(s.title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{s.em ? emLine(l, s.em) : l}</Fragment>))}
       </h1>
@@ -307,11 +329,33 @@ function SituationText({ s, answers, set, onBack }) {
   )
 }
 
+/* the hopeful close to the quiz — what they're working toward (multi-select, non-scoring) */
+function Goals({ s, answers, set, fillSit }) {
+  const picks = Array.isArray(answers.goal) ? answers.goal : []
+  const has = (name) => picks.includes(name)
+  const toggle = (name) => set('goal', has(name) ? picks.filter((p) => p !== name) : [...picks, name])
+  return (
+    <>
+      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
+      <div className="ov4-list">
+        {GOALS.map((o, n) => (
+          <button key={o.name} className="ov4-card ov4-card-sm" data-on={has(o.name) || undefined}
+            style={{ '--d': `${0.04 * n + 0.06}s` }} onClick={() => toggle(o.name)}>
+            <span className="ov4-card-ic"><o.icon size={20} weight="duotone" /></span>
+            <span className="ov4-card-name">{o.name}</span>
+            <span className="ov4-card-check"><Check size={12} weight="bold" /></span>
+          </button>
+        ))}
+      </div>
+    </>
+  )
+}
+
 function Trust() {
   return (
     <div className="ov4-pause ov4-trust">
       <Badge Icon={ShieldCheck} />
-      <span className="ov4-kicker">Before we start</span>
+      <span className="ov4-kicker">Just between us</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">Private, secure,<br />and yours alone.</h1>
       <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">No one reads your world but you. Which means you can be honest here, even about the messy parts.</p>
     </div>
@@ -322,7 +366,7 @@ function Prep({ s }) {
   return (
     <div className="ov4-pause ov4-prep2">
       <Badge Icon={Fingerprint} />
-      <span className="ov4-kicker">16 love archetypes</span>
+      <span className="ov4-kicker">{s.kicker || 'Your pattern'}</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{s.title}</h1>
       <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{s.sub}</p>
     </div>
@@ -515,11 +559,54 @@ function Breather({ s, fillSit }) {
   const b = BREATHERS[s.n] || {}
   const lg = b.big // credibility breather matches the prep screen's larger title/spacing
   return (
-    <div className="ov4-pause">
+    <div className="ov4-pause ov5-breather">
       <Badge Icon={b.icon || Sparkle} />
       {b.kicker && <span className="ov4-kicker">{b.kicker}</span>}
       <h1 className={`ov4-q ov4-pause-title${lg ? ' ov4-pause-title-lg' : ''}`}>{b.title}</h1>
       <p className={`ov4-sub ov4-pause-sub${lg ? ' ov4-pause-sub-lg' : ''}`}><Emph body={fillSit(b.body)} em={b.em} /></p>
+      {b.demo && <ChatDemo />}
+      {b.method && <MethodRow />}
+    </div>
+  )
+}
+
+/* the differentiator made visible: Kael replies AND hands you options to tap */
+function ChatDemo() {
+  return (
+    <div className="ov5-demo" aria-hidden="true">
+      <div className="ov5-demo-row">
+        <span className="ov5-demo-av"><Sparkle size={14} weight="fill" /></span>
+        <div className="ov5-demo-bubble">That sounds like a lot to hold on your own. Want to start with the part that’s loudest right now?</div>
+      </div>
+      <div className="ov5-demo-chips">
+        <span className="ov5-demo-chip">The racing thoughts</span>
+        <span className="ov5-demo-chip">Why I can’t rest</span>
+        <span className="ov5-demo-chip">I just need to vent</span>
+      </div>
+      <div className="ov5-demo-input">
+        <span className="ov5-demo-input-hint">or type your own…</span>
+        <span className="ov5-demo-send"><PaperPlaneTilt size={15} weight="fill" /></span>
+      </div>
+    </div>
+  )
+}
+
+/* the three methods Kael draws on, shown as credibility (not generic advice) */
+function MethodRow() {
+  const items = [
+    { k: 'CBT', d: 'Reframe the thought', Ic: Brain },
+    { k: 'ACT', d: 'Sit with the feeling', Ic: Heart },
+    { k: 'Mindfulness', d: 'Come back to now', Ic: Wind },
+  ]
+  return (
+    <div className="ov5-method">
+      {items.map((m) => (
+        <div className="ov5-method-chip" key={m.k}>
+          <span className="ov7-method-ic"><m.Ic size={17} weight="duotone" /></span>
+          <b>{m.k}</b>
+          <span>{m.d}</span>
+        </div>
+      ))}
     </div>
   )
 }
@@ -568,7 +655,7 @@ function Reveal({ arch }) {
   const Glyph = arch.glyph
   return (
     <div className="ov4-reveal">
-      <span className="ov4-reveal-label">Your Love Archetype</span>
+      <span className="ov4-reveal-label">What Kael noticed</span>
       <span className="ov4-reveal-glyph"><Glyph size={50} weight="duotone" /></span>
       <h1 className="ov4-reveal-name">{arch.name}</h1>
       <p className="ov4-reveal-essence">{arch.essence}</p>
@@ -603,66 +690,109 @@ function Section({ label, className, children }) {
   )
 }
 
-/* the read — axis bars → a mini prose read → chips for love / values / triggers →
-   growth pointers. Each section is styled differently for variety. */
-function MiniRead({ arch, axes }) {
+/* the read — axis bars (the four pillars) → four beats, each with the pattern
+   in your own words, the recognizable chips, and a "how Kael helps" line →
+   growth pointers. Personalized: bodies/chips echo the user's answers via fillSit. */
+const READ_SECTIONS = [
+  { key: 'love', label: 'How you carry it' },
+  { key: 'value', label: 'What you’re really after' },
+  { key: 'triggers', label: 'What sets it off' },
+  { key: 'respond', label: 'How you cope' },
+]
+function MiniRead({ arch, axes, fillSit }) {
   if (!arch) return null
   const b = arch.beats || {}
-  const prose = [b.love && b.love.body, b.respond && b.respond.body].filter(Boolean)
+  const fill = fillSit || ((x) => x)
   const growth = [arch.aspiration, ...(Array.isArray(arch.compare) ? arch.compare.slice(0, 2).map((c) => c.withKael) : [])].filter(Boolean)
   return (
-    <div className="ov4-read ov4-miniread">
-      <div className="ov4-beat-arch">
-        <span className="ov4-beat-arch-label">Your archetype</span>
-        <h2 className="ov4-beat-arch-name">{arch.name}</h2>
-      </div>
+    <div className="ov4-read ov4-miniread ov7r">
+      {/* masthead — the bespoke 1-of-16 portrait */}
+      <header className="ov7r-head">
+        <span className="ov7r-eyebrow">Your pattern</span>
+        <h2 className="ov7r-name">{arch.name}</h2>
+        {arch.open && <p className="ov7r-open">{fill(arch.open)}</p>}
+      </header>
 
+      {/* the four pillars, as a level-meter card */}
       {axes && (
-        <section className="ov4-axes">
-          {AXIS_META.map((m, k) => (<AxisBar key={m.key} meta={m} axis={axes[m.key]} d={0.06 * k + 0.1} />))}
-        </section>
-      )}
-
-      <section className="ov4-mini">
-        {prose.map((p, k) => {
-          const m = p.match(/^(.*?[.!?])(\s+)([\s\S]*)$/)
-          const lead = m ? m[1] : p
-          const rest = m ? m[3] : ''
-          const Tag = k === 0 ? 'strong' : 'em' // first beat leads bold, the pivot reads italic
-          return (<p key={k}><Tag>{lead}</Tag>{rest ? ' ' + rest : ''}</p>)
-        })}
-        <span className="ov4-mini-by">— Kael</span>
-      </section>
-
-      <Section label="How you love">
-        <div className="ov4-tagrow">{(b.love?.chips || []).map((c, k) => (<span key={k} className="ov4-tag">{c}</span>))}</div>
-      </Section>
-
-      <Section label="What you value in love">
-        <div className="ov4-vgrid">
-          {(b.value?.chips || []).slice(0, 4).map((c, k) => {
-            const Ic = VALUE_ICONS[k % VALUE_ICONS.length]
+        <section className="ov7r-pillars">
+          <span className="ov7r-cap">Your four pillars</span>
+          {AXIS_META.map((m, k) => {
+            const ax = axes[m.key] || { pos: 50 }
+            const onRight = ax.pos >= 50
             return (
-              <div key={k} className="ov4-vtile" style={{ '--d': `${0.05 * k + 0.1}s` }}>
-                <span className="ov4-vtile-ic"><Ic size={18} weight="duotone" /></span>
-                <span className="ov4-vtile-name">{c}</span>
+              <div className="ov7r-pillar" key={m.key} style={{ '--d': `${0.05 * k + 0.12}s` }}>
+                <span className="ov7r-pillar-name">{m.name}</span>
+                <div className="ov7r-track">
+                  <span className="ov7r-fill" style={{ width: `${ax.pos}%` }} />
+                  <span className="ov7r-dot" style={{ left: `${ax.pos}%` }} />
+                </div>
+                <div className="ov7r-ends">
+                  <span data-on={!onRight || undefined}>{m.left}</span>
+                  <span data-on={onRight || undefined}>{m.right}</span>
+                </div>
               </div>
             )
           })}
-        </div>
-      </Section>
+        </section>
+      )}
 
-      <Section label="What activates you">
-        <div className="ov4-tagrow ov4-tagrow-warm">{(b.triggers?.chips || []).map((c, k) => (<span key={k} className="ov4-tag ov4-tag-warm">{c}</span>))}</div>
-      </Section>
+      {/* the read — numbered editorial beats, each closed by Kael's note */}
+      <div className="ov7r-beats">
+        {READ_SECTIONS.map((sec, k) => {
+          const beat = b[sec.key]
+          if (!beat) return null
+          const chips = beat.chips || []
+          return (
+            <section className="ov7r-beat" key={sec.key} style={{ '--d': `${0.05 * k + 0.18}s` }}>
+              <div className="ov7r-beat-head">
+                <span className="ov7r-num">{String(k + 1).padStart(2, '0')}</span>
+                <span className="ov7r-label">{sec.label}</span>
+              </div>
+              <p className="ov7r-body">{fill(beat.body)}</p>
+              {sec.key === 'value' ? (
+                <div className="ov7r-tiles">
+                  {chips.slice(0, 4).map((c, j) => {
+                    const Ic = VALUE_ICONS[j % VALUE_ICONS.length]
+                    return (
+                      <div key={j} className="ov7r-tile" style={{ '--d': `${0.05 * j + 0.1}s` }}>
+                        <span className="ov7r-tile-ic"><Ic size={16} weight="duotone" /></span>
+                        <span>{fill(c)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="ov7r-chips">
+                  {chips.map((c, j) => (<span key={j} className={`ov7r-chip${sec.key === 'triggers' ? ' ov7r-chip-warm' : ''}`}>{fill(c)}</span>))}
+                </div>
+              )}
+              {beat.help && (
+                <div className="ov7r-help">
+                  <span className="ov7r-help-mark"><Sparkle size={11} weight="fill" /></span>
+                  <p>{fill(beat.help)}</p>
+                </div>
+              )}
+            </section>
+          )
+        })}
+      </div>
 
-      <Section label="What growth looks like for you">
-        <ul className="ov4-growth">
-          {growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov4-growth-ic"><ArrowUpRight size={13} weight="bold" /></span>{g}</li>))}
+      {/* the second-loudest pillar, a quiet aside */}
+      {arch.accent && <p className="ov7r-accent">{fill(arch.accent)}</p>}
+
+      {/* where this goes, signed */}
+      <section className="ov7r-close">
+        <span className="ov7r-cap ov7r-cap-brown">Where this goes</span>
+        <ul className="ov7r-grow">
+          {growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov7r-grow-ic"><ArrowUpRight size={12} weight="bold" /></span>{fill(g)}</li>))}
         </ul>
-      </Section>
+      </section>
 
-      <div className="ov4-readnote"><ChatsCircle size={16} weight="duotone" /><span>This read gets sharper the more you talk to Kael.</span></div>
+      <footer className="ov7r-foot">
+        <span className="ov7r-sign">— Kael</span>
+        <span className="ov7r-foot-note">This read sharpens the more you talk to me.</span>
+      </footer>
     </div>
   )
 }
@@ -673,8 +803,8 @@ function FullRead({ arch }) {
   const sections = [
     'Your pattern, in depth',
     'What you protect, and why',
-    'Who fits you, who clashes',
-    `How the ${bare} grows in love`,
+    'Where it comes from',
+    `How the ${bare} grows`,
   ]
   return (
     <div className="ov4-read ov4-fullwrap">
@@ -702,27 +832,42 @@ function Notif({ s }) {
   )
 }
 
-/* ── Act 4 — Kael is ready, the 30-day journey, the paywall ── */
+/* ── Act 4 — the daily practice, Kael is ready, the 30-day journey, the paywall ── */
+
+/* the daily-ritual beat — names the recurring loop the user is actually signing up for:
+   the archetype is the hook, the daily note is the habit. */
+function DailyLoop() {
+  return (
+    <div className="ov4-pause ov4-dailyloop">
+      <Badge Icon={Sun} />
+      <span className="ov4-kicker">How this works</span>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">This is a daily practice.</h1>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Your pattern is the starting point. From here, Kael checks in each day, learns how you tick, and <em className="ov4-em">leaves you a short note</em> on what it notices. Small, steady, and built around you.</p>
+    </div>
+  )
+}
+
 /* a short breather: Kael is calibrated to this archetype, addressed by name */
-function Ready({ arch, nm }) {
+function Ready({ arch, nm, answers }) {
   if (!arch) return null
   const Glyph = arch.glyph
+  const goals = answers && Array.isArray(answers.goal) ? proseList(answers.goal.map(lowerFirst)) : ''
   return (
     <div className="ov4-pause ov4-ready">
       <span className="ov4-cal-glyph"><Glyph size={30} weight="duotone" /></span>
       <span className="ov4-kicker">Calibrated to you</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{nm ? `Kael is ready, ${cap(nm)}.` : 'Kael is ready.'}</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Tuned to how you love, what scares you, and the pattern you walked in with. Not a generic coach. Yours.</p>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{goals ? `Tuned to your pattern, and pointed at ${goals}.` : 'Tuned to your pattern, not a generic script.'}</p>
     </div>
   )
 }
 
-/* a warm editorial timeline — the relationship journey, not a habit tracker */
+/* a warm editorial timeline — the daily practice taking hold, not a habit tracker */
 const JOURNEY = [
-  { when: 'Today', Ic: ChatsCircle, t: "Bring Kael the moment you're in", d: 'The spiral, the unread text, the fight. Start where it hurts.' },
-  { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to see your moves before you name them.' },
-  { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One reaction caught early. You feel the difference.' },
-  { when: 'Day 30', Ic: HeartStraight, t: 'The pattern stops running you', d: 'You catch it early and choose differently. The old reflex loosens its grip.' },
+  { when: 'Today', Ic: ChatsCircle, t: "Bring Kael what's on your mind", d: 'The spiral, the stress, the thing you can’t say out loud. Start anywhere.' },
+  { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to catch your loops before you finish naming them.' },
+  { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One spiral caught early, one kinder word to yourself. You feel it.' },
+  { when: 'Day 30', Ic: HeartStraight, t: 'A quieter mind', d: 'The old reflex still shows up, but it stops running the show. You catch it, and you choose.' },
 ]
 function ThirtyDays() {
   return (
@@ -747,49 +892,54 @@ function ThirtyDays() {
   )
 }
 
-/* universal paywall (shown at onboarding end AND on in-app limits) — names the
-   archetype + a short, relationship-intelligence feature list (not generic-AI) */
+/* paywall — the first studio design (VGrouped: warm badge → centered hero → icon
+   feature list → stacked plans → CTA + links), adapted to the wellness product.
+   Badge is the user's own pattern glyph. */
 const PAY_FEATURES = [
-  { Ic: ChatsCircle, t: 'There for the 2am spiral, every time.' },
-  { Ic: Waveform, t: 'Knows your pattern, not just your words.' },
-  { Ic: Brain, t: 'Remembers every person in your story.' },
-  { Ic: ChartLineUp, t: 'Shows you changing, week by week.' },
+  { icon: InfinityIcon, t: 'Unlimited conversations', s: 'Every spiral and 2am, judgment-free' },
+  { icon: Brain, t: 'Kael remembers your whole story', s: 'Your patterns and history, never re-explain' },
+  { icon: ChatsCircle, t: 'A daily note that knows you', s: 'Kael notices your dips and reflects them back' },
+  { icon: Wind, t: 'A calmer, steadier baseline', s: 'The old reflex loosens, one day at a time' },
 ]
 function Paywall({ arch, onClose }) {
   const [plan, setPlan] = useState('annual')
-  const bare = arch ? arch.name.replace(/^The\s+/, '') : 'your'
-  const Glyph = arch ? arch.glyph : null
+  const Glyph = arch ? arch.glyph : ShieldCheck
   return (
-    <>
-      <div className="ov-body ov4-paybody">
-        <div className="ov4-pay-head">
-          {Glyph && <span className="ov4-pay-glyph"><Glyph size={30} weight="duotone" /></span>}
-          <span className="ov4-pay-kicker">Your {bare} plan</span>
-          <h1 className="ov4-pay-title">Have Kael in your corner.</h1>
+    <div className="pl-grouped ov7-pay" data-theme="light">
+      <button className="pl-x" onClick={onClose} aria-label="Close"><X size={20} weight="regular" /></button>
+      <div className="pl-body">
+        <div className="pl-hero">
+          <span className="pl-badge pl-badge-warm"><Glyph size={24} weight="duotone" /></span>
+          <p className="pl-kicker">Kael Premium</p>
+          <h1 className="pl-title">Kael, in your corner.</h1>
+          <p className="pl-lede">Unlimited check-ins with the coach who remembers your whole story.</p>
         </div>
-        <ul className="ov4-cal-list ov4-payfeatlist">
-          {PAY_FEATURES.map((f, k) => (
-            <li key={k} style={{ '--d': `${0.05 * k + 0.16}s` }}>
-              <span className="ov4-cal-ic"><f.Ic size={17} weight="duotone" /></span>{f.t}
-            </li>
+        <div className="pl-feats pl-feats-tight">
+          {PAY_FEATURES.map((f) => (
+            <div className="pl-feat" key={f.t}>
+              <span className="pl-feat-ic"><f.icon size={22} weight="duotone" /></span>
+              <div className="pl-feat-t"><b>{f.t}</b><span>{f.s}</span></div>
+            </div>
           ))}
-        </ul>
-        <div className="ov4-plans">
-          <button className="ov4-plan" data-on={plan === 'annual' || undefined} onClick={() => setPlan('annual')}>
-            <span className="ov4-plan-tag">Best value</span>
-            <div className="ov4-plan-l"><b>Annual</b><span>7 days free, then yearly</span></div>
-            <div className="ov4-plan-r"><b>$99.99</b><span>/yr</span></div>
-          </button>
-          <button className="ov4-plan" data-on={plan === 'monthly' || undefined} onClick={() => setPlan('monthly')}>
-            <div className="ov4-plan-l"><b>Monthly</b><span>7 days free, then monthly</span></div>
-            <div className="ov4-plan-r"><b>$14.99</b><span>/mo</span></div>
-          </button>
+        </div>
+        <div className="pl-tail">
+          <div className="pl-plans">
+            <button className="pl-plan" data-on={plan === 'annual' || undefined} onClick={() => setPlan('annual')}>
+              <span className="pl-plan-tag">Save 44%</span>
+              <div className="pl-plan-l"><span className="pl-plan-name">Annual</span><span className="pl-plan-sub">7 days free, then billed yearly</span></div>
+              <div className="pl-plan-r"><span className="pl-plan-price">$99.99</span><span className="pl-plan-per">/year</span></div>
+            </button>
+            <button className="pl-plan" data-on={plan === 'monthly' || undefined} onClick={() => setPlan('monthly')}>
+              <div className="pl-plan-l"><span className="pl-plan-name">Monthly</span><span className="pl-plan-sub">7 days free, then billed monthly</span></div>
+              <div className="pl-plan-r"><span className="pl-plan-price">$14.99</span><span className="pl-plan-per">/month</span></div>
+            </button>
+          </div>
         </div>
       </div>
-      <footer className="ov-foot ov4-payfoot">
-        <button className="ov-cta" onClick={onClose}>Start 7-day free trial</button>
-        <button className="ov4-quiet" onClick={onClose}>Not now</button>
+      <footer className="pl-foot">
+        <button className="ob-cta" onClick={onClose}>Start 7-day free trial</button>
+        <div className="pl-links"><button>Privacy</button><i>·</i><button>Terms</button><i>·</i><button>Restore</button></div>
       </footer>
-    </>
+    </div>
   )
 }

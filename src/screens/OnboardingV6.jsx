@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star,
+  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star, Sun,
   Heart, HeartStraight, Quotes, Compass,
   Fingerprint, ChatsCircle, Anchor, Brain, ChartLineUp,
   UsersThree, Waveform, Wind, House, HandHeart, ArrowUpRight,
@@ -9,10 +9,10 @@ import {
   FLOW, QUESTIONS, BLOCK_IDS, BLOCKS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
   REL_CONTEXT, AGES, GENDERS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
   resolveRead, answeredCount,
-} from '../obv4.js'
+} from '../obv6.js'
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Kael Onboarding V4. Open → quiz (4 thematic segments, breathers on relevant
+   Kael Onboarding V6 — the mental-wellness re-theme of V4. Open → quiz (4 thematic segments, breathers on relevant
    questions) → reveal → read in 4 beats (card + chips) → identity → notification
    → sell (scratched-surface → aspiration → benefits → with/without transform) →
    paywall. No tiebreakers (ties resolve silently). V2 design language reused.
@@ -32,15 +32,15 @@ function hash(str) {
 /* axis bars on the read — human axis name + both pole labels. left = the low-key
    pole, right = the named (POSITIVE) pole; the marker sits at axes[key].pos%. */
 const AXIS_META = [
-  { key: 'CF', name: 'Closeness', left: 'Free', right: 'Close' },
-  { key: 'AS', name: 'Attunement', left: 'Settled', right: 'Attuned' },
-  { key: 'ER', name: 'Expression', left: 'Reserved', right: 'Expressive' },
-  { key: 'GH', name: 'Tilt', left: 'Harmony', right: 'Growth' },
+  { key: 'MIND', name: 'Your mind', left: 'Quiet', right: 'Racing' },
+  { key: 'ENERGY', name: 'Your energy', left: 'Steady', right: 'Running low' },
+  { key: 'VOICE', name: 'Inner voice', left: 'Kind', right: 'Critical' },
+  { key: 'COPE', name: 'How you cope', left: 'Faces it', right: 'Numbs it' },
 ]
 /* small rotating icon set for the "what you value" chips */
 const VALUE_ICONS = [Heart, Anchor, House, Compass, ShieldCheck, Star, HandHeart, Wind]
 
-export default function OnboardingV4({ noanim = false }) {
+export default function OnboardingV6({ noanim = false }) {
   const [i, setI] = useState(0)
   const [dir, setDir] = useState(1)
   const [answers, setA] = useState({})
@@ -107,9 +107,9 @@ export default function OnboardingV4({ noanim = false }) {
   const ctaText = footerLabel
 
   return (
-    <div className={`lib-page ov-page ov4-page${noanim ? ' ov-noanim' : ''}`}>
+    <div className={`lib-page ov-page ov4-page ov6-page${noanim ? ' ov-noanim' : ''}`}>
       <div className="ob-devbar">
-        <span className="ob-dev-title">Onboarding V4 · {i + 1}/{total} · {s.id}</span>
+        <span className="ob-dev-title">Onboarding V6 · {i + 1}/{total} · {s.id}</span>
         <div className="ob-dev-controls">
           <button className="ob-dev-btn" onClick={() => go(i - 1)} disabled={i === 0}>Prev</button>
           <button className="ob-dev-btn" onClick={() => go(i + 1)} disabled={last}>Next</button>
@@ -183,6 +183,7 @@ function Body(props) {
     case 'reveal': return <Reveal {...props} />
     case 'miniread': return <MiniRead {...props} />
     case 'fullread': return <FullRead {...props} />
+    case 'dailyloop': return <DailyLoop {...props} />
     case 'name': return <NameField {...props} />
     case 'age': return <CardList {...props} field="age" items={AGES} />
     case 'gender': return <CardList {...props} field="gender" items={GENDERS} />
@@ -322,7 +323,7 @@ function Prep({ s }) {
   return (
     <div className="ov4-pause ov4-prep2">
       <Badge Icon={Fingerprint} />
-      <span className="ov4-kicker">16 love archetypes</span>
+      <span className="ov4-kicker">16 emotional archetypes</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{s.title}</h1>
       <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{s.sub}</p>
     </div>
@@ -568,7 +569,7 @@ function Reveal({ arch }) {
   const Glyph = arch.glyph
   return (
     <div className="ov4-reveal">
-      <span className="ov4-reveal-label">Your Love Archetype</span>
+      <span className="ov4-reveal-label">Your Emotional Archetype</span>
       <span className="ov4-reveal-glyph"><Glyph size={50} weight="duotone" /></span>
       <h1 className="ov4-reveal-name">{arch.name}</h1>
       <p className="ov4-reveal-essence">{arch.essence}</p>
@@ -634,11 +635,11 @@ function MiniRead({ arch, axes }) {
         <span className="ov4-mini-by">— Kael</span>
       </section>
 
-      <Section label="How you love">
+      <Section label="How you carry it">
         <div className="ov4-tagrow">{(b.love?.chips || []).map((c, k) => (<span key={k} className="ov4-tag">{c}</span>))}</div>
       </Section>
 
-      <Section label="What you value in love">
+      <Section label="What you're really after">
         <div className="ov4-vgrid">
           {(b.value?.chips || []).slice(0, 4).map((c, k) => {
             const Ic = VALUE_ICONS[k % VALUE_ICONS.length]
@@ -652,7 +653,7 @@ function MiniRead({ arch, axes }) {
         </div>
       </Section>
 
-      <Section label="What activates you">
+      <Section label="What sets it off">
         <div className="ov4-tagrow ov4-tagrow-warm">{(b.triggers?.chips || []).map((c, k) => (<span key={k} className="ov4-tag ov4-tag-warm">{c}</span>))}</div>
       </Section>
 
@@ -673,8 +674,8 @@ function FullRead({ arch }) {
   const sections = [
     'Your pattern, in depth',
     'What you protect, and why',
-    'Who fits you, who clashes',
-    `How the ${bare} grows in love`,
+    'Where it comes from',
+    `How the ${bare} grows`,
   ]
   return (
     <div className="ov4-read ov4-fullwrap">
@@ -702,7 +703,21 @@ function Notif({ s }) {
   )
 }
 
-/* ── Act 4 — Kael is ready, the 30-day journey, the paywall ── */
+/* ── Act 4 — the daily practice, Kael is ready, the 30-day journey, the paywall ── */
+
+/* the daily-ritual beat — names the recurring loop the user is actually signing up for:
+   the archetype is the hook, the daily note is the habit. */
+function DailyLoop() {
+  return (
+    <div className="ov4-pause ov4-dailyloop">
+      <Badge Icon={Sun} />
+      <span className="ov4-kicker">How this works</span>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">This is a daily practice.</h1>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Your archetype is the starting point. From here, Kael checks in each day, learns your patterns, and <em className="ov4-em">leaves you a short note</em> on what it notices. Small, steady, and built around you.</p>
+    </div>
+  )
+}
+
 /* a short breather: Kael is calibrated to this archetype, addressed by name */
 function Ready({ arch, nm }) {
   if (!arch) return null
@@ -712,17 +727,17 @@ function Ready({ arch, nm }) {
       <span className="ov4-cal-glyph"><Glyph size={30} weight="duotone" /></span>
       <span className="ov4-kicker">Calibrated to you</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{nm ? `Kael is ready, ${cap(nm)}.` : 'Kael is ready.'}</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Tuned to how you love, what scares you, and the pattern you walked in with. Not a generic coach. Yours.</p>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Tuned to how you carry stress, what sets you off, and the pattern you walked in with. Not a generic coach. Yours.</p>
     </div>
   )
 }
 
-/* a warm editorial timeline — the relationship journey, not a habit tracker */
+/* a warm editorial timeline — the daily practice taking hold, not a habit tracker */
 const JOURNEY = [
-  { when: 'Today', Ic: ChatsCircle, t: "Bring Kael the moment you're in", d: 'The spiral, the unread text, the fight. Start where it hurts.' },
-  { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to see your moves before you name them.' },
-  { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One reaction caught early. You feel the difference.' },
-  { when: 'Day 30', Ic: HeartStraight, t: 'The pattern stops running you', d: 'You catch it early and choose differently. The old reflex loosens its grip.' },
+  { when: 'Today', Ic: ChatsCircle, t: "Bring Kael what's on your mind", d: 'The spiral, the stress, the thing you can’t say out loud. Start anywhere.' },
+  { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to catch your loops before you finish naming them.' },
+  { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One spiral caught early, one kinder word to yourself. You feel it.' },
+  { when: 'Day 30', Ic: HeartStraight, t: 'A quieter mind', d: 'The old reflex still shows up, but it stops running the show. You catch it, and you choose.' },
 ]
 function ThirtyDays() {
   return (
@@ -750,9 +765,9 @@ function ThirtyDays() {
 /* universal paywall (shown at onboarding end AND on in-app limits) — names the
    archetype + a short, relationship-intelligence feature list (not generic-AI) */
 const PAY_FEATURES = [
-  { Ic: ChatsCircle, t: 'There for the 2am spiral, every time.' },
-  { Ic: Waveform, t: 'Knows your pattern, not just your words.' },
-  { Ic: Brain, t: 'Remembers every person in your story.' },
+  { Ic: ChatsCircle, t: 'There for the 2am spiral, judgment-free, every time.' },
+  { Ic: Waveform, t: 'Knows your patterns, not just your words.' },
+  { Ic: Brain, t: 'Remembers your whole story, so you never start over.' },
   { Ic: ChartLineUp, t: 'Shows you changing, week by week.' },
 ]
 function Paywall({ arch, onClose }) {

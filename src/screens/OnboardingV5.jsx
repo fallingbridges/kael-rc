@@ -1,50 +1,40 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star,
-  Heart, HeartStraight, Quotes, Compass,
-  Fingerprint, ChatsCircle, Anchor, Brain, ChartLineUp,
-  UsersThree, Waveform, Wind, House, HandHeart, ArrowUpRight,
+  ArrowLeft, Check, Sparkle, BellSimple, ShieldCheck, LockKey, Star, Quotes,
+  ChatCircleDots, ArrowUpRight, PaperPlaneTilt, SealCheck, Brain, Pulse, Leaf,
 } from '@phosphor-icons/react'
 import {
-  FLOW, QUESTIONS, BLOCK_IDS, BLOCKS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
-  REL_CONTEXT, AGES, GENDERS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
-  resolveRead, answeredCount,
-} from '../obv4.js'
+  FLOW, QUESTIONS, BLOCKS, BLOCK_IDS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
+  AGES, GENDERS, FREQ_OPTIONS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
+  AXIS_META, PROFILES, JOURNEY, PAY_FEATURES, resolveRead,
+} from '../obv5.js'
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Kael Onboarding V4. Open → quiz (4 thematic segments, breathers on relevant
-   questions) → reveal → read in 4 beats (card + chips) → identity → notification
-   → sell (scratched-surface → aspiration → benefits → with/without transform) →
-   paywall. No tiebreakers (ties resolve silently). V2 design language reused.
+   Kael Onboarding V5 — the mental-wellness flow.
+   arrive → quiz (4 blocks, breathers between, all 4 question types) → calibrate
+   → reveal the pattern → the read (4 beats, each with "How Kael helps") →
+   name / age / gender → notifications → ready → 30-day timeline → paywall.
+   Reuses the V4 (ov4-*) design language; ov5-* adds the new pieces.
    ────────────────────────────────────────────────────────────────────────── */
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 const cap = (w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w)
 const lines = (str) => (str || '').split('\n')
-const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender']
+const AUTO_KINDS = ['two', 'single', 'age', 'gender']
+const QUIZ_KINDS = ['two', 'single', 'slider', 'statement', 'multi', 'frequency']
 
-function hash(str) {
-  let h = 2166136261
-  for (let i = 0; i < str.length; i += 1) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) }
-  return h >>> 0
+/* default footer CTA per kind (FLOW.cta overrides) */
+const CTA_BY_KIND = {
+  welcome: 'Begin', promise: 'I’m listening', trust: 'I understand',
+  situation: 'Continue', situationText: 'Continue', slider: 'Continue',
+  statement: 'Continue', multi: 'Continue', breather: 'Continue',
+  frequency: 'Continue', name: 'Continue', ready: 'See my 30 days',
 }
 
-/* axis bars on the read — human axis name + both pole labels. left = the low-key
-   pole, right = the named (POSITIVE) pole; the marker sits at axes[key].pos%. */
-const AXIS_META = [
-  { key: 'CF', name: 'Closeness', left: 'Free', right: 'Close' },
-  { key: 'AS', name: 'Attunement', left: 'Settled', right: 'Attuned' },
-  { key: 'ER', name: 'Expression', left: 'Reserved', right: 'Expressive' },
-  { key: 'GH', name: 'Tilt', left: 'Harmony', right: 'Growth' },
-]
-/* small rotating icon set for the "what you value" chips */
-const VALUE_ICONS = [Heart, Anchor, House, Compass, ShieldCheck, Star, HandHeart, Wind]
-
-export default function OnboardingV4({ noanim = false }) {
+export default function OnboardingV5({ noanim = false }) {
   const [i, setI] = useState(0)
   const [dir, setDir] = useState(1)
   const [answers, setA] = useState({})
-  const seedRef = useRef(String(hash('kael-v4-' + Math.floor(Date.now() / 1e7))))
   const bodyRef = useRef(null)
   const advanceRef = useRef(null)
 
@@ -76,18 +66,18 @@ export default function OnboardingV4({ noanim = false }) {
 
   const revealAt = useMemo(() => FLOW.findIndex((f) => f.kind === 'reveal'), [])
   const resolved = useMemo(() => (i >= revealAt ? resolveRead(answers) : null), [i, revealAt, answers])
-  const arch = resolved ? resolved.read : null
+  const arch = resolved ? resolved.profile : null
   const nm = (answers.name || '').trim()
-  const fillSit = (str) => (str || '')
-    .replace(/\{SIT\}/g, answers.situationText || SIT_PHRASE[answers.situation] || "what you're carrying")
+  const fill = (str) => (str || '')
+    .replace(/\{SIT\}/g, resolved ? resolved.phrases.SIT : SIT_PHRASE[answers.situation] || 'what you walked in with')
+    .replace(/\{BODY\}/g, resolved ? resolved.phrases.BODY : 'the tension you carry')
+    .replace(/\{REACH\}/g, resolved ? resolved.phrases.REACH : 'something to take the edge off')
     .replace(/,?\s*\{name\}/g, nm ? `, ${cap(nm)}` : '')
-  const order = (opts, qid) => (hash(seedRef.current + qid) % 2 === 0 ? opts : [opts[1], opts[0]])
 
   /* chrome */
-  const isQuiz = ['two', 'single', 'slider', 'statement', 'multi'].includes(s.kind)
-  const showHead = !['welcome', 'hero', 'reveal', 'calibration', 'paywall'].includes(s.kind)
+  const isQuiz = QUIZ_KINDS.includes(s.kind)
+  const showHead = !['welcome', 'promise', 'reveal', 'calibration', 'paywall'].includes(s.kind)
   const canBack = i > 0 && s.kind !== 'calibration' && s.kind !== 'paywall'
-  /* progress bar derives its blocks from FLOW (via BLOCKS/BLOCK_IDS) so it can never desync from the order */
   const segs = BLOCKS.map((b) => {
     if ((s.block || 0) > b) return { b, fill: 100 }
     if (s.block === b) { const ids = BLOCK_IDS[b] || []; const idx = ids.indexOf(s.qid); return { b, fill: idx < 0 ? 0 : ((idx + 1) / ids.length) * 100 } }
@@ -95,21 +85,21 @@ export default function OnboardingV4({ noanim = false }) {
   })
 
   /* footer */
-  const footerLabel = s.cta || (['reveal', 'slider', 'statement', 'multi'].includes(s.kind) ? 'Continue' : null)
+  const footerLabel = s.cta || CTA_BY_KIND[s.kind] || null
   const ready = (() => {
     if (s.kind === 'name') return nm.length > 0
     if (s.kind === 'situationText') return (answers.situationText || '').trim().length > 0
-    if (s.kind === 'multi') return Array.isArray(answers[s.qid]?.picks) && answers[s.qid].picks.length > 0
     if (s.kind === 'situation') return Boolean(answers.situation)
+    if (s.kind === 'frequency') return Boolean(answers[s.qid])
+    if (s.kind === 'multi') return Array.isArray(answers[s.qid]?.picks) && answers[s.qid].picks.length > 0
     return true
   })()
   const showFooter = !AUTO_KINDS.concat(['calibration', 'paywall']).includes(s.kind) && Boolean(footerLabel)
-  const ctaText = footerLabel
 
   return (
-    <div className={`lib-page ov-page ov4-page${noanim ? ' ov-noanim' : ''}`}>
+    <div className={`lib-page ov-page ov4-page ov5-page${noanim ? ' ov-noanim' : ''}`}>
       <div className="ob-devbar">
-        <span className="ob-dev-title">Onboarding V4 · {i + 1}/{total} · {s.id}</span>
+        <span className="ob-dev-title">Onboarding V5 · {i + 1}/{total} · {s.id}</span>
         <div className="ob-dev-controls">
           <button className="ob-dev-btn" onClick={() => go(i - 1)} disabled={i === 0}>Prev</button>
           <button className="ob-dev-btn" onClick={() => go(i + 1)} disabled={last}>Next</button>
@@ -141,17 +131,13 @@ export default function OnboardingV4({ noanim = false }) {
 
               <div className="ov-body" ref={bodyRef}>
                 <div key={i} data-dir={dir} className="ov-flow ov4-flow">
-                  <Body
-                    s={s} answers={answers} arch={arch} axes={resolved ? resolved.axes : null}
-                    nm={nm} set={set} pickAuto={pickAuto}
-                    order={order} fillSit={fillSit} onAdvance={next} onBack={back}
-                  />
+                  <Body s={s} answers={answers} arch={arch} resolved={resolved} nm={nm} set={set} pickAuto={pickAuto} fill={fill} onAdvance={next} />
                 </div>
               </div>
 
               {showFooter && (
                 <footer className="ov-foot">
-                  <button className="ov-cta" onClick={next} disabled={!ready}>{fillSit(ctaText)}</button>
+                  <button className="ov-cta" onClick={next} disabled={!ready}>{fill(footerLabel)}</button>
                   {s.kind === 'notif' && s.alt && <button className="ov4-quiet" onClick={next}>{s.alt}</button>}
                 </footer>
               )}
@@ -167,14 +153,13 @@ export default function OnboardingV4({ noanim = false }) {
 function Body(props) {
   switch (props.s.kind) {
     case 'welcome': return <Welcome {...props} />
-    case 'hero': return <Hero {...props} />
+    case 'promise': return <Promise {...props} />
     case 'situation': return <SituationList {...props} />
     case 'situationText': return <SituationText {...props} />
     case 'trust': return <Trust {...props} />
-    case 'relcontext': return <CardList {...props} field="rel" items={REL_CONTEXT} />
-    case 'prep': return <Prep {...props} />
     case 'two': return <Choice {...props} />
     case 'single': return <SingleChoice {...props} />
+    case 'frequency': return <FrequencyScale {...props} />
     case 'slider': return <SliderCard {...props} />
     case 'statement': return <StatementSlider {...props} />
     case 'multi': return <MultiCard {...props} />
@@ -182,7 +167,6 @@ function Body(props) {
     case 'calibration': return <Calibration {...props} />
     case 'reveal': return <Reveal {...props} />
     case 'miniread': return <MiniRead {...props} />
-    case 'fullread': return <FullRead {...props} />
     case 'name': return <NameField {...props} />
     case 'age': return <CardList {...props} field="age" items={AGES} />
     case 'gender': return <CardList {...props} field="gender" items={GENDERS} />
@@ -193,26 +177,24 @@ function Body(props) {
   }
 }
 
-function Header({ title, sub, fillSit, center }) {
+function Header({ title, sub, fill, center }) {
   return (
     <div className={`ov4-titles${center ? ' ov4-center' : ''}`}>
-      <h1 className="ov4-q">{lines(fillSit ? fillSit(title) : title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{l}</Fragment>))}</h1>
-      {sub && <p className="ov4-sub">{fillSit ? fillSit(sub) : sub}</p>}
+      <h1 className="ov4-q">{lines(fill ? fill(title) : title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{l}</Fragment>))}</h1>
+      {sub && <p className="ov4-sub">{fill ? fill(sub) : sub}</p>}
     </div>
   )
 }
 
-/* a phosphor badge (V2 pause look) */
 function Badge({ Icon }) { return <span className="ov4-badge"><Icon size={26} weight="duotone" /></span> }
 
-/* italic-emphasis renderer for breather bodies */
 function Emph({ body, em }) {
   if (!em || !body.includes(em)) return <>{body}</>
   const [a, b] = body.split(em)
   return <>{a}<em className="ov4-em">{em}</em>{b}</>
 }
 
-function Illo({ label = 'Illustration', ratio = '4x3', sm = false }) {
+function Illo({ label = 'Illustration', ratio = '1x1', sm = false }) {
   return (
     <div className={`ov4-illo${sm ? ' ov4-illo-sm' : ''}`} data-ratio={ratio} aria-hidden="true">
       <span className="ov4-illo-ic"><Sparkle size={sm ? 18 : 24} weight="light" /></span>
@@ -221,45 +203,47 @@ function Illo({ label = 'Illustration', ratio = '4x3', sm = false }) {
   )
 }
 
-/* ── Act 1 ── */
-/* italic-emphasis renderer for a single word inside a hero title line */
 function emLine(line, em) {
   if (!em || !line.includes(em)) return line
   const [a, b] = line.split(em)
   return <>{a}<em className="ov4-hero-em">{em}</em>{b}</>
 }
 
-/* welcome — congratulate + give hope; keeps the illustration to differentiate from the promise */
+/* ── Act 1 ── */
 function Welcome({ s }) {
   return (
     <div className="ov4-hero ov4-welcome">
-      <Illo label="Welcome" ratio="1x1" />
+      <Illo label="Warm opening image" ratio="1x1" />
       <h1 className="ov4-hero-title">{lines(s.title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{l}</Fragment>))}</h1>
-      <p className="ov4-hero-sub">{s.subEm ? <Emph body={s.sub} em={s.subEm} /> : s.sub}</p>
-    </div>
-  )
-}
-
-/* the promise — type-forward (no illustration), with the emphasized word in italic */
-function Hero({ s }) {
-  return (
-    <div className="ov4-hero ov4-hero-type">
-      <span className="ov4-hero-kicker">Now, a promise</span>
-      <h1 className="ov4-hero-title ov4-hero-title-lg">
-        {lines(s.title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{s.em ? emLine(l, s.em) : l}</Fragment>))}
-      </h1>
       <p className="ov4-hero-sub">{s.sub}</p>
     </div>
   )
 }
 
-function SituationList({ s, answers, set, fillSit, onAdvance }) {
+function Promise({ s }) {
+  return (
+    <div className="ov4-hero ov4-hero-type">
+      <span className="ov4-hero-kicker">{s.kicker}</span>
+      <h1 className="ov4-hero-title ov4-hero-title-lg">
+        {lines(s.title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{s.em ? emLine(l, s.em) : l}</Fragment>))}
+      </h1>
+      <p className="ov4-hero-sub">{s.sub}</p>
+      <div className="ov5-promise-row">
+        <span className="ov5-promise-chip"><Brain size={15} weight="duotone" />Remembers you</span>
+        <span className="ov5-promise-chip"><ChatCircleDots size={15} weight="duotone" />Offers the words</span>
+        <span className="ov5-promise-chip"><SealCheck size={15} weight="duotone" />Real method</span>
+      </div>
+    </div>
+  )
+}
+
+function SituationList({ s, answers, set, fill, onAdvance }) {
   const sel = answers.situation
   const custom = answers.situationText
   const chooseElse = () => { set('situation', 'Something else'); onAdvance() }
   return (
     <>
-      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
+      <Header title={s.title} sub={s.sub} fill={fill} />
       <div className="ov4-list">
         {custom && (
           <button className="ov4-card ov4-card-sm" data-on onClick={chooseElse}>
@@ -296,13 +280,13 @@ function SituationList({ s, answers, set, fillSit, onAdvance }) {
   )
 }
 
-function SituationText({ s, answers, set, onBack }) {
+function SituationText({ s, answers, set }) {
   const v = answers.situationText || ''
   return (
     <>
       <Header title={s.title} sub={s.sub} />
-      <input className="ov-input ov4-input" value={v} maxLength={50} autoFocus onChange={(e) => set('situationText', e.target.value)} placeholder={s.placeholder} autoComplete="off" spellCheck={false} />
-      <span className="ov4-charcount">{v.length}/50</span>
+      <input className="ov-input ov4-input" value={v} maxLength={60} autoFocus onChange={(e) => set('situationText', e.target.value)} placeholder={s.placeholder} autoComplete="off" spellCheck={false} />
+      <span className="ov4-charcount">{v.length}/60</span>
     </>
   )
 }
@@ -313,27 +297,20 @@ function Trust() {
       <Badge Icon={ShieldCheck} />
       <span className="ov4-kicker">Before we start</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">Private, secure,<br />and yours alone.</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">No one reads your world but you. Which means you can be honest here, even about the messy parts.</p>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">No one reads your world but you. Be as honest as you need to be.</p>
+      <div className="ov5-trustrow">
+        <span className="ov5-trustrow-item"><LockKey size={15} weight="duotone" />End-to-end private</span>
+        <span className="ov5-trustrow-item"><ShieldCheck size={15} weight="duotone" />Never sold, ever</span>
+      </div>
     </div>
   )
 }
 
-function Prep({ s }) {
-  return (
-    <div className="ov4-pause ov4-prep2">
-      <Badge Icon={Fingerprint} />
-      <span className="ov4-kicker">16 love archetypes</span>
-      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{s.title}</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{s.sub}</p>
-    </div>
-  )
-}
-
-function CardList({ s, answers, pickAuto, field, items, fillSit }) {
+function CardList({ s, answers, pickAuto, field, items, fill }) {
   const sel = answers[field]
   return (
     <>
-      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
+      <Header title={s.title} sub={s.sub} fill={fill} />
       <div className="ov4-list" data-locked={Boolean(sel) || undefined}>
         {items.map((it, n) => {
           const label = typeof it === 'string' ? it : it.name
@@ -356,26 +333,25 @@ function NameField({ s, answers, set }) {
   return (
     <>
       <Header title={s.title} sub={s.sub} />
-      <input className="ov-input ov4-input" value={answers.name || ''} onChange={(e) => set('name', e.target.value)} placeholder={s.placeholder} autoComplete="off" spellCheck={false} />
+      <input className="ov-input ov4-input" value={answers.name || ''} autoFocus onChange={(e) => set('name', e.target.value)} placeholder={s.placeholder} autoComplete="off" spellCheck={false} maxLength={24} />
     </>
   )
 }
 
-/* ── Act 2 ── */
-function Choice({ s, answers, pickAuto, order }) {
+/* ── Act 2 — questions ── */
+function Choice({ s, answers, pickAuto }) {
   const q = QUESTIONS[s.qid]
   if (!q) return null
   const sel = answers[s.qid]
-  const opts = order(q.options, s.qid)
   return (
     <div className="ov4-choice">
       <h1 className="ov4-q ov4-quiz-q">{q.prompt}</h1>
       <div className="ov4-cards" data-locked={Boolean(sel) || undefined}>
-        {opts.map((o, n) => {
+        {q.options.map((o, n) => {
           const on = sel && sel.name === o.name
           return (
             <button key={o.name} className="ov4-card" data-on={on || undefined} data-committed={on || undefined}
-              style={{ '--d': `${0.07 * n + 0.06}s` }} onClick={() => pickAuto(s.qid, { name: o.name, pole: o.pole }, 420)}>
+              style={{ '--d': `${0.07 * n + 0.06}s` }} onClick={() => pickAuto(s.qid, { name: o.name, val: o.val }, 420)}>
               <span className="ov4-card-ic ov4-card-ic-lg">{o.icon && <o.icon size={26} weight="duotone" />}</span>
               <span className="ov4-card-name">{o.name}</span>
             </button>
@@ -386,7 +362,6 @@ function Choice({ s, answers, pickAuto, order }) {
   )
 }
 
-/* block 4 · single-select conflict question — tap one, auto-advances (one pole signal) */
 function SingleChoice({ s, answers, pickAuto }) {
   const q = QUESTIONS[s.qid]
   if (!q) return null
@@ -400,7 +375,7 @@ function SingleChoice({ s, answers, pickAuto }) {
           const on = sel && sel.name === o.name
           return (
             <button key={o.name} className="ov4-card ov4-card-sm" data-on={on || undefined} data-committed={on || undefined}
-              style={{ '--d': `${0.05 * n + 0.06}s` }} onClick={() => pickAuto(s.qid, { name: o.name, pole: o.pole }, 360)}>
+              style={{ '--d': `${0.05 * n + 0.06}s` }} onClick={() => pickAuto(s.qid, { name: o.name, val: o.val, echo: o.echo }, 360)}>
               {o.icon && <span className="ov4-card-ic"><o.icon size={20} weight="duotone" /></span>}
               <span className="ov4-card-name">{o.name}</span>
               <span className="ov4-card-check"><Check size={12} weight="bold" /></span>
@@ -412,12 +387,38 @@ function SingleChoice({ s, answers, pickAuto }) {
   )
 }
 
+/* frequency-based question — a 5-step scale with an intensity meter. Freely
+   re-selectable; the user confirms with Continue (no auto-advance lock). */
+function FrequencyScale({ s, answers, set }) {
+  const q = QUESTIONS[s.qid]
+  if (!q) return null
+  const sel = answers[s.qid]
+  return (
+    <div className="ov4-choice">
+      <h1 className="ov4-q ov4-quiz-q">{q.prompt}</h1>
+      <div className="ov5-freq">
+        {FREQ_OPTIONS.map((o, n) => {
+          const on = sel && sel.name === o.name
+          return (
+            <button key={o.name} className="ov5-freq-opt" data-on={on || undefined}
+              style={{ '--d': `${0.05 * n + 0.06}s` }} onClick={() => set(s.qid, { name: o.name, val: o.val })}>
+              <span className="ov5-freq-name">{o.name}</span>
+              <span className="ov5-freq-meter" aria-hidden="true">
+                {[0, 1, 2, 3, 4].map((k) => (<span key={k} className="ov5-freq-pip" data-fill={k <= n || undefined} />))}
+              </span>
+              <span className="ov4-card-check"><Check size={12} weight="bold" /></span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function SliderCard({ s, set }) {
   const q = QUESTIONS[s.qid]
-  /* always start at the middle; the screen remounts per question (key={i}), so every
-     slider resets to center when the user advances to the next one */
   const [val, setVal] = useState(50)
-  const onChange = (v) => { setVal(v); set(s.qid, { value: v, pole: v >= 50 ? q.right.pole : q.left.pole }) }
+  const onChange = (v) => { setVal(v); set(s.qid, { value: v }) }
   const LIc = q.left.icon, RIc = q.right.icon
   return (
     <div className="ov4-choice ov4-sliderwrap">
@@ -432,17 +433,17 @@ function SliderCard({ s, set }) {
           <span className="ov4-track-thumb" style={{ left: `${val}%` }} />
           <input className="ov4-range" type="range" min="0" max="100" value={val} aria-label={q.prompt} onChange={(e) => onChange(Number(e.target.value))} />
         </div>
-        <p className="ov4-slider-hint">Slide toward whichever fits. There's no wrong spot.</p>
+        <p className="ov4-slider-hint">Slide toward whichever fits. There’s no wrong spot.</p>
       </div>
     </div>
   )
 }
 
-/* block 3 · a quoted statement rated on an agreement slider (Exactly me ↔ Not like me) */
+/* a quoted statement rated on an agreement slider (Not me ↔ Exactly me) */
 function StatementSlider({ s, set }) {
   const q = QUESTIONS[s.qid]
   const [val, setVal] = useState(50)
-  const onChange = (v) => { setVal(v); set(s.qid, { value: v, pole: v >= 50 ? q.right.pole : q.left.pole }) }
+  const onChange = (v) => { setVal(v); set(s.qid, { value: v }) }
   return (
     <div className="ov4-choice ov4-sliderwrap ov4-stmtwrap">
       <h1 className="ov4-q ov4-quiz-q">Does this sound like you?</h1>
@@ -452,8 +453,8 @@ function StatementSlider({ s, set }) {
       </figure>
       <div className="ov4-slider">
         <div className="ov4-slider-row">
-          <span className="ov4-slider-end">{q.left.name}</span>
-          <span className="ov4-slider-end ov4-slider-end-r">{q.right.name}</span>
+          <span className="ov4-slider-end">Not me</span>
+          <span className="ov4-slider-end ov4-slider-end-r">Exactly me</span>
         </div>
         <div className="ov4-track">
           <span className="ov4-track-fill" style={{ width: `${val}%` }} />
@@ -476,7 +477,7 @@ function MultiCard({ s, answers, set }) {
     let np
     if (has(o.name)) np = picks.filter((p) => p.name !== o.name)
     else if (full) return
-    else np = [...picks, { name: o.name, pole: o.pole }]
+    else np = [...picks, { name: o.name }]
     set(s.qid, { picks: np })
   }
   const grid = q.cols === 2
@@ -511,28 +512,70 @@ function MultiCard({ s, answers, set }) {
   )
 }
 
-function Breather({ s, fillSit }) {
+/* ── breathers ── */
+function Breather({ s, fill }) {
   const b = BREATHERS[s.n] || {}
-  const lg = b.big // credibility breather matches the prep screen's larger title/spacing
+  const lg = b.big
   return (
-    <div className="ov4-pause">
+    <div className="ov4-pause ov5-breather">
       <Badge Icon={b.icon || Sparkle} />
       {b.kicker && <span className="ov4-kicker">{b.kicker}</span>}
       <h1 className={`ov4-q ov4-pause-title${lg ? ' ov4-pause-title-lg' : ''}`}>{b.title}</h1>
-      <p className={`ov4-sub ov4-pause-sub${lg ? ' ov4-pause-sub-lg' : ''}`}><Emph body={fillSit(b.body)} em={b.em} /></p>
+      <p className={`ov4-sub ov4-pause-sub${lg ? ' ov4-pause-sub-lg' : ''}`}><Emph body={fill(b.body)} em={b.em} /></p>
+      {b.demo && <ChatDemo />}
+      {b.method && <MethodRow />}
     </div>
   )
 }
 
-/* segmented calibration with rotating reviews + whole-screen percentage */
-const MIN_FLOOR = 6600
+/* the differentiator made visible: Kael replies AND hands you options to tap */
+function ChatDemo() {
+  return (
+    <div className="ov5-demo" aria-hidden="true">
+      <div className="ov5-demo-row">
+        <span className="ov5-demo-av"><Sparkle size={14} weight="fill" /></span>
+        <div className="ov5-demo-bubble">That sounds like a lot to hold on your own. Want to start with the part that’s loudest right now?</div>
+      </div>
+      <div className="ov5-demo-chips">
+        <span className="ov5-demo-chip">The racing thoughts</span>
+        <span className="ov5-demo-chip">Why I can’t rest</span>
+        <span className="ov5-demo-chip">I just need to vent</span>
+      </div>
+      <div className="ov5-demo-input">
+        <span className="ov5-demo-input-hint">or type your own…</span>
+        <span className="ov5-demo-send"><PaperPlaneTilt size={15} weight="fill" /></span>
+      </div>
+    </div>
+  )
+}
+
+function MethodRow() {
+  const items = [
+    { k: 'CBT', d: 'Reframe the thought' },
+    { k: 'ACT', d: 'Sit with the feeling' },
+    { k: 'Mindfulness', d: 'Come back to now' },
+  ]
+  return (
+    <div className="ov5-method">
+      {items.map((m) => (
+        <div className="ov5-method-chip" key={m.k}>
+          <b>{m.k}</b>
+          <span>{m.d}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* segmented % calibration loader with rotating reviews */
+const MIN_FLOOR = 5200
 function Calibration({ onAdvance }) {
   const [pct, setPct] = useState(0)
   useEffect(() => {
     const TICK = 40
     const step = (100 * TICK) / MIN_FLOOR
     const iv = setInterval(() => setPct((p) => { const np = p + step; if (np >= 100) clearInterval(iv); return Math.min(100, np) }), TICK)
-    const floor = setTimeout(() => onAdvance(), MIN_FLOOR + 320)
+    const floor = setTimeout(() => onAdvance(), MIN_FLOOR + 360)
     return () => { clearInterval(iv); clearTimeout(floor) }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const n = CALIB_STEPS.length
@@ -556,19 +599,19 @@ function Calibration({ onAdvance }) {
       </div>
       <div className="ov4-calib-review" key={'r' + stepIdx}>
         <span className="ov4-stars">{[0, 1, 2, 3, 4].map((k) => <Star key={k} size={13} weight="fill" />)}</span>
-        <p>"{CALIB_REVIEWS[stepIdx % CALIB_REVIEWS.length]}"</p>
+        <p>“{CALIB_REVIEWS[stepIdx % CALIB_REVIEWS.length]}”</p>
       </div>
     </div>
   )
 }
 
-/* ── Act 3 ── */
+/* ── Act 3 — reveal + the read ── */
 function Reveal({ arch }) {
   if (!arch) return null
   const Glyph = arch.glyph
   return (
     <div className="ov4-reveal">
-      <span className="ov4-reveal-label">Your Love Archetype</span>
+      <span className="ov4-reveal-label">What Kael noticed</span>
       <span className="ov4-reveal-glyph"><Glyph size={50} weight="duotone" /></span>
       <h1 className="ov4-reveal-name">{arch.name}</h1>
       <p className="ov4-reveal-essence">{arch.essence}</p>
@@ -576,8 +619,6 @@ function Reveal({ arch }) {
   )
 }
 
-/* a labelled axis bar: human axis name, a track, a marker at axes[key].pos%,
-   and the side the user lands on emphasized */
 function AxisBar({ meta, axis, d }) {
   if (!axis) return null
   const onRight = axis.pos >= 50
@@ -593,27 +634,32 @@ function AxisBar({ meta, axis, d }) {
   )
 }
 
-/* a titled section of the read; children supply the section's own visual style */
-function Section({ label, className, children }) {
+/* a beat of the read: a recognition card + how Kael helps with it */
+function Beat({ beat, fill, d }) {
+  const Ic = beat.icon
   return (
-    <section className={`ov4-sec${className ? ' ' + className : ''}`}>
-      <span className="ov4-sec-label">{label}</span>
-      {children}
-    </section>
+    <div className="ov5-beat" style={{ '--d': `${d}s` }}>
+      <div className="ov5-beat-head">
+        <span className="ov5-beat-ic">{Ic && <Ic size={17} weight="duotone" />}</span>
+        <span className="ov5-beat-label">{beat.label}</span>
+      </div>
+      {beat.quote && <p className="ov5-beat-quote"><Quotes size={15} weight="fill" />{fill(beat.quote)}</p>}
+      <p className="ov5-beat-body">{fill(beat.body)}</p>
+      <div className="ov5-beat-help">
+        <span className="ov5-beat-help-ic"><Sparkle size={13} weight="fill" /></span>
+        <span><b>How Kael helps.</b> {fill(beat.help)}</span>
+      </div>
+    </div>
   )
 }
 
-/* the read — axis bars → a mini prose read → chips for love / values / triggers →
-   growth pointers. Each section is styled differently for variety. */
-function MiniRead({ arch, axes }) {
+function MiniRead({ arch, resolved, fill }) {
   if (!arch) return null
-  const b = arch.beats || {}
-  const prose = [b.love && b.love.body, b.respond && b.respond.body].filter(Boolean)
-  const growth = [arch.aspiration, ...(Array.isArray(arch.compare) ? arch.compare.slice(0, 2).map((c) => c.withKael) : [])].filter(Boolean)
+  const axes = resolved ? resolved.axes : null
   return (
-    <div className="ov4-read ov4-miniread">
+    <div className="ov4-read ov4-miniread ov5-read">
       <div className="ov4-beat-arch">
-        <span className="ov4-beat-arch-label">Your archetype</span>
+        <span className="ov4-beat-arch-label">Your pattern</span>
         <h2 className="ov4-beat-arch-name">{arch.name}</h2>
       </div>
 
@@ -623,70 +669,31 @@ function MiniRead({ arch, axes }) {
         </section>
       )}
 
-      <section className="ov4-mini">
-        {prose.map((p, k) => {
-          const m = p.match(/^(.*?[.!?])(\s+)([\s\S]*)$/)
-          const lead = m ? m[1] : p
-          const rest = m ? m[3] : ''
-          const Tag = k === 0 ? 'strong' : 'em' // first beat leads bold, the pivot reads italic
-          return (<p key={k}><Tag>{lead}</Tag>{rest ? ' ' + rest : ''}</p>)
+      <section className="ov4-mini ov5-mini">
+        {arch.prose.map((p, k) => {
+          const Tag = k === 0 ? 'strong' : 'em'
+          return (<p key={k}><Tag>{p}</Tag></p>)
         })}
-        <span className="ov4-mini-by">— Kael</span>
+        <span className="ov5-mini-by"><Sparkle size={12} weight="fill" />Kael</span>
       </section>
 
-      <Section label="How you love">
-        <div className="ov4-tagrow">{(b.love?.chips || []).map((c, k) => (<span key={k} className="ov4-tag">{c}</span>))}</div>
-      </Section>
-
-      <Section label="What you value in love">
-        <div className="ov4-vgrid">
-          {(b.value?.chips || []).slice(0, 4).map((c, k) => {
-            const Ic = VALUE_ICONS[k % VALUE_ICONS.length]
-            return (
-              <div key={k} className="ov4-vtile" style={{ '--d': `${0.05 * k + 0.1}s` }}>
-                <span className="ov4-vtile-ic"><Ic size={18} weight="duotone" /></span>
-                <span className="ov4-vtile-name">{c}</span>
-              </div>
-            )
-          })}
-        </div>
-      </Section>
-
-      <Section label="What activates you">
-        <div className="ov4-tagrow ov4-tagrow-warm">{(b.triggers?.chips || []).map((c, k) => (<span key={k} className="ov4-tag ov4-tag-warm">{c}</span>))}</div>
-      </Section>
-
-      <Section label="What growth looks like for you">
-        <ul className="ov4-growth">
-          {growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov4-growth-ic"><ArrowUpRight size={13} weight="bold" /></span>{g}</li>))}
-        </ul>
-      </Section>
-
-      <div className="ov4-readnote"><ChatsCircle size={16} weight="duotone" /><span>This read gets sharper the more you talk to Kael.</span></div>
-    </div>
-  )
-}
-
-/* teaser/handoff — editorial table-of-contents for the full read inside the app */
-function FullRead({ arch }) {
-  const bare = arch ? arch.name.replace(/^The\s+/, '') : 'your'
-  const sections = [
-    'Your pattern, in depth',
-    'What you protect, and why',
-    'Who fits you, who clashes',
-    `How the ${bare} grows in love`,
-  ]
-  return (
-    <div className="ov4-read ov4-fullwrap">
-      <div className="ov4-fulltoc">
-        <span className="ov4-beat-arch-label">The full read</span>
-        <h2 className="ov4-fulltoc-title">The Complete {bare} Read.</h2>
-        <span className="ov4-fulltoc-meta">1,000+ words · 6 chapters</span>
-        <ol className="ov4-fulltoc-list">
-          {sections.map((t, k) => (<li key={t}><b>{String(k + 1).padStart(2, '0')}</b><span>{t}</span></li>))}
-        </ol>
-        <div className="ov4-fulltoc-lock"><LockKey size={14} weight="duotone" />Unlocks inside Kael</div>
+      <div className="ov5-beats">
+        {arch.beats.map((b, k) => (<Beat key={k} beat={b} fill={fill} d={0.05 * k + 0.12} />))}
       </div>
+
+      <section className="ov4-sec">
+        <span className="ov4-sec-label">How it shows up for you</span>
+        <div className="ov4-tagrow">{arch.shows.map((c, k) => (<span key={k} className="ov4-tag">{c}</span>))}</div>
+      </section>
+
+      <section className="ov4-sec">
+        <span className="ov4-sec-label">What growth looks like</span>
+        <ul className="ov4-growth">
+          {arch.growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov4-growth-ic"><ArrowUpRight size={13} weight="bold" /></span>{g}</li>))}
+        </ul>
+      </section>
+
+      <div className="ov4-readnote"><ChatCircleDots size={16} weight="duotone" /><span>This read gets sharper the more you talk to Kael.</span></div>
     </div>
   )
 }
@@ -698,12 +705,19 @@ function Notif({ s }) {
       <span className="ov4-kicker">One small thing</span>
       <h1 className="ov4-q ov4-pause-title">{s.title}</h1>
       <p className="ov4-sub ov4-pause-sub">{s.sub}</p>
+      <div className="ov5-notif-preview">
+        <span className="ov5-notif-av"><Sparkle size={15} weight="fill" /></span>
+        <div className="ov5-notif-txt">
+          <b>Kael</b>
+          <span>Hey, you mentioned today might be heavy. How’s your head right now?</span>
+        </div>
+        <span className="ov5-notif-now">now</span>
+      </div>
     </div>
   )
 }
 
-/* ── Act 4 — Kael is ready, the 30-day journey, the paywall ── */
-/* a short breather: Kael is calibrated to this archetype, addressed by name */
+/* ── Act 4 — ready, the 30 days, the paywall ── */
 function Ready({ arch, nm }) {
   if (!arch) return null
   const Glyph = arch.glyph
@@ -712,29 +726,22 @@ function Ready({ arch, nm }) {
       <span className="ov4-cal-glyph"><Glyph size={30} weight="duotone" /></span>
       <span className="ov4-kicker">Calibrated to you</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{nm ? `Kael is ready, ${cap(nm)}.` : 'Kael is ready.'}</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Tuned to how you love, what scares you, and the pattern you walked in with. Not a generic coach. Yours.</p>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Tuned to your mind, your energy, and the pattern you came in with. Yours, not generic.</p>
     </div>
   )
 }
 
-/* a warm editorial timeline — the relationship journey, not a habit tracker */
-const JOURNEY = [
-  { when: 'Today', Ic: ChatsCircle, t: "Bring Kael the moment you're in", d: 'The spiral, the unread text, the fight. Start where it hurts.' },
-  { when: 'Day 3', Ic: Waveform, t: 'It learns your pattern', d: 'Kael starts to see your moves before you name them.' },
-  { when: 'Day 7', Ic: Sparkle, t: 'Your first shift, named', d: 'One reaction caught early. You feel the difference.' },
-  { when: 'Day 30', Ic: HeartStraight, t: 'The pattern stops running you', d: 'You catch it early and choose differently. The old reflex loosens its grip.' },
-]
 function ThirtyDays() {
   return (
     <div className="ov4-thirty">
       <div className="ov4-titles ov4-center">
         <span className="ov4-kicker">The road ahead</span>
-        <h1 className="ov4-q ov4-pause-title-lg">Your 30 days with Kael.</h1>
+        <h1 className="ov4-q ov4-pause-title-lg">Your first 30 days with Kael.</h1>
       </div>
       <ol className="ov4-timeline">
         {JOURNEY.map((m, k) => (
           <li key={m.when} style={{ '--d': `${0.1 * k + 0.18}s` }}>
-            <span className="ov4-tl-ic"><m.Ic size={18} weight="duotone" /></span>
+            <span className="ov4-tl-ic"><m.icon size={18} weight="duotone" /></span>
             <div className="ov4-tl-txt">
               <span className="ov4-tl-when">{m.when}</span>
               <b>{m.t}</b>
@@ -747,14 +754,6 @@ function ThirtyDays() {
   )
 }
 
-/* universal paywall (shown at onboarding end AND on in-app limits) — names the
-   archetype + a short, relationship-intelligence feature list (not generic-AI) */
-const PAY_FEATURES = [
-  { Ic: ChatsCircle, t: 'There for the 2am spiral, every time.' },
-  { Ic: Waveform, t: 'Knows your pattern, not just your words.' },
-  { Ic: Brain, t: 'Remembers every person in your story.' },
-  { Ic: ChartLineUp, t: 'Shows you changing, week by week.' },
-]
 function Paywall({ arch, onClose }) {
   const [plan, setPlan] = useState('annual')
   const bare = arch ? arch.name.replace(/^The\s+/, '') : 'your'
@@ -764,21 +763,21 @@ function Paywall({ arch, onClose }) {
       <div className="ov-body ov4-paybody">
         <div className="ov4-pay-head">
           {Glyph && <span className="ov4-pay-glyph"><Glyph size={30} weight="duotone" /></span>}
-          <span className="ov4-pay-kicker">Your {bare} plan</span>
+          <span className="ov4-pay-kicker">Your plan as the {bare}</span>
           <h1 className="ov4-pay-title">Have Kael in your corner.</h1>
         </div>
         <ul className="ov4-cal-list ov4-payfeatlist">
           {PAY_FEATURES.map((f, k) => (
             <li key={k} style={{ '--d': `${0.05 * k + 0.16}s` }}>
-              <span className="ov4-cal-ic"><f.Ic size={17} weight="duotone" /></span>{f.t}
+              <span className="ov4-cal-ic"><f.icon size={17} weight="duotone" /></span>{f.t}
             </li>
           ))}
         </ul>
         <div className="ov4-plans">
           <button className="ov4-plan" data-on={plan === 'annual' || undefined} onClick={() => setPlan('annual')}>
-            <span className="ov4-plan-tag">Best value</span>
-            <div className="ov4-plan-l"><b>Annual</b><span>7 days free, then yearly</span></div>
-            <div className="ov4-plan-r"><b>$99.99</b><span>/yr</span></div>
+            <span className="ov4-plan-tag">7 days free · best value</span>
+            <div className="ov4-plan-l"><b>Annual</b><span>then $99.99 a year</span></div>
+            <div className="ov4-plan-r"><b>$1.92</b><span>/wk</span></div>
           </button>
           <button className="ov4-plan" data-on={plan === 'monthly' || undefined} onClick={() => setPlan('monthly')}>
             <div className="ov4-plan-l"><b>Monthly</b><span>7 days free, then monthly</span></div>
@@ -788,6 +787,7 @@ function Paywall({ arch, onClose }) {
       </div>
       <footer className="ov-foot ov4-payfoot">
         <button className="ov-cta" onClick={onClose}>Start 7-day free trial</button>
+        <p className="ov5-pay-fine">No charge today. We’ll remind you before it ends.</p>
         <button className="ov4-quiet" onClick={onClose}>Not now</button>
       </footer>
     </>

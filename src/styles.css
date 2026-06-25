@@ -332,6 +332,7 @@ svg {
 .studio-tabs {
   flex: none;
   align-self: center;
+  max-width: calc(100% - 32px);
   display: flex;
   gap: 4px;
   padding: 4px;
@@ -339,6 +340,14 @@ svg {
   border-radius: 999px;
   background: color-mix(in srgb, var(--studio-ink) 7%, transparent);
   border: 1px solid color-mix(in srgb, var(--studio-ink) 12%, transparent);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.studio-tabs::-webkit-scrollbar {
+  display: none;
+}
+.studio-tab {
+  white-space: nowrap;
 }
 .studio-tab {
   padding: 8px 20px;
@@ -8941,3 +8950,905 @@ svg {
 /* ── paywall (minimal) ── */
 .ov4-pay-glyph { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 50%; color: var(--warm-proof); background: radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--warm-proof) 22%, var(--paper)), color-mix(in srgb, var(--warm-proof) 6%, var(--paper))); box-shadow: 0 0 0 1px color-mix(in srgb, var(--warm-proof) 26%, transparent); margin-bottom: 2px; animation: ov4-glyph-in 0.6s var(--ease) both; }
 .ov4-payfeatlist { margin-top: 0; }
+
+/* ============ Kael — two-screen concept (full-screen chat + notes) ============ */
+.kd-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+.kd-chat,
+.kd-notes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- shared top bar ---- */
+.kd-topbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 14px 11px;
+  border-bottom: 1px solid var(--line-2);
+}
+.kd-top-avatar {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--badge-fill);
+  color: var(--badge-ink);
+  border: 1px solid color-mix(in srgb, var(--badge-ink) 18%, transparent);
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.kd-top-kael {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.kd-top-name {
+  font-family: var(--serif);
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.kd-top-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+}
+.kd-top-state[data-state='thinking'],
+.kd-top-state[data-state='responding'] {
+  color: var(--badge-ink);
+}
+.kd-state-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--badge-ink);
+}
+.kd-top-state[data-state='present'] .kd-state-dot {
+  background: color-mix(in srgb, var(--ink-3) 80%, transparent);
+}
+.kd-top-state[data-state='thinking'] .kd-state-dot {
+  animation: kd-pulse 1.1s ease-in-out infinite;
+}
+@keyframes kd-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+.kd-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.kd-typing i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--badge-ink);
+  animation: kd-typing 1s ease-in-out infinite;
+}
+.kd-typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.kd-typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes kd-typing {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+.kd-top-notes {
+  flex: none;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.kd-notes-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e5484d;
+  border: 2px solid var(--paper);
+}
+.kd-top-back {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.kd-top-title {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.kd-top-spacer {
+  width: 38px;
+}
+
+/* ---- chat ---- */
+.kd-chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 16px 22px 10px;
+}
+.kd-chat-scroll::-webkit-scrollbar {
+  display: none;
+}
+.kd-day {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  margin: 2px 0 18px;
+}
+.kd-kgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.kd-khead {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.kd-kglyph {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--badge-fill);
+  color: var(--badge-ink);
+}
+.kd-bubble {
+  align-self: flex-start;
+  max-width: 90%;
+  padding: 12px 15px;
+  border-radius: 5px 16px 16px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-card);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.42;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.kd-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+/* one consistent chip language — replies inline, starters in the strip */
+.kd-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-card);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.004em;
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.kd-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--line-strong);
+}
+.kd-chip--icon {
+  padding-left: 11px;
+}
+.kd-chip-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--badge-ink);
+}
+/* starter strip — pinned above the composer, horizontal scroll, thumb-reachable */
+.kd-starters {
+  flex: none;
+  display: flex;
+  gap: 9px;
+  padding: 12px 22px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  border-top: 1px solid var(--line-2);
+}
+.kd-starters::-webkit-scrollbar {
+  display: none;
+}
+.kd-composer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 18px 12px;
+  background: var(--paper);
+}
+.kd-composer-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 17px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--field);
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink);
+}
+.kd-composer-input::placeholder {
+  color: var(--ink-3);
+}
+.kd-composer-input:focus {
+  outline: none;
+  border-color: var(--line-strong);
+}
+.kd-composer-send {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--invert-bg);
+  color: var(--invert-ink);
+  border: 0;
+  cursor: pointer;
+}
+
+/* ---- notes ---- */
+.kd-notes-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 16px 22px 28px;
+}
+.kd-notes-scroll::-webkit-scrollbar {
+  display: none;
+}
+.kd-arch {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 16px 16px 16px 18px;
+  border-radius: 20px;
+  background: var(--badge-fill);
+  border: 1px solid color-mix(in srgb, var(--badge-ink) 16%, transparent);
+  cursor: pointer;
+}
+.kd-arch-glyph {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--badge-ink) 11%, transparent);
+  color: var(--badge-ink);
+}
+.kd-arch-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.kd-arch-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--badge-ink) 60%, transparent);
+}
+.kd-arch-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--badge-ink);
+}
+.kd-arch-caret {
+  flex: none;
+  color: color-mix(in srgb, var(--badge-ink) 50%, transparent);
+}
+
+/* today's note — an open editorial read */
+.kd-today {
+  margin-top: 30px;
+}
+.kd-today-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.kd-today-kind {
+  color: var(--badge-ink);
+}
+.kd-today-title {
+  margin-top: 12px;
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.024em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.kd-today .kd-note-body {
+  padding: 16px 0 0;
+}
+.kd-today .kd-note-para {
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+.kd-today .kd-note-list li {
+  font-size: 16.5px;
+  line-height: 1.55;
+}
+
+/* earlier notes — the archive */
+.kd-archsec {
+  margin-top: 36px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line-2);
+}
+.kd-section {
+  display: block;
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.kd-archive {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.kd-notecard {
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+.kd-notecard[data-open='true'] {
+  border-color: var(--line-strong);
+}
+.kd-notecard-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  text-align: left;
+  padding: 16px 44px 16px 16px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+.kd-note-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.016em;
+  color: var(--ink);
+}
+.kd-note-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.kd-note-kind {
+  color: var(--badge-ink);
+}
+.kd-note-dot2 {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink-3) 55%, transparent);
+}
+.kd-note-date {
+  color: var(--ink-3);
+}
+.kd-note-caret {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  color: var(--ink-3);
+  transition: transform 0.2s ease;
+}
+.kd-notecard[data-open='true'] .kd-note-caret {
+  transform: rotate(180deg);
+}
+.kd-note-body {
+  padding: 4px 16px 17px;
+}
+.kd-note-para {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.55;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.kd-note-para + .kd-note-para {
+  margin-top: 11px;
+}
+.kd-note-list {
+  margin: 11px 0 0;
+  padding-left: 19px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kd-note-list li {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.5;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  list-style: disc;
+}
+.kd-note-body strong {
+  font-weight: 700;
+}
+.kd-note-body em {
+  font-style: italic;
+}
+
+/* ============ The Lighthouse — full archetype read ============ */
+.ar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 8px 22px 30px;
+}
+.ar-scroll::-webkit-scrollbar {
+  display: none;
+}
+/* hero */
+.ar-hero {
+  text-align: center;
+  padding: 12px 0 26px;
+}
+.ar-hero-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  background: var(--badge-fill);
+  border: 1px solid color-mix(in srgb, var(--badge-ink) 16%, transparent);
+  color: var(--badge-ink);
+  margin-bottom: 16px;
+}
+.ar-hero-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 9px;
+}
+.ar-hero-title {
+  font-family: var(--serif);
+  font-size: 39px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.ar-hero-tag {
+  margin: 13px auto 0;
+  max-width: 26ch;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.008em;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.ar-hero-meta {
+  display: block;
+  margin-top: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+/* the four-axis spectrum — the signature viz */
+.ar-axes {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  padding: 22px 20px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-card);
+}
+.ar-axis-name {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 11px;
+}
+.ar-axis-track {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line-2);
+}
+.ar-axis-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--badge-ink) 78%, transparent);
+}
+.ar-axis-dot {
+  position: absolute;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--badge-ink);
+  border: 3px solid var(--surface);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+}
+.ar-axis-poles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+.ar-axis-pole {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--ink-3);
+}
+.ar-axis-pole[data-active='true'] {
+  font-weight: 700;
+  color: var(--badge-ink);
+}
+/* chapters */
+.ar-ch {
+  margin-top: 36px;
+}
+.ar-ch-num {
+  display: block;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--badge-ink);
+}
+.ar-ch-title {
+  margin-top: 5px;
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+.ar-ch-pull {
+  margin: 17px 0 4px;
+  padding-left: 15px;
+  border-left: 2px solid color-mix(in srgb, var(--badge-ink) 42%, transparent);
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.34;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.ar-ch-p {
+  margin-top: 13px;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.62;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+/* chip sections */
+.ar-chips {
+  margin-top: 26px;
+  padding: 18px 18px 19px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.ar-chips-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 13px;
+}
+.ar-chiprow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ar-chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--badge-fill);
+  border: 1px solid color-mix(in srgb, var(--badge-ink) 16%, transparent);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.004em;
+  color: var(--badge-ink);
+}
+/* footer */
+.ar-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 38px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line-2);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.ar-foot-glyph {
+  flex: none;
+  color: color-mix(in srgb, var(--badge-ink) 55%, transparent);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Onboarding V5 — mental-wellness flow. Reuses the ov4-* language; these are
+   the pieces unique to V5 (frequency scale, chat demo, method row, beat cards
+   with "How Kael helps", notification preview).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* promise — differentiator chips under the hero */
+.ov5-promise-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 2px; animation: ov4-rise 0.5s var(--ease) 0.4s both; }
+.ov5-promise-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 99px; background: color-mix(in srgb, var(--warm-proof) 9%, var(--paper)); border: 1px solid var(--line-2); font: 600 12.5px var(--sans); letter-spacing: -0.01em; color: var(--ink-2); }
+.ov5-promise-chip svg { color: var(--warm-proof); }
+
+/* trust — reassurance pills */
+.ov5-trustrow { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; animation: ov4-rise 0.5s var(--ease) 0.22s both; }
+.ov5-trustrow-item { display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 99px; background: color-mix(in srgb, var(--warm-proof) 9%, var(--paper)); border: 1px solid var(--line-2); font: 600 12.5px var(--sans); color: var(--ink-2); }
+.ov5-trustrow-item svg { color: var(--warm-proof); }
+
+/* frequency-based question — a 5-step scale with an ascending intensity meter */
+.ov5-freq { display: flex; flex-direction: column; gap: 9px; }
+.ov5-freq[data-locked] { pointer-events: none; }
+.ov5-freq-opt { display: flex; align-items: center; gap: 14px; width: 100%; padding: 15px 16px; border-radius: 15px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20, 18, 14, 0.04); cursor: pointer; text-align: left; transition: transform 0.16s var(--ease), border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease; animation: ov4-rise 0.46s var(--ease) var(--d, 0.06s) backwards; }
+.ov5-freq-opt:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--ink) 22%, transparent); }
+.ov5-freq-opt[data-on] { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 4%, var(--surface)); box-shadow: 0 0 0 1px var(--ink); }
+.ov5-freq-opt[data-committed] { transform: scale(0.985); }
+.ov5-freq-name { flex: 1; font: 500 16.5px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
+.ov5-freq-meter { display: inline-flex; align-items: flex-end; gap: 3px; height: 18px; }
+.ov5-freq-pip { width: 4px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 12%, transparent); transition: background 0.16s ease; }
+.ov5-freq-pip:nth-child(1) { height: 6px; }
+.ov5-freq-pip:nth-child(2) { height: 9px; }
+.ov5-freq-pip:nth-child(3) { height: 12px; }
+.ov5-freq-pip:nth-child(4) { height: 15px; }
+.ov5-freq-pip:nth-child(5) { height: 18px; }
+.ov5-freq-pip[data-fill] { background: var(--warm-proof); }
+.ov5-freq-opt[data-on] .ov4-card-check { border-color: var(--ink); background: var(--ink); color: var(--invert-ink); }
+
+/* breather — chat demo: Kael replies AND hands you tappable options */
+.ov5-breather { gap: 16px; }
+.ov5-demo { width: 100%; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 12px 34px -20px rgba(20, 18, 14, 0.28); text-align: left; animation: ov4-pop 0.5s var(--ease) 0.18s both; }
+.ov5-demo-row { display: flex; gap: 10px; align-items: flex-start; }
+.ov5-demo-av { flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); }
+.ov5-demo-bubble { flex: 1; padding: 12px 14px; border-radius: 4px 16px 16px 16px; background: color-mix(in srgb, var(--warm-proof) 8%, var(--paper)); border: 1px solid var(--line-2); font-family: var(--serif); font-size: 15px; line-height: 1.5; color: var(--ink); }
+.ov5-demo-chips { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 38px; }
+.ov5-demo-chip { padding: 9px 13px; border-radius: 99px; background: var(--paper); border: 1px solid var(--line-strong); font: 600 13px var(--sans); color: var(--ink); box-shadow: 0 1px 2px rgba(20, 18, 14, 0.04); }
+.ov5-demo-input { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; padding: 10px 11px 10px 16px; border-radius: 99px; background: var(--field); border: 1px solid var(--line-2); }
+.ov5-demo-input-hint { font: 400 14px var(--sans); color: var(--ink-3); }
+.ov5-demo-send { flex: 0 0 auto; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); }
+
+/* breather — method credentials (legitimacy) */
+.ov5-method { display: flex; gap: 8px; width: 100%; margin-top: 2px; animation: ov4-rise 0.5s var(--ease) 0.2s both; }
+.ov5-method-chip { flex: 1; display: flex; flex-direction: column; gap: 3px; padding: 13px 10px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line-2); text-align: center; box-shadow: 0 1px 3px rgba(20, 18, 14, 0.04); }
+.ov5-method-chip b { font: 700 13px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
+.ov5-method-chip span { font: 400 11px var(--sans); line-height: 1.3; color: var(--ink-3); }
+
+/* the read — signature + beat cards */
+.ov5-mini-by { align-self: flex-end; display: inline-flex; align-items: center; gap: 5px; font: 600 11px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-proof); margin-top: 2px; }
+.ov5-beats { display: flex; flex-direction: column; gap: 12px; }
+.ov5-beat { display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(20, 18, 14, 0.04); animation: ov4-rise 0.5s var(--ease) var(--d, 0.1s) backwards; }
+.ov5-beat-head { display: flex; align-items: center; gap: 10px; }
+.ov5-beat-ic { flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--warm-proof) 12%, var(--paper)); color: var(--badge-ink); }
+.ov5-beat-label { font: 600 10.5px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); }
+.ov5-beat-quote { display: flex; gap: 9px; align-items: flex-start; margin: 0; font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.4; color: var(--ink); }
+.ov5-beat-quote svg { flex: 0 0 auto; margin-top: 4px; color: var(--warm-proof); }
+.ov5-beat-body { font-family: var(--serif); font-size: 15.5px; line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
+.ov5-beat-help { display: flex; gap: 9px; align-items: flex-start; padding: 12px 13px; border-radius: 12px; background: color-mix(in srgb, var(--warm-proof) 9%, var(--paper)); border: 1px solid color-mix(in srgb, var(--warm-proof) 22%, transparent); font: 400 13.5px var(--sans); line-height: 1.5; color: var(--ink-2); }
+.ov5-beat-help b { color: var(--ink); font-weight: 600; }
+.ov5-beat-help-ic { flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: var(--surface); color: var(--warm-proof); box-shadow: 0 1px 2px rgba(20, 18, 14, 0.06); margin-top: -1px; }
+
+/* notification — a sample of the gentle nudge */
+.ov5-notif-preview { display: flex; align-items: center; gap: 11px; width: 100%; margin-top: 6px; padding: 13px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 12px 34px -20px rgba(20, 18, 14, 0.3); text-align: left; animation: ov4-pop 0.55s var(--ease) 0.18s both; }
+.ov5-notif-av { flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: var(--invert-bg); color: var(--invert-ink); }
+.ov5-notif-txt { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ov5-notif-txt b { font: 700 13px var(--sans); color: var(--ink); }
+.ov5-notif-txt span { font: 400 13px var(--sans); line-height: 1.4; color: var(--ink-2); }
+.ov5-notif-now { flex: 0 0 auto; align-self: flex-start; font: 500 11px var(--sans); color: var(--ink-3); }
+
+/* paywall — trial reassurance line */
+.ov5-pay-fine { font: 400 12px var(--sans); color: var(--ink-3); text-align: center; margin: -2px 0 2px; }
+
+/* ── Onboarding V7 — the read, a designed self-portrait ──────────────────── */
+.ov7r { gap: 28px; }
+
+/* masthead */
+.ov7r-head { display: flex; flex-direction: column; gap: 9px; animation: ov4-rise 0.55s var(--ease) both; }
+.ov7r-eyebrow { font: 600 10px var(--sans); letter-spacing: 0.24em; text-transform: uppercase; color: var(--warm-proof); }
+.ov7r-name { margin: 0; font-family: var(--title); font-weight: 500; font-size: 33px; line-height: 1.03; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
+.ov7r-open { margin: 5px 0 0; font-family: var(--serif); font-size: 17px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
+
+/* pillars — a level-meter card */
+.ov7r-pillars { display: flex; flex-direction: column; gap: 18px; padding: 21px 19px 22px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 6px 22px -14px rgba(20, 18, 14, 0.22); animation: ov4-pop 0.5s var(--ease) 0.1s both; }
+.ov7r-cap { font: 600 9.5px var(--sans); letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-3); }
+.ov7r-cap-brown { color: var(--badge-ink); }
+.ov7r-pillar { display: flex; flex-direction: column; gap: 9px; animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov7r-pillar-name { font: 600 12px var(--sans); color: var(--ink); }
+.ov7r-track { position: relative; height: 7px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.ov7r-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 99px; background: color-mix(in srgb, var(--badge-ink) 20%, var(--line)); transition: width 0.8s var(--ease); }
+.ov7r-dot { position: absolute; top: 50%; width: 15px; height: 15px; border-radius: 50%; background: var(--warm-proof); border: 3px solid var(--surface); box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--warm-proof) 80%, transparent); transform: translate(-50%, -50%); transition: left 0.8s var(--ease); }
+.ov7r-ends { display: flex; justify-content: space-between; font: 500 11.5px var(--sans); color: var(--ink-3); }
+.ov7r-ends span[data-on] { color: var(--badge-ink); font-weight: 700; }
+
+/* numbered editorial beats */
+.ov7r-beats { display: flex; flex-direction: column; }
+.ov7r-beat { display: flex; flex-direction: column; gap: 13px; padding: 26px 0; border-top: 1px solid var(--line-2); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov7r-beat:first-child { border-top: 0; padding-top: 4px; }
+.ov7r-beat-head { display: flex; align-items: baseline; gap: 11px; }
+.ov7r-num { font-family: var(--title); font-weight: 500; font-size: 15px; line-height: 1; color: var(--warm-proof); }
+.ov7r-label { font: 600 10.5px var(--sans); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-2); }
+.ov7r-body { margin: 0; font-family: var(--serif); font-size: 16.5px; line-height: 1.62; color: var(--ink); text-wrap: pretty; }
+
+/* recognizable chips */
+.ov7r-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.ov7r-chip { padding: 6px 12px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line-2); font: 500 12px var(--sans); color: var(--ink-2); }
+.ov7r-chip-warm { background: color-mix(in srgb, var(--warm-react) 8%, var(--surface)); border-color: color-mix(in srgb, var(--warm-react) 26%, transparent); color: color-mix(in srgb, var(--warm-react) 62%, var(--ink)); }
+
+/* what-you-want tiles */
+.ov7r-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.ov7r-tile { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 13px; background: var(--surface); border: 1px solid var(--line-2); font: 500 13px var(--sans); color: var(--ink); animation: ov4-rise 0.45s var(--ease) var(--d) both; }
+.ov7r-tile-ic { flex: 0 0 auto; width: 27px; height: 27px; display: grid; place-items: center; border-radius: 8px; background: color-mix(in srgb, var(--warm-proof) 13%, var(--paper)); color: var(--badge-ink); }
+
+/* Kael's note in the margin */
+.ov7r-help { display: flex; align-items: flex-start; gap: 10px; margin-top: 3px; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--warm-proof) 7%, var(--paper)); }
+.ov7r-help-mark { flex: 0 0 auto; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 22%, var(--paper)); color: var(--badge-ink); }
+.ov7r-help p { margin: 0; font: 500 13px/1.5 var(--sans); color: var(--badge-ink); }
+
+/* the second-loudest pillar — a quiet italic aside */
+.ov7r-accent { margin: 0; padding: 2px 0 2px 16px; border-left: 2px solid color-mix(in srgb, var(--warm-proof) 50%, var(--line)); font: italic 400 16px/1.55 var(--serif); color: var(--ink-2); text-wrap: pretty; }
+
+/* close + signature */
+.ov7r-close { display: flex; flex-direction: column; gap: 14px; }
+.ov7r-grow { list-style: none; display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; }
+.ov7r-grow li { display: flex; align-items: flex-start; gap: 11px; font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: var(--ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov7r-grow-ic { flex: 0 0 auto; width: 21px; height: 21px; margin-top: 1px; display: grid; place-items: center; border-radius: 7px; background: color-mix(in srgb, var(--warm-proof) 16%, var(--paper)); color: var(--badge-ink); }
+.ov7r-foot { display: flex; flex-direction: column; gap: 4px; padding-top: 18px; border-top: 1px solid var(--line-2); }
+.ov7r-sign { font: italic 500 19px var(--title); color: var(--warm-proof); }
+.ov7r-foot-note { font: 400 12px var(--sans); color: var(--ink-3); }
+
+/* method chips — an icon per modality, in a soft gold tile */
+.ov7-page .ov5-method-chip { align-items: center; padding: 14px 10px 13px; }
+.ov5-method-chip .ov7-method-ic { width: 30px; height: 30px; margin-bottom: 5px; display: grid; place-items: center; border-radius: 9px; background: color-mix(in srgb, var(--warm-proof) 14%, var(--paper)); color: var(--badge-ink); }
+
+/* screen transition — slide in WITHOUT an opacity fade, so the incoming screen is
+   opaque from the first frame and the outgoing one can't ghost through it */
+.ov7-page .ov4-flow { animation: ov7-flowin 0.34s var(--ease) both; }
+@keyframes ov7-flowin { from { transform: translateY(9px); } to { transform: none; } }
+
+/* quiz segment eyebrow — an icon beside the label */
+.ov7-page .ov4-eyebrow { display: inline-flex; align-items: center; gap: 5px; }
+
+/* paywall (first studio design) — fill the onboarding screen so the grouped
+   layout pushes the plans + footer to the bottom */
+.ov7-pay { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }

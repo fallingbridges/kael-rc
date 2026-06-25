@@ -14,8 +14,12 @@ import Onboarding from './screens/Onboarding.jsx'
 import OnboardingV2 from './screens/OnboardingV2.jsx'
 import OnboardingV3 from './screens/OnboardingV3.jsx'
 import OnboardingV4 from './screens/OnboardingV4.jsx'
+import OnboardingV5 from './screens/OnboardingV5.jsx'
+import OnboardingV6 from './screens/OnboardingV6.jsx'
+import OnboardingV7 from './screens/OnboardingV7.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
+import KaelDuo from './screens/KaelDuo.jsx'
 import { Sparkle, Sun, Moon, Download, Grid } from './components/Icons.jsx'
 import { kaelReply, chipExchange, moodExchange } from './kael.js'
 import { getLesson } from './lessons.js'
@@ -279,6 +283,27 @@ export default function App() {
               </button>
               <button
                 className="studio-tab"
+                data-on={studioTab === 'onboarding-v5'}
+                onClick={() => setStudioTab('onboarding-v5')}
+              >
+                Onboarding V5
+              </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'onboarding-v6'}
+                onClick={() => setStudioTab('onboarding-v6')}
+              >
+                Onboarding V6
+              </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'onboarding-v7'}
+                onClick={() => setStudioTab('onboarding-v7')}
+              >
+                Onboarding V7
+              </button>
+              <button
+                className="studio-tab"
                 data-on={studioTab === 'paywall'}
                 onClick={() => setStudioTab('paywall')}
               >
@@ -290,6 +315,13 @@ export default function App() {
                 onClick={() => setStudioTab('cards')}
               >
                 Cards
+              </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'duo'}
+                onClick={() => setStudioTab('duo')}
+              >
+                2-Screen
               </button>
             </div>
             <div className="studio-body">
@@ -305,10 +337,18 @@ export default function App() {
                 <OnboardingV3 />
               ) : studioTab === 'onboarding-v4' ? (
                 <OnboardingV4 />
+              ) : studioTab === 'onboarding-v5' ? (
+                <OnboardingV5 />
+              ) : studioTab === 'onboarding-v6' ? (
+                <OnboardingV6 />
+              ) : studioTab === 'onboarding-v7' ? (
+                <OnboardingV7 />
               ) : studioTab === 'paywall' ? (
                 <PaywallLab />
               ) : studioTab === 'cards' ? (
                 <ReflectionCards />
+              ) : studioTab === 'duo' ? (
+                <KaelDuo />
               ) : (
                 <Onboarding />
               )}
