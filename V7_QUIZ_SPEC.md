@@ -54,7 +54,7 @@ Block 1, breather 1, Block 2, breather 2, Block 3, breather 3, Block 4, breather
 
 | id | kind | weight | prompt | answers → pole |
 |---|---|---|---|---|
-| `m1` | two | 1.5 | *Be honest. How's your head most days?* | "Busy. Always three thoughts deep" → **R** · "Mostly quiet and clear" → **Q** |
+| `m1` | two | 1.5 | *Be honest. How's your head most days?* | "Mostly busy and hard to quiet" → **R** · "Mostly quiet and clear" → **Q** |
 | `m2` | slider | 1.0 | *How often do you replay a conversation after it's over?* | Rarely → **Q** … Almost always → **R** |
 | `m3` | statement | 1.0 | *"My brain won't switch off when I'm trying to sleep."* | Not me → **Q** … Exactly me → **R** |
 | `m4` | slider | 1.0 | *When something's uncertain, how often does your mind jump to the worst case?* | Rarely → **Q** … Almost always → **R** |

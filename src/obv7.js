@@ -151,7 +151,7 @@ export const PILLAR_READ = {
 export const QUESTIONS = {
   /* Block 1 · Your mind */
   m1: { axis: 'MIND', kind: 'two', block: 1, weight: 1.5, prompt: 'Be honest. How’s your head most days?', options: [
-    { name: 'Busy. Always three thoughts deep', pole: 'R', icon: Brain },
+    { name: 'Mostly busy and hard to quiet', pole: 'R', icon: Brain },
     { name: 'Mostly quiet and clear', pole: 'Q', icon: Feather },
   ] },
   m2: { axis: 'MIND', kind: 'slider', block: 1, weight: 1.0, prompt: 'How often do you replay a conversation after it’s over?',
