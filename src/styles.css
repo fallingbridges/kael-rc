@@ -9780,11 +9780,11 @@ svg {
 /* paywall — trial reassurance line */
 .ov5-pay-fine { font: 400 12px var(--sans); color: var(--ink-3); text-align: center; margin: -2px 0 2px; }
 
-/* ── Onboarding V7 — the read, a designed self-portrait ──────────────────── */
-.ov7r { gap: 28px; }
+/* ── Onboarding V7 — the read, a stack of cards ──────────────────────────── */
+.ov7r { gap: 14px; }
 
 /* masthead */
-.ov7r-head { display: flex; flex-direction: column; gap: 9px; animation: ov4-rise 0.55s var(--ease) both; }
+.ov7r-head { display: flex; flex-direction: column; gap: 9px; margin-bottom: 6px; animation: ov4-rise 0.55s var(--ease) both; }
 .ov7r-eyebrow { font: 600 10px var(--sans); letter-spacing: 0.24em; text-transform: uppercase; color: var(--warm-proof); }
 .ov7r-name { margin: 0; font-family: var(--title); font-weight: 500; font-size: 33px; line-height: 1.03; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
 .ov7r-open { margin: 5px 0 0; font-family: var(--serif); font-size: 17px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
@@ -9801,23 +9801,20 @@ svg {
 .ov7r-ends { display: flex; justify-content: space-between; font: 500 11.5px var(--sans); color: var(--ink-3); }
 .ov7r-ends span[data-on] { color: var(--badge-ink); font-weight: 700; }
 
-/* numbered editorial beats */
-.ov7r-beats { display: flex; flex-direction: column; }
-.ov7r-beat { display: flex; flex-direction: column; gap: 13px; padding: 26px 0; border-top: 1px solid var(--line-2); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
-.ov7r-beat:first-child { border-top: 0; padding-top: 4px; }
-.ov7r-beat-head { display: flex; align-items: baseline; gap: 11px; }
-.ov7r-num { font-family: var(--title); font-weight: 500; font-size: 15px; line-height: 1; color: var(--warm-proof); }
-.ov7r-label { font: 600 10.5px var(--sans); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-2); }
+/* numbered beats — each its own card */
+.ov7r-beats { display: flex; flex-direction: column; gap: 14px; }
+.ov7r-beat { display: flex; flex-direction: column; gap: 12px; padding: 19px 18px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 2px 12px -9px rgba(20, 18, 14, 0.18); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov7r-label { margin: 0; font-family: var(--title); font-weight: 500; font-size: 22px; line-height: 1.12; letter-spacing: -0.015em; color: var(--ink); text-wrap: balance; }
 .ov7r-body { margin: 0; font-family: var(--serif); font-size: 16.5px; line-height: 1.62; color: var(--ink); text-wrap: pretty; }
 
 /* recognizable chips */
 .ov7r-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-.ov7r-chip { padding: 6px 12px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line-2); font: 500 12px var(--sans); color: var(--ink-2); }
+.ov7r-chip { padding: 6px 12px; border-radius: 99px; background: var(--paper); border: 1px solid var(--line-2); font: 500 12px var(--sans); color: var(--ink-2); }
 .ov7r-chip-warm { background: color-mix(in srgb, var(--warm-react) 8%, var(--surface)); border-color: color-mix(in srgb, var(--warm-react) 26%, transparent); color: color-mix(in srgb, var(--warm-react) 62%, var(--ink)); }
 
 /* what-you-want tiles */
 .ov7r-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.ov7r-tile { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 13px; background: var(--surface); border: 1px solid var(--line-2); font: 500 13px var(--sans); color: var(--ink); animation: ov4-rise 0.45s var(--ease) var(--d) both; }
+.ov7r-tile { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 13px; background: var(--paper); border: 1px solid var(--line-2); font: 500 13px var(--sans); color: var(--ink); animation: ov4-rise 0.45s var(--ease) var(--d) both; }
 .ov7r-tile-ic { flex: 0 0 auto; width: 27px; height: 27px; display: grid; place-items: center; border-radius: 8px; background: color-mix(in srgb, var(--warm-proof) 13%, var(--paper)); color: var(--badge-ink); }
 
 /* Kael's note in the margin */
@@ -9829,7 +9826,7 @@ svg {
 .ov7r-accent { margin: 0; padding: 2px 0 2px 16px; border-left: 2px solid color-mix(in srgb, var(--warm-proof) 50%, var(--line)); font: italic 400 16px/1.55 var(--serif); color: var(--ink-2); text-wrap: pretty; }
 
 /* close + signature */
-.ov7r-close { display: flex; flex-direction: column; gap: 14px; }
+.ov7r-close { display: flex; flex-direction: column; gap: 14px; padding: 19px 18px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 2px 12px -9px rgba(20, 18, 14, 0.18); }
 .ov7r-grow { list-style: none; display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; }
 .ov7r-grow li { display: flex; align-items: flex-start; gap: 11px; font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: var(--ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
 .ov7r-grow-ic { flex: 0 0 auto; width: 21px; height: 21px; margin-top: 1px; display: grid; place-items: center; border-radius: 7px; background: color-mix(in srgb, var(--warm-proof) 16%, var(--paper)); color: var(--badge-ink); }

@@ -695,7 +695,7 @@ function Section({ label, className, children }) {
    growth pointers. Personalized: bodies/chips echo the user's answers via fillSit. */
 const READ_SECTIONS = [
   { key: 'love', label: 'How you carry it' },
-  { key: 'value', label: 'What you’re really after' },
+  { key: 'value', label: 'What you’re after' },
   { key: 'triggers', label: 'What sets it off' },
   { key: 'respond', label: 'How you cope' },
 ]
@@ -745,10 +745,7 @@ function MiniRead({ arch, axes, fillSit }) {
           const chips = beat.chips || []
           return (
             <section className="ov7r-beat" key={sec.key} style={{ '--d': `${0.05 * k + 0.18}s` }}>
-              <div className="ov7r-beat-head">
-                <span className="ov7r-num">{String(k + 1).padStart(2, '0')}</span>
-                <span className="ov7r-label">{sec.label}</span>
-              </div>
+              <h3 className="ov7r-label">{sec.label}</h3>
               <p className="ov7r-body">{fill(beat.body)}</p>
               {sec.key === 'value' ? (
                 <div className="ov7r-tiles">
@@ -783,7 +780,7 @@ function MiniRead({ arch, axes, fillSit }) {
 
       {/* where this goes, signed */}
       <section className="ov7r-close">
-        <span className="ov7r-cap ov7r-cap-brown">Where this goes</span>
+        <h3 className="ov7r-label">Where this goes</h3>
         <ul className="ov7r-grow">
           {growth.map((g, k) => (<li key={k} style={{ '--d': `${0.05 * k + 0.1}s` }}><span className="ov7r-grow-ic"><ArrowUpRight size={12} weight="bold" /></span>{fill(g)}</li>))}
         </ul>
