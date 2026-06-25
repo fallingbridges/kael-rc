@@ -29,6 +29,8 @@ export const AXES = ['MIND', 'ENERGY', 'VOICE', 'COPE']
 export const POSITIVE = { MIND: 'R', ENERGY: 'D', VOICE: 'H', COPE: 'N' }
 const HEALTHY = { MIND: 'Q', ENERGY: 'S', VOICE: 'K', COPE: 'F' }
 const POLE_AXIS = { R: 'MIND', Q: 'MIND', D: 'ENERGY', S: 'ENERGY', H: 'VOICE', K: 'VOICE', N: 'COPE', F: 'COPE' }
+/* each pillar's anchor — the deliberate two-choice (weight 1.5); breaks pos ties */
+const ANCHOR = { MIND: 'm1', ENERGY: 'e1', VOICE: 'v1', COPE: 'c1' }
 
 /* ── the 16 patterns (one per 4-letter code, MIND-ENERGY-VOICE-COPE) ──
    The bespoke identity: name + one-line essence + a 2-sentence opening that
@@ -170,12 +172,12 @@ export const QUESTIONS = {
   e3: { axis: 'ENERGY', kind: 'statement', block: 2, weight: 1.5,
     statement: 'I push through until I crash.',
     left: { name: 'Not me', pole: 'S' }, right: { name: 'Exactly me', pole: 'D' } },
-  e4: { axis: 'ENERGY', kind: 'multi', block: 2, max: 3, cols: 2, prompt: 'Where does the stress tend to land?',
+  e4: { axis: 'ENERGY', kind: 'multi', block: 2, max: 3, cols: 2, prompt: 'Where does stress show up in your body?',
     sub: 'Pick up to three. Your body keeps the score.', options: [
       { name: 'Tight chest', pole: 'D', icon: Heartbeat },
       { name: 'Restless sleep', pole: 'D', icon: Moon },
-      { name: 'A short fuse', pole: 'D', icon: Flame },
-      { name: 'Can’t focus', pole: 'D', icon: Spiral },
+      { name: 'Jaw tension', pole: 'D', icon: Lightning },
+      { name: 'Shallow breathing', pole: 'D', icon: Wind },
       { name: 'Low energy', pole: 'D', icon: BatteryLow },
       { name: 'A knot in my stomach', pole: 'D', icon: Waves },
     ] },
@@ -201,8 +203,8 @@ export const QUESTIONS = {
   c2: { axis: 'COPE', kind: 'slider', block: 4, weight: 1.5, prompt: 'How often do you numb out instead of feeling it?',
     left: { name: 'Rarely', pole: 'F' }, right: { name: 'Almost always', pole: 'N' } },
   c3: { axis: 'COPE', kind: 'statement', block: 4, weight: 1.5,
-    statement: 'I’d rather distract myself than sit with a hard feeling.',
-    left: { name: 'Not me', pole: 'F' }, right: { name: 'Exactly me', pole: 'N' } },
+    statement: 'I can sit with discomfort without needing to fix it right away.',
+    left: { name: 'Not me', pole: 'N' }, right: { name: 'Exactly me', pole: 'F' } },
   /* what you reach for when it's heavy — OPTIONAL (pick none if you don't), feeds {REACH} */
   c4: { axis: 'COPE', kind: 'multi', block: 4, max: 3, cols: 2, prompt: 'When it gets heavy, what do you reach for?',
     sub: 'Pick any that fit, or none at all. No judgment, Kael’s seen them all.', options: [
@@ -285,8 +287,11 @@ export function resolve(answers = {}) {
   })
   // 4-letter code: each pillar resolves to its symptom or healthy pole
   const code = AXES.map((a) => (axes[a].sum > TIE_EPS ? POSITIVE[a] : HEALTHY[a])).join('')
-  // primary = the loudest pillar (highest position); secondary = next
-  const ranked = AXES.slice().sort((a, b) => axes[b].pos - axes[a].pos)
+  // primary = the loudest pillar (highest position). On a pos tie, the pillar whose
+  // anchor (the deliberate two-choice) landed on the symptom pole wins; then raw sum.
+  const anchorSym = (axis) => (answers[ANCHOR[axis]] && answers[ANCHOR[axis]].pole === POSITIVE[axis] ? 1 : 0)
+  const ranked = AXES.slice().sort((a, b) =>
+    (axes[b].pos - axes[a].pos) || (anchorSym(b) - anchorSym(a)) || (axes[b].sum - axes[a].sum))
   return { code, primary: ranked[0], secondary: ranked[1], axes }
 }
 
