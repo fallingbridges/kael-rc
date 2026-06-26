@@ -9849,3 +9849,68 @@ svg {
 /* paywall (first studio design) — fill the onboarding screen so the grouped
    layout pushes the plans + footer to the bottom */
 .ov7-pay { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+/* ── Intro concept (3-screen hook): safety · recognition · hope ───────────── */
+.io-head { display: flex; align-items: center; justify-content: center; }
+.io-dots { display: flex; gap: 7px; }
+.io-dot { width: 6px; height: 6px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 15%, transparent); transition: width 0.34s var(--ease), background 0.34s var(--ease); }
+.io-dot[data-on] { width: 20px; background: var(--warm-proof); }
+
+.io-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 22px; }
+.io-recog, .io-hope { gap: 18px; }
+
+@keyframes io-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes io-pop { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes io-chip-pop { 0% { opacity: 0; transform: scale(0.5); } 55% { opacity: 1; transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+
+.io-title { font-family: var(--title); font-weight: 500; font-size: 33px; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; max-width: 17ch; animation: io-rise 0.55s var(--ease) 0.1s both; }
+.io-title-sm { font-size: 27px; line-height: 1.16; }
+.io-sub { font-family: var(--serif); font-size: 16px; line-height: 1.5; color: var(--ink-2); max-width: 30ch; margin-top: -6px; animation: io-rise 0.55s var(--ease) 0.18s both; }
+
+/* screen 1 — the breathing presence */
+.io-orb { position: relative; width: 92px; height: 92px; display: grid; place-items: center; animation: io-pop 0.6s var(--ease) both; }
+.io-orb-core { position: relative; z-index: 2; width: 62px; height: 62px; display: grid; place-items: center; border-radius: 20px; background: var(--invert-bg); color: var(--invert-ink); box-shadow: 0 16px 30px -16px rgba(20, 18, 14, 0.5); animation: io-breathe 5s ease-in-out infinite; }
+.io-orb-ring { position: absolute; inset: 6px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--warm-proof) 45%, transparent); animation: io-ring 5s ease-out infinite; }
+.io-orb-ring-2 { animation-delay: 2.5s; }
+@keyframes io-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes io-ring { 0% { transform: scale(0.72); opacity: 0; } 35% { opacity: 0.75; } 100% { transform: scale(1.5); opacity: 0; } }
+
+.io-bubble { display: flex; gap: 9px; align-items: flex-start; max-width: 290px; text-align: left; padding: 12px 14px; border-radius: 5px 16px 16px 16px; background: color-mix(in srgb, var(--warm-proof) 8%, var(--paper)); border: 1px solid var(--line-2); animation: io-pop 0.55s var(--ease) 0.3s both; }
+.io-bubble-av { flex: 0 0 auto; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); margin-top: 1px; }
+.io-bubble-text { font-family: var(--serif); font-size: 15px; line-height: 1.5; color: var(--ink); min-height: 1.5em; }
+.io-caret { display: inline-block; width: 2px; height: 0.95em; vertical-align: -1px; margin-left: 1px; background: var(--warm-proof); animation: io-blink 1s steps(1) infinite; }
+@keyframes io-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+.io-contrast { font: 400 13.5px var(--sans); line-height: 1.55; color: var(--ink-3); max-width: 30ch; animation: io-rise 0.55s var(--ease) 0.44s both; }
+.io-contrast b { color: var(--ink); font-weight: 600; }
+
+/* screen 2 — however you feel: the Kael bar is the hero, moods are light openers */
+.io-recog-title { font-size: 35px; line-height: 1.08; letter-spacing: -0.024em; }
+.io-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; max-width: 332px; }
+.io-pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px 6px 7px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line-2); cursor: pointer; box-shadow: 0 1px 2px rgba(20, 18, 14, 0.03); transition: border-color 0.16s var(--ease); animation: io-chip-pop 0.44s var(--ease) var(--d) both; }
+.io-pill:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.io-pill:active { transform: scale(0.97); }
+.io-pill-ic { flex: 0 0 auto; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 14%, var(--paper)); color: var(--warm-proof); }
+.io-pill-name { font: 600 12.5px var(--sans); color: var(--ink); letter-spacing: -0.01em; }
+.io-ask { width: 100%; max-width: 322px; display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 15px; border-radius: 99px; background: var(--surface); border: 1.5px solid var(--line-strong); box-shadow: 0 5px 14px -10px rgba(20, 18, 14, 0.16); animation: io-rise 0.5s var(--ease) 0.5s both; }
+.io-ask-av { flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); animation: io-breathe 4s ease-in-out infinite; }
+.io-ask-text { flex: 1; text-align: left; font: 400 15px var(--sans); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s ease; }
+.io-ask[data-filled] .io-ask-text { color: var(--ink); font-weight: 500; }
+.io-ask-action { flex: 0 0 auto; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); transition: transform 0.16s var(--ease); }
+.io-ask-action:active { transform: scale(0.94); }
+.io-ask-note { font: 400 12.5px var(--sans); color: var(--ink-3); animation: io-rise 0.5s var(--ease) 0.82s both; }
+.io-entry { width: 100%; max-width: 334px; display: flex; flex-direction: column; align-items: center; gap: 13px; padding: 15px 10px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 4px 16px -11px rgba(20, 18, 14, 0.16); animation: io-pop 0.34s var(--ease) 0.06s both; }
+.io-entry .io-pills { max-width: none; animation: none; }
+.io-entry .io-pill { background: var(--paper); }
+.io-entry .io-ask { background: var(--paper); border: 1px solid var(--line-2); box-shadow: none; animation: io-rise 0.4s var(--ease) 0.16s both; }
+
+/* screen 3 — the loop breaks: a real exchange weeks in (memory + changed behavior) */
+.io-hope-title { font-size: 34px; line-height: 1.08; letter-spacing: -0.024em; }
+.io-chat { width: 100%; max-width: 322px; display: flex; flex-direction: column; gap: 14px; padding: 15px 14px 17px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 4px 16px -11px rgba(20, 18, 14, 0.16); }
+.io-chat-when { align-self: center; font: 600 10px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; animation: io-rise 0.5s var(--ease) 0.15s both; }
+.io-cmsg { display: flex; gap: 8px; align-items: flex-end; max-width: 90%; animation: io-rise 0.5s var(--ease) var(--d) both; }
+.io-cmsg p { font-family: var(--serif); font-size: 14.5px; line-height: 1.45; padding: 10px 14px; }
+.io-cmsg-kael { align-self: flex-start; }
+.io-cmsg-kael p { background: color-mix(in srgb, var(--warm-proof) 8%, var(--paper)); border: 1px solid var(--line-2); color: var(--ink); border-radius: 5px 16px 16px 16px; }
+.io-cmsg-user { align-self: flex-end; }
+.io-cmsg-user p { background: var(--invert-bg); color: var(--invert-ink); border-radius: 16px 16px 5px 16px; }
+.io-cmsg-av { flex: 0 0 auto; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); margin-bottom: 1px; }

@@ -11,6 +11,7 @@ import {
   REL_CONTEXT, AGES, GENDERS, GOALS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
   resolveRead, answeredCount,
 } from '../obv7.js'
+import { Safety as IntroSafety, Recognition as IntroRecognition, Hope as IntroHope } from './IntroConcept.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Kael Onboarding V7 — the merge: V6's balanced 16-question quiz + axis-bar
@@ -96,7 +97,7 @@ export default function OnboardingV7({ noanim = false }) {
 
   /* chrome */
   const isQuiz = ['two', 'single', 'slider', 'statement', 'multi'].includes(s.kind)
-  const showHead = !['welcome', 'hero', 'reveal', 'calibration', 'paywall'].includes(s.kind)
+  const showHead = !['welcome', 'hero', 'intro', 'reveal', 'calibration', 'paywall'].includes(s.kind)
   const canBack = i > 0 && s.kind !== 'calibration' && s.kind !== 'paywall'
   /* progress bar derives its blocks from FLOW (via BLOCKS/BLOCK_IDS) so it can never desync from the order */
   const segs = BLOCKS.map((b) => {
@@ -188,6 +189,7 @@ export default function OnboardingV7({ noanim = false }) {
 /* ── dispatch ── */
 function Body(props) {
   switch (props.s.kind) {
+    case 'intro': return props.s.scene === 'recognition' ? <IntroRecognition /> : props.s.scene === 'hope' ? <IntroHope /> : <IntroSafety />
     case 'welcome': return <Welcome {...props} />
     case 'hero': return <Hero {...props} />
     case 'situation': return <SituationList {...props} />

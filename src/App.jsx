@@ -20,6 +20,7 @@ import OnboardingV7 from './screens/OnboardingV7.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
+import IntroConcept from './screens/IntroConcept.jsx'
 import { Sparkle, Sun, Moon, Download, Grid } from './components/Icons.jsx'
 import { kaelReply, chipExchange, moodExchange } from './kael.js'
 import { getLesson } from './lessons.js'
@@ -323,6 +324,13 @@ export default function App() {
               >
                 2-Screen
               </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'intro'}
+                onClick={() => setStudioTab('intro')}
+              >
+                Intro
+              </button>
             </div>
             <div className="studio-body">
               {studioTab === 'components' ? (
@@ -349,6 +357,8 @@ export default function App() {
                 <ReflectionCards />
               ) : studioTab === 'duo' ? (
                 <KaelDuo />
+              ) : studioTab === 'intro' ? (
+                <IntroConcept />
               ) : (
                 <Onboarding />
               )}

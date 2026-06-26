@@ -430,8 +430,9 @@ export const BEATS = [
 
 export const FLOW = [
   /* ACT 1 · open + get to know you (identity up front, like V4) */
-  { id: 'welcome', kind: 'welcome', act: 1, title: 'You showed up. That is the first move.', sub: "Most people sit with this alone for years. You just chose not to, so let's make sense of how you carry it.", subEm: 'how you carry it', cta: 'Begin' },
-  { id: 'promise', kind: 'hero', act: 1, kicker: 'Before we begin', title: 'A coach that\nremembers you.', em: 'remembers', sub: 'Most apps forget you the moment you close them. Kael remembers, and helps you change your patterns.', cta: 'Continue' },
+  { id: 'intro-meet', kind: 'intro', scene: 'safety', act: 1, cta: 'Continue' },
+  { id: 'intro-moods', kind: 'intro', scene: 'recognition', act: 1, cta: 'Continue' },
+  { id: 'intro-break', kind: 'intro', scene: 'hope', act: 1, cta: "Let's begin" },
   { id: 'situation', kind: 'situation', act: 1, field: 'situation', title: 'What brings you here?', sub: "Pick what's closest. We start there.", cta: 'Continue' },
   { id: 'situationText', kind: 'situationText', act: 1, field: 'situationText', title: 'Say it in your words.', sub: 'Whatever is on your mind right now. Keep it short.', placeholder: 'In a few words…', cta: 'Continue' },
   { id: 'hero', kind: 'hero', act: 1, title: "There's a logic to how you feel.", em: 'how you feel', sub: "A few honest minutes, and I'll show you how you handle stress, what sets you off, and the pattern underneath it.", cta: 'Show me' },
