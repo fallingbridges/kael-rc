@@ -27,7 +27,7 @@ export default function PhoneFrame({
       <div className="phone-scaler">
         <div className="phone">
           <div className="phone-screen" data-theme={theme}>
-            <StatusBar tone={active === 'home' ? 'dark' : 'light'} />
+            <StatusBar tone="light" />
             <div className="screen-body">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div

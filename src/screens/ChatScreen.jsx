@@ -1,148 +1,58 @@
-import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Sparkle, Sliders, Plus, Send, Mic, Reply, Pattern, Back } from '../components/Icons.jsx'
+import { useEffect, useRef } from 'react'
+import { ArrowLeft, ArrowRight, Sparkle, PaperPlaneTilt, Microphone } from '@phosphor-icons/react'
 
-const CHIPS = [
-  { type: 'decode', label: 'Decode this', Icon: Sparkle },
-  { type: 'reply', label: 'Help me reply', Icon: Reply },
-  { type: 'pattern', label: 'Find the pattern', Icon: Pattern },
-]
-
-export default function ChatScreen({ messages = [], typing = false, onSend, onChip, onBack }) {
-  const [draft, setDraft] = useState('')
-  const scrollRef = useRef(null)
+export default function ChatScreen({ messages, typing, draft, onDraftChange, onSend, onWeave, onBack }) {
+  const threadRef = useRef(null)
 
   useEffect(() => {
-    const el = scrollRef.current
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [messages, typing])
+    if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight
+  }, [messages.length, typing])
 
-  function submit(e) {
+  const last = messages[messages.length - 1]
+  const showOpts = !typing && last?.who === 'kael' && last.options?.length > 0
+
+  const submit = (e) => {
     e.preventDefault()
-    const text = draft.trim()
-    if (!text) return
-    setDraft('')
-    onSend?.(text)
+    if (!draft.trim()) return
+    onSend(draft)
   }
 
   return (
-    <div className="chat-root">
-      <header className="chat-head">
-        <button className="ch-back" onClick={() => onBack?.()} aria-label="Back to home">
-          <Back size={22} sw={1.7} />
-        </button>
-        <span className="ch-name">Kael</span>
-        <span className="ch-sub">
-          <span className="live" />
-          Present
-        </span>
-        <button className="ch-set" aria-label="Settings">
-          <Sliders size={20} sw={1.6} />
-        </button>
+    <div className="ka-chat">
+      <header className="ka-chat-top">
+        <button className="ka-icon-btn" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button>
+        <div className="ka-chat-id"><b>Kael</b><span>Present</span></div>
+        <button className="ka-today-btn" onClick={onWeave}>Today<ArrowRight size={13} weight="bold" /></button>
       </header>
 
-      <div className="chat-scroll" ref={scrollRef}>
-        <div className="chat-day">Today</div>
-
-        {messages.map((m) =>
-          m.who === 'user' ? (
-            <motion.div
-              key={m.id}
-              className="msg user"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-            >
-              <div className="bubble-user">{m.text}</div>
-              {m.time && <span className="stamp">{m.time}</span>}
-            </motion.div>
-          ) : (
-            <motion.div
-              key={m.id}
-              className="msg kael"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.32, ease: [0.22, 0.61, 0.36, 1] }}
-            >
-              <span className="kmark">
-                <Sparkle size={16} sw={1.5} />
-              </span>
-              <div className="bubble-kael">{m.text}</div>
-            </motion.div>
-          )
-        )}
-
-        <AnimatePresence>
-          {typing && (
-            <motion.div
-              className="msg kael"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.24 }}
-            >
-              <span className="kmark">
-                <Sparkle size={16} sw={1.5} />
-              </span>
-              <div className="bubble-kael typing" aria-label="Kael is typing">
-                <span className="d" />
-                <span className="d" />
-                <span className="d" />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {!typing && (
-          <div className="chips">
-            {CHIPS.map(({ type, label, Icon }) => (
-              <motion.button
-                key={type}
-                className="chip"
-                onClick={() => onChip?.(type)}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-              >
-                <span className="c-ic">
-                  <Icon size={14} sw={1.6} />
-                </span>
-                {label}
-              </motion.button>
+      <div className="ka-chat-thread" ref={threadRef}>
+        {messages.map((m) => (
+          <div key={m.id} className={`io-cmsg io-cmsg-${m.who}`}>
+            {m.who === 'kael' && <span className="io-cmsg-av"><Sparkle size={12} weight="fill" /></span>}
+            <p>{m.text}</p>
+          </div>
+        ))}
+        {typing && <div className="ka-typing"><span /><span /><span /></div>}
+        {showOpts && (
+          <div className="ka-opts">
+            {last.options.map((o) => (
+              <button key={o} className="ka-opt" onClick={() => onSend(o)}>{o}</button>
             ))}
           </div>
         )}
-
       </div>
 
-      <form className="composer" onSubmit={submit}>
-        <div className="composer-field">
-          <button type="button" className="plus" aria-label="Add">
-            <Plus size={20} sw={1.7} />
-          </button>
-          <input
-            className="field-input"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Message Kael…"
-            aria-label="Message Kael"
-          />
-          {draft.trim() ? (
-            <motion.button
-              type="submit"
-              className="send"
-              aria-label="Send"
-              initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 24 }}
-            >
-              <Send size={18} sw={1.8} />
-            </motion.button>
-          ) : (
-            <button type="button" className="mic" aria-label="Voice message">
-              <Mic size={20} sw={1.6} />
-            </button>
-          )}
-        </div>
+      <form className="ka-composer" onSubmit={submit}>
+        <input
+          className="ka-composer-input"
+          value={draft}
+          onChange={(e) => onDraftChange(e.target.value)}
+          placeholder="Message Kael…"
+          autoComplete="off"
+        />
+        <button type={draft.trim() ? 'submit' : 'button'} className="ka-composer-btn" aria-label={draft.trim() ? 'Send' : 'Voice'}>
+          {draft.trim() ? <PaperPlaneTilt size={18} weight="fill" /> : <Microphone size={18} weight="fill" />}
+        </button>
       </form>
     </div>
   )

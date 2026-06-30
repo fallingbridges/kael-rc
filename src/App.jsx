@@ -5,8 +5,10 @@ import HomeScreen from './screens/HomeScreen.jsx'
 import ChatScreen from './screens/ChatScreen.jsx'
 import YouScreen from './screens/YouScreen.jsx'
 import JourneyScreen from './screens/JourneyScreen.jsx'
-import LearnScreen from './screens/LearnScreen.jsx'
-import LessonScreen from './screens/LessonScreen.jsx'
+import PatternsScreen from './screens/PatternsScreen.jsx'
+import ReflectionView from './screens/ReflectionView.jsx'
+import TagTimelineView from './screens/TagTimelineView.jsx'
+import PatternView from './screens/PatternView.jsx'
 import ComponentLibrary from './screens/ComponentLibrary.jsx'
 import BrandGuide from './screens/BrandGuide.jsx'
 import StoreScreens from './screens/StoreScreens.jsx'
@@ -21,9 +23,10 @@ import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
 import IntroConcept from './screens/IntroConcept.jsx'
+import JourneyConcept from './screens/JourneyConcept.jsx'
 import { Sparkle, Sun, Moon, Download, Grid } from './components/Icons.jsx'
-import { kaelReply, chipExchange, moodExchange } from './kael.js'
-import { getLesson } from './lessons.js'
+import { kaelReply } from './kael.js'
+import { CHAT, MOOD, getReflection } from './journal.js'
 
 function nowTime() {
   return new Date()
@@ -31,45 +34,36 @@ function nowTime() {
     .toLowerCase()
 }
 
-const SEED = [
-  { id: 1, who: 'user', text: 'He said he needs space and now I’m spiraling.', time: '9:32 am' },
-  {
-    id: 2,
-    who: 'kael',
-    text: 'Let’s slow it down. What part hurts most right now: the distance, the ambiguity, or what it seems to mean about you?',
-  },
-]
+const OPT = ['Tell me more', 'That lands', 'Honestly, I’m not sure']
+const SEED = CHAT.map((m, i) => ({ id: i + 1, who: m.who, text: m.text, options: m.options }))
 
-function ScreenView({ tab, messages, typing, handlers }) {
+function ScreenView({ tab, messages, typing, draft, handlers }) {
   switch (tab) {
     case 'chat':
       return (
         <ChatScreen
           messages={messages}
           typing={typing}
+          draft={draft}
+          onDraftChange={handlers.setDraft}
           onSend={handlers.sendText}
-          onChip={handlers.sendChip}
+          onWeave={handlers.weaveToday}
           onBack={handlers.goHome}
         />
       )
     case 'you':
-      return (
-        <YouScreen
-          onNavigate={handlers.goChat}
-          onOpenSheet={handlers.openSheet}
-          onPrompt={handlers.startFromPrompt}
-        />
-      )
+      return <YouScreen theme={handlers.theme} onToggleTheme={handlers.toggleTheme} />
     case 'journey':
-      return <JourneyScreen onNavigate={handlers.goChat} onOpenSheet={handlers.openSheet} />
-    case 'learn':
-      return <LearnScreen onOpenLesson={handlers.openLesson} />
+      return <JourneyScreen onOpenReflection={handlers.openReflection} />
+    case 'patterns':
+      return <PatternsScreen onOpenTag={handlers.openTag} />
     default:
       return (
         <HomeScreen
-          onPrompt={handlers.startFromPrompt}
+          onTalk={handlers.goChat}
           onMood={handlers.bringMood}
-          onOpenRead={handlers.goYou}
+          onOpenReflection={handlers.openReflection}
+          onSeeAll={handlers.goJourney}
         />
       )
   }
@@ -83,8 +77,9 @@ export default function App() {
   const [messages, setMessages] = useState(SEED)
   const [typing, setTyping] = useState(false)
   const [scale, setScale] = useState(0.72)
-  const [activeLesson, setActiveLesson] = useState(null)
+  const [stack, setStack] = useState([])
   const [sheet, setSheet] = useState(null)
+  const [draft, setDraft] = useState('')
 
   useLayoutEffect(() => {
     const fit = () => {
@@ -108,7 +103,7 @@ export default function App() {
     setTyping(true)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
-      setMessages((m) => [...m, { id: nextId(), who: 'kael', text: replyText }])
+      setMessages((m) => [...m, { id: nextId(), who: 'kael', text: replyText, options: OPT }])
       setTyping(false)
     }, 950)
   }
@@ -118,35 +113,22 @@ export default function App() {
     if (!clean) return
     setMessages((m) => [...m, { id: nextId(), who: 'user', text: clean, time: nowTime() }])
     respond(kaelReply(clean))
+    setDraft('')
   }
 
-  function sendChip(type) {
-    const { user, kael } = chipExchange(type)
-    setMessages((m) => [...m, { id: nextId(), who: 'user', text: user, time: nowTime() }])
-    respond(kael)
-  }
-
-  function startFromPrompt(label) {
-    setTab('chat')
-    sendText(label)
-  }
-
+  // tapping a Home mood doesn't send — it prefills the composer so the user
+  // can read (and tweak) the line before hitting send.
   function bringMood(id) {
-    const { user, kael } = moodExchange(id)
+    setDraft(MOOD[id]?.seed || '')
     setTab('chat')
-    setMessages((m) => [...m, { id: nextId(), who: 'user', text: user, time: nowTime() }])
-    respond(kael)
   }
 
-  function openLesson(id) {
-    setActiveLesson(id)
-  }
-
-  function discussLesson(lesson) {
-    setActiveLesson(null)
-    setTab('chat')
-    sendText(`I just read “${lesson.title}.” It stirred something up. Can we talk about it?`)
-  }
+  const openReflection = (id) => setStack((s) => [...s, { kind: 'reflection', id }])
+  const openTag = (cat, name) =>
+    setStack((s) => [...s, cat === 'patterns' ? { kind: 'pattern', name } : { kind: 'tag', cat, name }])
+  const popStack = () => setStack((s) => s.slice(0, -1))
+  const weaveToday = () => openReflection('today')
+  const talkAbout = () => { setStack([]); setTab('chat') }
 
   function openSheet(detail) {
     setSheet(detail)
@@ -175,17 +157,18 @@ export default function App() {
 
   const handlers = {
     sendText,
-    sendChip,
+    setDraft,
     goChat: () => setTab('chat'),
     goHome: () => setTab('home'),
-    goYou: () => setTab('you'),
-    startFromPrompt,
+    goJourney: () => { setStack([]); setTab('journey') },
     bringMood,
-    openLesson,
+    openReflection,
+    openTag,
+    weaveToday,
     openSheet,
+    theme,
+    toggleTheme: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),
   }
-
-  const lesson = activeLesson ? getLesson(activeLesson) : null
 
   return (
     <div className="stage" data-theme={theme}>
@@ -331,6 +314,13 @@ export default function App() {
               >
                 Intro
               </button>
+              <button
+                className="studio-tab"
+                data-on={studioTab === 'journey'}
+                onClick={() => setStudioTab('journey')}
+              >
+                Journey
+              </button>
             </div>
             <div className="studio-body">
               {studioTab === 'components' ? (
@@ -359,6 +349,8 @@ export default function App() {
                 <KaelDuo />
               ) : studioTab === 'intro' ? (
                 <IntroConcept />
+              ) : studioTab === 'journey' ? (
+                <JourneyConcept />
               ) : (
                 <Onboarding />
               )}
@@ -376,21 +368,47 @@ export default function App() {
             theme={theme}
             active={tab}
             onSelect={setTab}
-            hideNav={tab === 'chat'}
+            hideNav={tab === 'chat' || stack.length > 0}
             overlay={
-              lesson ? (
-                <LessonScreen
-                  lesson={lesson}
-                  onBack={() => setActiveLesson(null)}
-                  onDiscuss={discussLesson}
-                />
-              ) : null
+              stack.length ? (() => {
+                const top = stack[stack.length - 1]
+                if (top.kind === 'reflection') {
+                  return (
+                    <ReflectionView
+                      key={`r-${top.id}`}
+                      r={getReflection(top.id)}
+                      onBack={popStack}
+                      onOpenTag={openTag}
+                      onTalk={talkAbout}
+                    />
+                  )
+                }
+                if (top.kind === 'pattern') {
+                  return (
+                    <PatternView
+                      key={`p-${top.name}`}
+                      name={top.name}
+                      onBack={popStack}
+                      onOpenReflection={openReflection}
+                    />
+                  )
+                }
+                return (
+                  <TagTimelineView
+                    key={`t-${top.cat}-${top.name}`}
+                    cat={top.cat}
+                    name={top.name}
+                    onBack={popStack}
+                    onOpenReflection={openReflection}
+                  />
+                )
+              })() : null
             }
             sheet={sheet}
             onCloseSheet={() => setSheet(null)}
             onSheetCta={sheetCta}
           >
-            <ScreenView tab={tab} messages={messages} typing={typing} handlers={handlers} />
+            <ScreenView tab={tab} messages={messages} typing={typing} draft={draft} handlers={handlers} />
           </PhoneFrame>
         </motion.div>
         )}

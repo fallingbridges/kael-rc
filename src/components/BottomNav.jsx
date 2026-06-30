@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Sun, Route, Book, Person, Sparkle } from './Icons.jsx'
+import { Sun, Route, Pulse, Person, Sparkle } from './Icons.jsx'
 
 // 2-1-2 layout: the centre is an elevated medallion — talking to Kael is the point.
 const LEFT = [
@@ -7,7 +7,7 @@ const LEFT = [
   { id: 'journey', label: 'Journey', Icon: Route },
 ]
 const RIGHT = [
-  { id: 'learn', label: 'Learn', Icon: Book },
+  { id: 'patterns', label: 'Insight', Icon: Pulse },
   { id: 'you', label: 'You', Icon: Person },
 ]
 
