@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Sparkle, BellSimple, LockKey, Moon } from '@phosphor-icons/react'
-import { PROFILE } from '../journal.js'
+import { PROFILE, MOOD, MOSAIC } from '../journal.js'
 
 function Toggle({ on, onChange }) {
   return <button className="ka-toggle" data-on={on || undefined} onClick={onChange} aria-pressed={on}><span /></button>
@@ -26,6 +26,20 @@ export default function YouScreen({ theme, onToggleTheme }) {
           <h1 className="ka-you-name">{PROFILE.name}</h1>
           <span className="ka-you-stat">Day {PROFILE.day} · {PROFILE.reflections} reflections · {PROFILE.daysActive} days active</span>
         </div>
+
+        <section className="ka-block">
+          <h2 className="ka-sec-label">The weather you’ve kept</h2>
+          <div className="ka-mosaic">
+            {MOSAIC.map((mood, i) => (
+              <span
+                key={i}
+                className="ka-mosaic-cell"
+                style={mood ? { background: `color-mix(in srgb, ${MOOD[mood].accent} 60%, var(--paper))` } : undefined}
+              />
+            ))}
+          </div>
+          <p className="ka-mosaic-cap">Every day you showed up, painted by how it felt. Kael remembers all {PROFILE.daysActive}.</p>
+        </section>
 
         <section className="ka-block">
           <h2 className="ka-sec-label">Your companion</h2>

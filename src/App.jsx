@@ -60,6 +60,7 @@ function ScreenView({ tab, messages, typing, draft, handlers }) {
     default:
       return (
         <HomeScreen
+          kaelMessage={[...messages].reverse().find((m) => m.who === 'kael')?.text}
           onTalk={handlers.goChat}
           onMood={handlers.bringMood}
           onOpenReflection={handlers.openReflection}

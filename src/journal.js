@@ -27,7 +27,7 @@ export const MOOD = Object.fromEntries(MOODS.map((m) => [m.id, m]))
 /* the six brought to Home's "bring a feeling" — the common hard ones */
 export const HOME_MOODS = ['anxious', 'overthinking', 'overwhelmed', 'low', 'lonely', 'numb'].map((id) => MOOD[id])
 
-export const PROFILE = { name: 'Maya', initial: 'M', day: 142, streak: 6, reflections: 38, daysActive: 31 }
+export const PROFILE = { name: 'Maya', initial: 'M', day: 142, streak: 4, reflections: 38, daysActive: 31 }
 
 /* ── reflections — Kael's daily writing about the user, newest first.
    prose blocks: { t:'p', x } · { t:'quote', x } (the user's own words, pulled back).
@@ -476,7 +476,7 @@ export const CHAT = [
   { who: 'user', text: 'A bit smaller, maybe.' },
   { who: 'kael', text: 'Daylight does that. Want to name just the first thing for today and let the other six wait?', options: ['The manager email', 'Get through the morning', 'Rest, honestly'] },
   { who: 'user', text: 'Rest, honestly. I’m so tired.' },
-  { who: 'kael', text: 'Then that’s the one. Tired isn’t a debt you owe the day. What would rest even look like, for an hour?', options: ['Lie down', 'A slow walk', 'Nothing, without the guilt'] },
+  { who: 'kael', text: 'I keep coming back to something you said. You told me you were fine, more than once, and each time you said it a little faster.\n\nWhat I noticed was the move right after. You reorganised your inbox, rewrote a doc nobody asked for, found one more task to reach for, the way someone reaches for a railing.\n\nSo here’s the quieter question. Not whether you’re fine, but what you’d have to feel if you stopped being busy for a while. What do you think is waiting underneath all that motion?', options: ['Honestly, I don’t know', 'I think I’m scared to look', 'Can we start smaller?'] },
 ]
 
 /* insights — for the Patterns screen */
@@ -496,6 +496,10 @@ export const ACTIVITY = [
   1,3,2,0,1,1,2, 2,1,1,2,3,1,0, 0,1,2,1,2,1,1, 3,2,1,0,1,2,2,
   1,1,2,3,2,1,1, 2,0,1,2,1,3,2, 1,2,2,1,2,1,0, 2,3,2,1,2,1,1,
 ]
+/* the same 12 weeks, painted by feeling — each day its dominant mood, or null
+   if you didn't show up. the long-view "inner weather" mosaic for the profile. */
+const MOSAIC_MOODS = ['anxious', 'tired', 'overwhelmed', 'low', 'calm', 'overthinking', 'hopeful', 'stressed', 'sad', 'restless', 'numb', 'lonely']
+export const MOSAIC = ACTIVITY.map((v, i) => (v === 0 ? null : MOSAIC_MOODS[(i * 5 + v * 3) % MOSAIC_MOODS.length]))
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 export const getReflection = (id) => REFLECTIONS.find((r) => r.id === id)

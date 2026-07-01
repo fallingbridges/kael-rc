@@ -9930,7 +9930,7 @@ svg {
 .io-chat { width: 100%; max-width: 322px; display: flex; flex-direction: column; gap: 14px; padding: 15px 14px 17px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 4px 16px -11px rgba(20, 18, 14, 0.16); }
 .io-chat-when { align-self: center; font: 600 10px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; animation: io-rise 0.5s var(--ease) 0.15s both; }
 .io-cmsg { display: flex; gap: 8px; align-items: flex-end; max-width: 90%; animation: io-rise 0.5s var(--ease) var(--d) both; }
-.io-cmsg p { font-family: var(--serif); font-size: 14.5px; line-height: 1.45; padding: 10px 14px; }
+.io-cmsg p { font-family: var(--serif); font-size: 14.5px; line-height: 1.45; padding: 10px 14px; white-space: pre-line; }
 .io-cmsg-kael { align-self: flex-start; }
 .io-cmsg-kael p { background: color-mix(in srgb, var(--warm-proof) 8%, var(--paper)); border: 1px solid var(--line-2); color: var(--ink); border-radius: 5px 16px 16px 16px; }
 .io-cmsg-user { align-self: flex-end; }
@@ -10036,13 +10036,25 @@ svg {
 .ka-streak { display: inline-flex; align-items: center; gap: 6px; font: 500 13px var(--sans); color: var(--ink-2); }
 .ka-streak svg { color: var(--warm-react); }
 .ka-avatar { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--surface); font-family: var(--title); font-size: 18px; color: var(--ink); display: grid; place-items: center; cursor: pointer; }
-.ka-streak-pill { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 13px; border-radius: 99px; background: var(--field); border: 1px solid var(--line-strong); color: var(--ink-2); font: 700 15.5px var(--sans); font-variant-numeric: tabular-nums; }
+.ka-streak-pill { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 13px; border-radius: 99px; background: color-mix(in srgb, var(--warm-react) 12%, var(--paper)); border: 1px solid color-mix(in srgb, var(--warm-react) 24%, transparent); color: var(--warm-react); font: 700 15.5px var(--sans); font-variant-numeric: tabular-nums; }
+.ka-streak-pill svg { color: #d98436; }
+/* week strip — each day painted with its feeling (inner weather) */
+.ka-week-wrap { padding: 16px 22px 8px; }
+.ka-week { display: flex; gap: 4px; }
+.ka-week-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 9px; background: none; border: 0; padding: 0; cursor: pointer; }
+.ka-week-day:disabled { cursor: default; }
+.ka-week-wd { font: 600 10px var(--sans); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink-3); }
+.ka-week-disc { width: 33px; height: 33px; border-radius: 50%; display: grid; place-items: center; font: 600 12.5px var(--sans); color: var(--ink-3); border: 1px solid var(--line-2); font-variant-numeric: tabular-nums; transition: transform 0.14s var(--ease); }
+.ka-week-day:not(:disabled):active .ka-week-disc { transform: scale(0.92); }
+.ka-week-disc[data-on] { background: color-mix(in srgb, var(--dm) 42%, var(--paper)); border-color: transparent; color: color-mix(in srgb, var(--dm) 78%, var(--ink)); }
+.ka-week-disc[data-today] { box-shadow: 0 0 0 2px color-mix(in srgb, var(--dm) 62%, var(--ink)); }
+.ka-week-cap { margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--ink-3); text-align: center; }
 
 /* Kael's prompt */
 .ka-prompt { margin: 18px 22px 0; padding: 17px 18px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow-float); }
-.ka-prompt-eyebrow { display: inline-flex; align-items: center; gap: 6px; font: 600 10.5px var(--sans); letter-spacing: 0.09em; text-transform: uppercase; color: var(--badge-ink); }
-.ka-prompt-eyebrow svg { color: var(--warm-proof); }
-.ka-prompt-text { font-family: var(--serif); font-size: 17px; line-height: 1.5; color: var(--ink); margin: 10px 0 15px; }
+.ka-prompt-id { display: inline-flex; align-items: center; gap: 9px; font: 600 11px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
+.ka-prompt-mark { width: 27px; height: 27px; border-radius: 8px; background: var(--invert-bg); color: var(--invert-ink); display: grid; place-items: center; flex: 0 0 auto; }
+.ka-prompt-text { font-family: var(--serif); font-size: 16px; line-height: 1.55; color: var(--ink); margin: 14px 0 16px; white-space: pre-line; }
 
 /* mood tiles */
 .ka-moods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
@@ -10064,12 +10076,13 @@ svg {
 .ka-sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
 .ka-sec-head .ka-sec-label { margin-bottom: 0; }
 .ka-seeall { display: inline-flex; align-items: center; gap: 3px; background: none; border: 0; font: 600 12px var(--sans); color: var(--ink-3); cursor: pointer; padding: 0; }
-.ka-hcard-list { display: flex; flex-direction: column; gap: 10px; }
-.ka-hcard { display: flex; flex-direction: column; align-items: flex-start; width: 100%; text-align: left; padding: 15px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow-card); cursor: pointer; }
-.ka-hcard-eyebrow { display: inline-flex; align-items: center; gap: 8px; font: 600 10.5px var(--sans); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); }
-.ka-hcard-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
-.ka-hcard-title { font-family: var(--title); font-weight: 500; font-size: 17.5px; line-height: 1.2; color: var(--ink); letter-spacing: -0.01em; margin: 9px 0 0; }
-.ka-hcard-prev { font-family: var(--serif); font-size: 13.5px; line-height: 1.46; color: var(--ink-3); margin-top: 6px; }
+.ka-jent-list { display: flex; flex-direction: column; gap: 10px; }
+.ka-jent { display: flex; align-items: flex-start; gap: 14px; width: 100%; text-align: left; padding: 16px; border-radius: 17px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow-card); cursor: pointer; }
+.ka-jent-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 13px; background: color-mix(in srgb, var(--mood) 15%, var(--paper)); color: var(--mood); display: grid; place-items: center; }
+.ka-jent-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ka-jent-title { font-family: var(--title); font-weight: 500; font-size: 17px; line-height: 1.22; color: var(--ink); letter-spacing: -0.01em; }
+.ka-jent-meta { font: 500 11.5px var(--sans); color: var(--ink-3); margin-top: 5px; }
+.ka-jent-prev { font-family: var(--serif); font-size: 13.5px; line-height: 1.46; color: var(--ink-3); margin-top: 9px; }
 
 /* Talk — chat */
 .ka-chat { height: 100%; display: flex; flex-direction: column; background: var(--paper); }
@@ -10249,6 +10262,10 @@ svg {
 .ka-set-tx { flex: 1; display: flex; flex-direction: column; gap: 1px; }
 .ka-set-tx b { font: 600 14.5px var(--sans); color: var(--ink); }
 .ka-set-tx span { font: 400 12px var(--sans); color: var(--ink-3); }
+/* the long-view inner-weather mosaic */
+.ka-mosaic { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin-top: 6px; }
+.ka-mosaic-cell { aspect-ratio: 1; border-radius: 4px; background: color-mix(in srgb, var(--ink) 4%, var(--paper)); }
+.ka-mosaic-cap { margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 13.5px; line-height: 1.46; color: var(--ink-3); }
 .ka-toggle { flex: 0 0 auto; width: 44px; height: 26px; border-radius: 99px; border: 0; background: color-mix(in srgb, var(--ink) 14%, transparent); cursor: pointer; padding: 3px; transition: background 0.2s var(--ease); }
 .ka-toggle span { display: block; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); transition: transform 0.2s var(--ease); }
 .ka-toggle[data-on] { background: var(--warm-react); }
