@@ -1,78 +1,110 @@
 import { useState } from 'react'
-import { REFLECTIONS, MOOD } from '../journal.js'
+import { MagnifyingGlass, X } from '@phosphor-icons/react'
+import { REFLECTIONS, MOOD, PROFILE } from '../journal.js'
 
-const FILTERS = ['All', 'Work', 'Rest & body', 'Family', 'My manager', 'Mom']
+const uniq = (a) => [...new Set(a)]
+const MOODS_PRESENT = uniq(REFLECTIONS.map((r) => r.moodId))
+const THEMES = uniq(REFLECTIONS.flatMap((r) => [...(r.tags.topics || []), ...(r.tags.patterns || [])]))
+const PEOPLE = uniq(REFLECTIONS.flatMap((r) => r.tags.people || []))
+const WHENS = [['all', 'All time'], ['month', 'This month'], ['week', 'This week']]
 
-const matches = (r, f) => {
-  if (f === 'All') return true
-  const all = [...(r.tags.people || []), ...(r.tags.topics || []), ...(r.tags.patterns || [])]
-  return all.includes(f)
-}
-
+const allTags = (r) => [...(r.tags.people || []), ...(r.tags.topics || []), ...(r.tags.patterns || [])]
+const dayNum = (r) => parseInt(r.date.split(' ').pop(), 10)
 const parse = (r) => {
   const [wd, md] = r.date.split(', ')
-  const [month, day] = md.split(' ')
-  return { wd: wd.slice(0, 3).toUpperCase(), day, monthKey: `${month} 2026`.toUpperCase() }
-}
-
-const tagsFor = (r) => {
-  const t = [{ label: MOOD[r.moodId].label, c: MOOD[r.moodId].accent, mood: true }]
-  ;(r.tags.patterns || []).slice(0, 1).forEach((n) => t.push({ label: n, c: 'var(--ink-3)' }))
-  return t
+  const [, day] = md.split(' ')
+  return { day, wd: wd.slice(0, 3) }
 }
 
 export default function JourneyScreen({ onOpenReflection }) {
-  const [filter, setFilter] = useState('All')
-  const list = REFLECTIONS.filter((r) => matches(r, filter))
+  const [find, setFind] = useState(false)
+  const [q, setQ] = useState('')
+  const [mood, setMood] = useState(null)
+  const [tag, setTag] = useState(null)
+  const [when, setWhen] = useState('all')
 
-  const groups = []
-  list.forEach((r) => {
-    const { monthKey } = parse(r)
-    let g = groups.find((x) => x.key === monthKey)
-    if (!g) { g = { key: monthKey, items: [] }; groups.push(g) }
-    g.items.push(r)
+  const list = REFLECTIONS.filter((r) => {
+    if (q) {
+      const hay = `${r.title} ${r.preview} ${allTags(r).join(' ')}`.toLowerCase()
+      if (!hay.includes(q.toLowerCase())) return false
+    }
+    if (mood && r.moodId !== mood) return false
+    if (tag && !allTags(r).includes(tag)) return false
+    if (when === 'week' && dayNum(r) < 27) return false
+    return true
   })
+  const active = q || mood || tag || when !== 'all'
 
   return (
-    <div className="ka-screen ka-journey">
-      <header className="ka-journey-head">
-        <h1 className="ka-journey-title">Your journey with Kael</h1>
-        <div className="ka-filters">
-          {FILTERS.map((f) => (
-            <button key={f} className="ka-filter" data-on={filter === f || undefined} onClick={() => setFilter(f)}>{f}</button>
-          ))}
+    <div className="ka-screen ka-diary">
+      <header className="ka-diary-head">
+        <div className="ka-diary-bar">
+          <div>
+            <h1 className="ka-journey-title">Your journey with Kael</h1>
+            <p className="ka-j-sub">{PROFILE.reflections} reflections, kept together.</p>
+          </div>
+          <button className="ka-diary-find" data-on={find || undefined} onClick={() => setFind((f) => !f)} aria-label="Search and filter">
+            {find ? <X size={18} weight="bold" /> : <MagnifyingGlass size={18} />}
+            {active && !find && <span className="ka-diary-finddot" />}
+          </button>
         </div>
-      </header>
-      <div className="ka-scroll">
-        {groups.map((g) => (
-          <div className="ka-jmonth" key={g.key}>
-            <h2 className="ka-jmonth-label">{g.key}</h2>
-            <div className="ka-jtl">
-              {g.items.map((r) => {
-                const d = parse(r)
-                const m = MOOD[r.moodId]
-                return (
-                  <button key={r.id} className="ka-jrow" style={{ '--mood': m.accent }} onClick={() => onOpenReflection(r.id)}>
-                    <span className="ka-jdate">
-                      <span className="ka-jday">{d.day}</span>
-                      <span className="ka-jwd">{d.wd}</span>
-                    </span>
-                    <span className="ka-jcard">
-                      <span className="ka-jtitle">{r.title}</span>
-                      <span className="ka-jprev">{r.preview}</span>
-                      <span className="ka-jtags">
-                        {tagsFor(r).map((tg, i) => (
-                          <span key={i} className="ka-jtag" style={{ '--c': tg.c }}>{tg.label}</span>
-                        ))}
-                      </span>
-                    </span>
-                  </button>
-                )
-              })}
+
+        {find && (
+          <div className="ka-diary-findpanel">
+            <div className="ka-j-search">
+              <MagnifyingGlass size={16} />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search your reflections" aria-label="Search" />
+            </div>
+            <div className="ka-j-frow"><span className="ka-j-flabel">Feeling</span>
+              <div className="ka-j-fchips">
+                {MOODS_PRESENT.map((id) => <button key={id} className="ka-j-fchip" data-on={mood === id || undefined} onClick={() => setMood(mood === id ? null : id)}>{MOOD[id].label}</button>)}
+              </div>
+            </div>
+            <div className="ka-j-frow"><span className="ka-j-flabel">Theme</span>
+              <div className="ka-j-fchips">
+                {THEMES.map((t) => <button key={t} className="ka-j-fchip" data-on={tag === t || undefined} onClick={() => setTag(tag === t ? null : t)}>{t}</button>)}
+              </div>
+            </div>
+            {PEOPLE.length > 0 && (
+              <div className="ka-j-frow"><span className="ka-j-flabel">Person</span>
+                <div className="ka-j-fchips">
+                  {PEOPLE.map((p) => <button key={p} className="ka-j-fchip" data-on={tag === p || undefined} onClick={() => setTag(tag === p ? null : p)}>{p}</button>)}
+                </div>
+              </div>
+            )}
+            <div className="ka-j-frow"><span className="ka-j-flabel">When</span>
+              <div className="ka-j-fchips">
+                {WHENS.map(([k, l]) => <button key={k} className="ka-j-fchip" data-on={when === k || undefined} onClick={() => setWhen(k)}>{l}</button>)}
+              </div>
             </div>
           </div>
-        ))}
-        {!list.length && <p className="ka-empty">Nothing tagged “{filter}” yet.</p>}
+        )}
+      </header>
+
+      <div className="ka-scroll">
+        <div className="ka-dv">
+          {list.length > 0 && (
+            <div className="ka-dv-chapter"><span className="ka-dv-month">June</span><span className="ka-dv-year">2026</span></div>
+          )}
+          {list.map((r) => {
+            const d = parse(r)
+            const m = MOOD[r.moodId]
+            return (
+              <button key={r.id} className="ka-dv-entry" style={{ '--mood': m.accent }} onClick={() => onOpenReflection(r.id)}>
+                <span className="ka-dv-date">
+                  <span className="ka-dv-day">{d.day}</span>
+                  <span className="ka-dv-wd">{r.isToday ? 'Today' : d.wd}</span>
+                </span>
+                <span className="ka-dv-body">
+                  <span className="ka-dv-title">{r.title}</span>
+                  <span className="ka-dv-line">{r.preview}</span>
+                  <span className="ka-dv-feel"><m.Icon size={12} weight="fill" />{m.label}</span>
+                </span>
+              </button>
+            )
+          })}
+          {!list.length && <p className="ka-empty">Nothing matches that yet.</p>}
+        </div>
         <div className="ka-foot-sp" />
       </div>
     </div>

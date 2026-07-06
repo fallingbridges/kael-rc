@@ -38,19 +38,19 @@ export const REFLECTIONS = [
     title: 'The day you almost rested',
     preview: 'An hour came free, and you didn’t know what to do with it.',
     body: [
-      { t: 'p', x: 'You got to the end of your list today, and for once there was a little left over — an hour, maybe, that didn’t have a job. And you told me you didn’t know what to do with it.' },
+      { t: 'p', x: 'You got to the end of your list today, and for once there was a little left over. An hour, maybe, that didn’t have a job. And you told me you didn’t know what to do with it.' },
       { t: 'quote', x: 'It feels weird to just sit here.' },
       { t: 'p', x: 'It almost never feels earned, that hour. There’s always one more thing that would make the rest okay, as if rest were a wage and you hadn’t quite worked enough to be paid in it.' },
       { t: 'p', x: 'You did sit, in the end. Twenty minutes by the window. You called it nothing. I’d call it practice.' },
     ],
-    tags: { people: [], topics: ['Rest & body', 'Work'], patterns: ['Earning rest'], mood: ['tired'] },
+    tags: { people: ['Sam'], topics: ['Rest & body', 'Work'], patterns: ['Earning rest'], mood: ['tired'] },
   },
   {
     id: 'sunday', dayLabel: 'Yesterday', date: 'Monday, June 29', moodId: 'overwhelmed',
     title: 'Sunday took more than its share',
     preview: 'By nine the week ahead had turned into a wall again.',
     body: [
-      { t: 'p', x: 'By nine tonight the week ahead had turned into a wall again. You could see all of it at once — every meeting, every unanswered thing — and none of it felt possible.' },
+      { t: 'p', x: 'By nine tonight the week ahead had turned into a wall again. You could see all of it at once, every meeting, every unanswered thing, and none of it felt possible.' },
       { t: 'quote', x: 'I don’t even know where to start, so I just don’t.' },
       { t: 'p', x: 'That isn’t laziness, whatever your 9pm voice tells you. It’s a mind trying to hold seven days in a single moment. Of course it buckles.' },
       { t: 'p', x: 'We’ve been here three Sundays now. It was never the work. It’s the looking at all of it at once.' },
@@ -67,7 +67,7 @@ export const REFLECTIONS = [
       { t: 'p', x: 'Notice what the silence became. Not “they’re busy,” not “they’re in back-to-backs.” It became you, failing, quietly. Your mind reached for the worst reading and called it the obvious one.' },
       { t: 'p', x: 'They replied at five. It was fine. It’s always, so far, been fine. The cost wasn’t the message. It was the three hours you spent bracing for one that never came.' },
     ],
-    tags: { people: ['My manager'], topics: ['Work'], patterns: ['Reading silence as judgment'], mood: ['anxious'] },
+    tags: { people: ['Priya'], topics: ['Work'], patterns: ['Reading silence as judgment'], mood: ['anxious'] },
   },
   {
     id: 'mom', dayLabel: 'Wed, Jun 24', date: 'Wednesday, June 24', moodId: 'low',
@@ -78,18 +78,18 @@ export const REFLECTIONS = [
       { t: 'quote', x: 'I just always want her to be proud of me.' },
       { t: 'p', x: 'There’s a younger you in that sentence, still doing the math: be good enough, and be loved. You’re allowed to put the calculator down with her. The love was never the prize waiting at the end of the work.' },
     ],
-    tags: { people: ['Mom'], topics: ['Family'], patterns: ['Earning love'], mood: ['low'] },
+    tags: { people: ['Mom', 'Dad'], topics: ['Family'], patterns: ['Earning love'], mood: ['low'] },
   },
   {
     id: 'walk', dayLabel: 'Fri, Jun 20', date: 'Friday, June 20', moodId: 'calm',
     title: 'You chose the walk',
     preview: 'The spiral started, and you put your shoes on instead.',
     body: [
-      { t: 'p', x: 'The spiral started tonight — the familiar one — and instead of lying down inside it, you put your shoes on and walked.' },
+      { t: 'p', x: 'The spiral started tonight, the familiar one, and instead of lying down inside it, you put your shoes on and walked.' },
       { t: 'quote', x: 'I just went outside. It’s not a big deal.' },
       { t: 'p', x: 'It is, a little. A month ago this exact feeling kept you up until three. Tonight you found the door. Let it count, even if you can’t quite let it be a big deal yet.' },
     ],
-    tags: { people: [], topics: ['Rest & body'], patterns: ['Breaking the loop'], mood: ['calm'] },
+    tags: { people: ['Rohan'], topics: ['Rest & body'], patterns: ['Breaking the loop'], mood: ['calm'] },
   },
   {
     id: 'first', dayLabel: 'Wed, Jun 11', date: 'Wednesday, June 11', moodId: 'overthinking',
@@ -107,17 +107,18 @@ export const REFLECTIONS = [
 
 /* tag registries — counts represent the fuller history (rankings on Patterns) */
 export const PEOPLE = [
-  { name: 'My manager', count: 8 },
-  { name: 'Mom', count: 6 },
-  { name: 'Priya', count: 5 },
-  { name: 'Sam', count: 4 },
+  { name: 'Sam', role: 'Partner', count: 31, tone: 'close, but anxious', accent: '#b06a72' },
+  { name: 'Priya', role: 'Manager', count: 24, tone: 'weighs on you', accent: '#bd7c42' },
+  { name: 'Dad', role: 'Father', count: 14, tone: 'tightens you', accent: '#5c6893' },
+  { name: 'Rohan', role: 'Closest friend', count: 9, tone: 'lifts you', accent: '#4d8d7e' },
+  { name: 'Mom', role: 'Mother', count: 6, tone: 'softens you', accent: '#7f9550' },
 ]
 export const TOPICS = [
-  { name: 'Work', count: 14 },
-  { name: 'Rest & body', count: 9 },
-  { name: 'Family', count: 6 },
-  { name: 'Relationships', count: 5 },
-  { name: 'Sleep', count: 4 },
+  { name: 'Work', count: 14, accent: '#6d82a0' },
+  { name: 'Rest & body', count: 9, accent: '#7f9a6f' },
+  { name: 'Family', count: 6, accent: '#b8748a' },
+  { name: 'Relationships', count: 5, accent: '#c2734f' },
+  { name: 'Sleep', count: 4, accent: '#8a82a0' },
 ]
 export const PATTERNS = [
   { name: 'Earning rest', count: 7 },
@@ -481,14 +482,13 @@ export const CHAT = [
 
 /* insights — for the Patterns screen */
 export const MOOD_MAKEUP = [
-  { id: 'anxious', pct: 18 }, { id: 'overthinking', pct: 14 }, { id: 'overwhelmed', pct: 12 },
-  { id: 'stressed', pct: 11 }, { id: 'tired', pct: 10 }, { id: 'low', pct: 9 },
-  { id: 'lonely', pct: 8 }, { id: 'numb', pct: 7 }, { id: 'calm', pct: 6 }, { id: 'hopeful', pct: 5 },
+  { id: 'anxious', pct: 24 }, { id: 'hopeful', pct: 16 }, { id: 'overwhelmed', pct: 14 },
+  { id: 'restless', pct: 13 }, { id: 'sad', pct: 12 }, { id: 'numb', pct: 11 }, { id: 'calm', pct: 10 },
 ]
 export const PATTERN_NOTES = [
   'You let yourself rest only after the work is done. Rest still has to be earned.',
   'Silence reads as a verdict before it reads as “they’re busy.” The worst story is the first one you reach for.',
-  'Sunday nights carry more than their share. The trigger isn’t the week — it’s seeing all of it at once.',
+  'Sunday nights carry more than their share. The trigger isn’t the week. It’s seeing all of it at once.',
 ]
 /* 12 weeks × 7 days of engagement intensity (0–3) for the activity heatmap */
 export const ACTIVITY = [

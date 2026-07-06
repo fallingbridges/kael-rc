@@ -64,13 +64,9 @@ export default function ReflectionView({ r, onBack, onOpenTag, onTalk }) {
               <div className="ka-tagrow" key={cat}>
                 <span className="ka-tagrow-label">{label}</span>
                 <div className="ka-tagrow-chips">
-                  {names.map((n) => (cat === 'mood' ? (
-                    <button key={n} className="ka-chip-mood" style={{ '--c': MOOD[n].accent }} onClick={() => onOpenTag(cat, n)}>
-                      <span className="ka-chip-dot" />{MOOD[n].label}
-                    </button>
-                  ) : (
-                    <button key={n} className="ka-chip" onClick={() => onOpenTag(cat, n)}>{n}</button>
-                  )))}
+                  {names.map((n) => (
+                    <button key={n} className="ka-chip" onClick={() => onOpenTag(cat, n)}>{cat === 'mood' ? MOOD[n].label : n}</button>
+                  ))}
                 </div>
               </div>
             )
