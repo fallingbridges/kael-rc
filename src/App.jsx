@@ -1,14 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import PhoneFrame from './components/PhoneFrame.jsx'
-import HomeScreen from './screens/HomeScreen.jsx'
-import ChatScreen from './screens/ChatScreen.jsx'
-import YouScreen from './screens/YouScreen.jsx'
-import JourneyScreen from './screens/JourneyScreen.jsx'
-import PatternsScreen from './screens/PatternsScreen.jsx'
-import ReflectionView from './screens/ReflectionView.jsx'
-import TagTimelineView from './screens/TagTimelineView.jsx'
-import PatternView from './screens/PatternView.jsx'
 import ComponentLibrary from './screens/ComponentLibrary.jsx'
 import BrandGuide from './screens/BrandGuide.jsx'
 import StoreScreens from './screens/StoreScreens.jsx'
@@ -20,69 +12,20 @@ import OnboardingV5 from './screens/OnboardingV5.jsx'
 import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
-import ReflectConcept from './screens/ReflectConcept.jsx'
+import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom } from './screens/ReflectConcept.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
 import IntroConcept from './screens/IntroConcept.jsx'
 import JourneyConcept from './screens/JourneyConcept.jsx'
 import { Sparkle, Sun, Moon, Download, Grid } from './components/Icons.jsx'
-import { kaelReply } from './kael.js'
-import { CHAT, MOOD, getReflection } from './journal.js'
-
-function nowTime() {
-  return new Date()
-    .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-    .toLowerCase()
-}
-
-const OPT = ['Tell me more', 'That lands', 'Honestly, I’m not sure']
-const SEED = CHAT.map((m, i) => ({ id: i + 1, who: m.who, text: m.text, options: m.options }))
-
-function ScreenView({ tab, messages, typing, draft, handlers }) {
-  switch (tab) {
-    case 'chat':
-      return (
-        <ChatScreen
-          messages={messages}
-          typing={typing}
-          draft={draft}
-          onDraftChange={handlers.setDraft}
-          onSend={handlers.sendText}
-          onWeave={handlers.weaveToday}
-          onBack={handlers.goHome}
-        />
-      )
-    case 'you':
-      return <YouScreen theme={handlers.theme} onToggleTheme={handlers.toggleTheme} />
-    case 'journey':
-      return <JourneyScreen onOpenReflection={handlers.openReflection} />
-    case 'patterns':
-      return <PatternsScreen onOpenTag={handlers.openTag} />
-    default:
-      return (
-        <HomeScreen
-          kaelMessage={[...messages].reverse().find((m) => m.who === 'kael')?.text}
-          onTalk={handlers.goChat}
-          onMood={handlers.bringMood}
-          onOpenReflection={handlers.openReflection}
-          onSeeAll={handlers.goJourney}
-        />
-      )
-  }
-}
 
 export default function App() {
   const [theme, setTheme] = useState('light')
   const [view, setView] = useState('app')
   const [studioTab, setStudioTab] = useState('components')
-  const [tab, setTab] = useState('home')
-  const [messages, setMessages] = useState(SEED)
-  const [typing, setTyping] = useState(false)
+  const [reflectView, setReflectView] = useState({ kind: 'home' })
   const [scale, setScale] = useState(0.72)
-  const [stack, setStack] = useState([])
-  const [sheet, setSheet] = useState(null)
-  const [draft, setDraft] = useState('')
 
   useLayoutEffect(() => {
     const fit = () => {
@@ -96,52 +39,7 @@ export default function App() {
     return () => window.removeEventListener('resize', fit)
   }, [])
 
-  const idRef = useRef(SEED.length + 1)
-  const timerRef = useRef(null)
   const ease = [0.22, 0.61, 0.36, 1]
-
-  const nextId = () => idRef.current++
-
-  function respond(replyText) {
-    setTyping(true)
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      setMessages((m) => [...m, { id: nextId(), who: 'kael', text: replyText, options: OPT }])
-      setTyping(false)
-    }, 950)
-  }
-
-  function sendText(text) {
-    const clean = text.trim()
-    if (!clean) return
-    setMessages((m) => [...m, { id: nextId(), who: 'user', text: clean, time: nowTime() }])
-    respond(kaelReply(clean))
-    setDraft('')
-  }
-
-  // tapping a Home mood doesn't send — it prefills the composer so the user
-  // can read (and tweak) the line before hitting send.
-  function bringMood(id) {
-    setDraft(MOOD[id]?.seed || '')
-    setTab('chat')
-  }
-
-  const openReflection = (id) => setStack((s) => [...s, { kind: 'reflection', id }])
-  const openTag = (cat, name) =>
-    setStack((s) => [...s, cat === 'patterns' ? { kind: 'pattern', name } : { kind: 'tag', cat, name }])
-  const popStack = () => setStack((s) => s.slice(0, -1))
-  const weaveToday = () => openReflection('today')
-  const talkAbout = () => { setStack([]); setTab('chat') }
-
-  function openSheet(detail) {
-    setSheet(detail)
-  }
-
-  function sheetCta(message) {
-    setSheet(null)
-    setTab('chat')
-    sendText(message)
-  }
 
   async function downloadShot() {
     const node = document.querySelector('.phone-screen')
@@ -154,23 +52,8 @@ export default function App() {
     })
     const a = document.createElement('a')
     a.href = dataUrl
-    a.download = `kael-${tab}-${theme}.png`
+    a.download = `kael-reflect-${theme}.png`
     a.click()
-  }
-
-  const handlers = {
-    sendText,
-    setDraft,
-    goChat: () => setTab('chat'),
-    goHome: () => setTab('home'),
-    goJourney: () => { setStack([]); setTab('journey') },
-    bringMood,
-    openReflection,
-    openTag,
-    weaveToday,
-    openSheet,
-    theme,
-    toggleTheme: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),
   }
 
   return (
@@ -385,51 +268,20 @@ export default function App() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.1, ease }}
         >
-          <PhoneFrame
-            theme={theme}
-            active={tab}
-            onSelect={setTab}
-            hideNav={tab === 'chat' || stack.length > 0}
-            overlay={
-              stack.length ? (() => {
-                const top = stack[stack.length - 1]
-                if (top.kind === 'reflection') {
-                  return (
-                    <ReflectionView
-                      key={`r-${top.id}`}
-                      r={getReflection(top.id)}
-                      onBack={popStack}
-                      onOpenTag={openTag}
-                      onTalk={talkAbout}
-                    />
-                  )
-                }
-                if (top.kind === 'pattern') {
-                  return (
-                    <PatternView
-                      key={`p-${top.name}`}
-                      name={top.name}
-                      onBack={popStack}
-                      onOpenReflection={openReflection}
-                    />
-                  )
-                }
-                return (
-                  <TagTimelineView
-                    key={`t-${top.cat}-${top.name}`}
-                    cat={top.cat}
-                    name={top.name}
-                    onBack={popStack}
-                    onOpenReflection={openReflection}
-                  />
-                )
-              })() : null
-            }
-            sheet={sheet}
-            onCloseSheet={() => setSheet(null)}
-            onSheetCta={sheetCta}
-          >
-            <ScreenView tab={tab} messages={messages} typing={typing} draft={draft} handlers={handlers} />
+          <PhoneFrame theme={theme} hideNav>
+            {reflectView.kind === 'home' ? (
+              <ReflectHome
+                onNew={() => setReflectView({ kind: 'new' })}
+                onOpen={(id) => setReflectView({ kind: 'old', id })}
+              />
+            ) : (
+              <ReflectRoom
+                key={reflectView.kind === 'old' ? `old-${reflectView.id}` : 'new'}
+                mode={reflectView}
+                onBack={() => setReflectView({ kind: 'home' })}
+                onNew={() => setReflectView({ kind: 'new' })}
+              />
+            )}
           </PhoneFrame>
         </motion.div>
         )}
