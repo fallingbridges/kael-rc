@@ -45,26 +45,32 @@ const MOODS = [
   { id: 'anxious', label: 'Anxious', Icon: SmileyNervous, accent: 'var(--mood-anxious)',
     seed: 'My thoughts are racing and I can’t slow them down.',
     open: 'Let’s not chase every thought. Which one keeps coming back the loudest?',
+    chips: ['Work, probably', 'Something I said', 'I can’t pin it down'],
     title: 'Racing thoughts, hard to slow', line: 'Finding the one thought under the noise.' },
   { id: 'hurt', label: 'Hurt', Icon: HeartBreak, accent: 'var(--mood-hurt)',
     seed: 'I’m feeling hurt by something.',
     open: 'I’m sorry it landed like that. What happened, and where does it still sting?',
+    chips: ['Someone close to me', 'Something at work', 'I’d rather not name it yet'],
     title: 'Something that stung', line: 'Naming the hurt before it hardens.' },
   { id: 'heavy', label: 'Heavy', Icon: CloudRain, accent: 'var(--mood-low)',
     seed: 'Everything feels heavy today.',
     open: 'Heavy usually has a shape, even if it’s blurry right now. What’s the heaviest part of today?',
+    chips: ['Everything at once', 'One thing, mostly', 'I honestly don’t know'],
     title: 'Carrying more than usual', line: 'Naming what’s making today heavy.' },
   { id: 'calm', label: 'Calm', Icon: Leaf, accent: 'var(--mood-calm)',
     seed: 'I actually feel calm right now.',
     open: 'Let’s not rush past it. What settled today, and what does the calm feel like?',
+    chips: ['Something went right', 'I just feel steady', 'Not sure, but I’ll take it'],
     title: 'A steadier kind of day', line: 'Noticing what made room for the calm.' },
   { id: 'hopeful', label: 'Hopeful', Icon: SunHorizon, accent: 'var(--mood-hopeful)',
     seed: 'I actually feel a little hopeful today.',
     open: 'I’ll take it. What shifted, and what’s the hope resting on?',
+    chips: ['Something shifted', 'A decision I made', 'Just a feeling'],
     title: 'Something starting to shift', line: 'Naming what the hope is resting on.' },
   { id: 'grateful', label: 'Grateful', Icon: Heart, accent: 'var(--warm-proof)',
     seed: 'I’m feeling grateful and I want to sit with it.',
     open: 'Let’s slow down and savor it. What’s the thing you don’t want to rush past?',
+    chips: ['Someone in my life', 'A small moment', 'Where I’ve landed'],
     title: 'Something worth savoring', line: 'Holding onto what’s good before it passes.' },
 ]
 
@@ -74,22 +80,27 @@ const DOORS = [
   { id: 'vent', label: 'Need to vent', Icon: ChatCircleDots, accent: 'var(--badge-ink)',
     seed: 'I just need to vent for a minute.',
     open: 'Go ahead, let it out. I’m not going anywhere. What’s got you?',
+    chips: ['Work', 'Someone', 'Honestly, everything'],
     title: 'Just needed to let it out', line: 'No fixing yet, just saying it.' },
   { id: 'relationship', label: 'Relationship stuff', Icon: Users, accent: 'var(--mood-hurt)',
     seed: 'Something in one of my relationships is on my mind.',
     open: 'Okay. Who is this about, and what happened between you?',
+    chips: ['My partner', 'Family', 'A friend'],
     title: 'Something in a relationship', line: 'Untangling what’s going on between us.' },
   { id: 'perspective', label: 'Need perspective', Icon: Binoculars, accent: 'var(--warm-proof)',
     seed: 'I could use some perspective on something.',
     open: 'Let’s step back a little. What are you too close to right now?',
+    chips: ['A decision', 'A situation', 'Myself, maybe'],
     title: 'Trying to step back', line: 'Getting some distance to see it clearly.' },
   { id: 'good', label: 'Good news', Icon: Sun, accent: 'var(--mood-hopeful)',
     seed: 'I got some good news and I want to sit with it.',
     open: 'Let’s not rush past it. What’s the news, and what did it feel like in the moment?',
+    chips: ['Work news', 'Something personal', 'Small but good'],
     title: 'Some good news, worth keeping', line: 'Holding onto it before it fades.' },
   { id: 'open', label: 'Just checking in', Icon: NotePencil, accent: 'var(--mood-calm)',
     seed: 'I just felt like checking in.',
     open: 'That’s a good enough reason to be here. What’s been on your mind lately, even loosely?',
+    chips: ['A few things', 'Nothing specific', 'Not sure yet'],
     title: 'Just checking in', line: 'No agenda, just noticing where things are.' },
 ]
 
@@ -117,6 +128,16 @@ const ASK_QUESTIONS = [
   'What would you do differently this week if no one would judge you for it?',
   'What’s something you know you need, but keep putting off?',
   'When did you last surprise yourself, in a good way?',
+]
+
+/* generic quick-replies — a rotating fallback so every Kael message has
+   tappable options, even the ones without a scripted set */
+const REPLY_SETS = [
+  ['Yeah, that’s it', 'Not really', 'I’m not sure'],
+  ['There’s more to it', 'That’s most of it', 'Hard to say'],
+  ['Kind of', 'Not quite', 'Let me think'],
+  ['That’s the part', 'Maybe', 'Go on'],
+  ['Exactly', 'A little', 'I hadn’t thought of that'],
 ]
 
 /* the collection — living titles + one-liners, newest first. Nothing is ever
@@ -407,19 +428,28 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
   const [started, setStarted] = useState(Boolean(existing))
   const [reopened, setReopened] = useState(false)
   const [draft, setDraft] = useState('')
+  const [activeChips, setActiveChips] = useState([]) // quick-replies under the latest Kael message
   const bodyRef = useRef(null)
   const timer = useRef(null)
+  const chipIdx = useRef(0)
+  const nextGenericChips = () => {
+    const set = REPLY_SETS[chipIdx.current % REPLY_SETS.length]
+    chipIdx.current += 1
+    return set
+  }
 
   useEffect(() => () => clearTimeout(timer.current), [])
   useEffect(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight
   }, [msgs, typing])
 
-  const kaelSays = (text, after) => {
+  const kaelSays = (text, chips, after) => {
     setTyping(true)
+    setActiveChips([])
     timer.current = setTimeout(() => {
       setMsgs((m) => [...m, { who: 'kael', text, time: nowStr() }])
       setTyping(false)
+      setActiveChips(chips && chips.length ? chips : nextGenericChips())
       if (after) after()
     }, 900)
   }
@@ -441,10 +471,10 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
     if (item.deep) {
       setDeep(true)
       setMeta(NEW_STAGES[1])
-      kaelSays(NEW_SCRIPT[0].kael, () => setTurn(1))
+      kaelSays(NEW_SCRIPT[0].kael, NEW_SCRIPT[0].chips, () => setTurn(1))
     } else {
       setMeta({ title: item.title, line: item.line, Icon: item.Icon, accent: item.accent })
-      kaelSays(item.open)
+      kaelSays(item.open, item.chips)
     }
   }
 
@@ -468,15 +498,11 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
       return
     }
     const t = Math.min(turn, NEW_SCRIPT.length - 1)
-    kaelSays(NEW_SCRIPT[t].kael, () => {
+    kaelSays(NEW_SCRIPT[t].kael, NEW_SCRIPT[t].chips, () => {
       setTurn(t + 1)
       if (t === 2) setMeta(NEW_STAGES[2])
     })
   }
-
-  const chips = deep && started && !typing && turn > 0 && turn <= NEW_SCRIPT.length - 1
-    ? NEW_SCRIPT[turn - 1].chips
-    : []
 
   return (
     <div className="rf-screen rf-room">
@@ -550,9 +576,9 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
             <p className="rf-typing">…</p>
           </div>
         )}
-        {chips.length > 0 && (
+        {activeChips.length > 0 && !typing && (
           <div className="rf-chips">
-            {chips.map((c) => <button key={c} className="rf-chip" onClick={() => say(c)}>{c}</button>)}
+            {activeChips.map((c) => <button key={c} className="rf-chip" onClick={() => say(c)}>{c}</button>)}
           </div>
         )}
       </div>
