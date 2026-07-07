@@ -13,7 +13,6 @@ import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
 import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, autoTone } from './screens/ReflectConcept.jsx'
-import FirstRunConcept from './screens/FirstRunConcept.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
@@ -193,13 +192,6 @@ export default function App() {
               </button>
               <button
                 className="studio-tab"
-                data-on={studioTab === 'firstrun'}
-                onClick={() => setStudioTab('firstrun')}
-              >
-                First run
-              </button>
-              <button
-                className="studio-tab"
                 data-on={studioTab === 'paywall'}
                 onClick={() => setStudioTab('paywall')}
               >
@@ -257,8 +249,6 @@ export default function App() {
                 <CloseV8 />
               ) : studioTab === 'reflect' ? (
                 <ReflectConcept />
-              ) : studioTab === 'firstrun' ? (
-                <FirstRunConcept />
               ) : studioTab === 'paywall' ? (
                 <PaywallLab />
               ) : studioTab === 'cards' ? (

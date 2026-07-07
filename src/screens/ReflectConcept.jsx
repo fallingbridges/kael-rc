@@ -1,13 +1,28 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowLeft, ArrowRight, MagnifyingGlass, Plus, Sparkle, PaperPlaneTilt, X,
+  ArrowLeft, ArrowRight, MagnifyingGlass, Plus, Sparkle, PaperPlaneTilt, X, Check,
   Spiral, Leaf, CloudRain, Moon, Sun, HeartBreak, SmileyNervous, SunHorizon,
-  ChatCircleDots, Users, Binoculars, NotePencil,
+  ChatCircleDots, Users, Binoculars, NotePencil, Scales,
   Compass, User, EnvelopeSimple, Briefcase, Heart, ClockCounterClockwise,
-  Checks,
+  Checks, Infinity as InfinityIcon, Brain, Wind,
 } from '@phosphor-icons/react'
 
 const nowStr = () => new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+
+/* reveals `total` characters one at a time, like the V7 first screen's typewriter */
+function useReveal(total, speed = 15, delay = 560) {
+  const [n, setN] = useState(0)
+  useEffect(() => {
+    setN(0)
+    if (!total) return undefined
+    let i = 0, iv
+    const t = setTimeout(() => {
+      iv = setInterval(() => { i++; setN(i); if (i >= total) clearInterval(iv) }, speed)
+    }, delay)
+    return () => { clearTimeout(t); clearInterval(iv) }
+  }, [total, speed, delay])
+  return n
+}
 
 /* ──────────────────────────────────────────────────────────────────────────
    Reflect — the one-verb model, as a standalone concept.
@@ -68,12 +83,12 @@ const DOORS = [
     seed: 'I could use some perspective on something.',
     open: 'Let’s step back a little. What are you too close to right now?',
     title: 'Trying to step back', line: 'Getting some distance to see it clearly.' },
-  { id: 'good', label: 'Something good', Icon: Sun, accent: 'var(--mood-hopeful)',
-    seed: 'Something good happened and I want to sit with it.',
-    open: 'Let’s not rush past it. What happened, and what did it feel like in the moment?',
-    title: 'Something good, worth keeping', line: 'Holding onto it before it fades.' },
-  { id: 'open', label: 'Nothing in particular', Icon: NotePencil, accent: 'var(--mood-calm)',
-    seed: 'Nothing specific, I just feel like reflecting.',
+  { id: 'good', label: 'Good news', Icon: Sun, accent: 'var(--mood-hopeful)',
+    seed: 'I got some good news and I want to sit with it.',
+    open: 'Let’s not rush past it. What’s the news, and what did it feel like in the moment?',
+    title: 'Some good news, worth keeping', line: 'Holding onto it before it fades.' },
+  { id: 'open', label: 'Just checking in', Icon: NotePencil, accent: 'var(--mood-calm)',
+    seed: 'I just felt like checking in.',
     open: 'That’s a good enough reason to be here. What’s been on your mind lately, even loosely?',
     title: 'Just checking in', line: 'No agenda, just noticing where things are.' },
 ]
@@ -218,7 +233,7 @@ export const autoTone = () => {
 }
 
 /* ── home — the collection ── */
-export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME, firstVisit = false }) {
+export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME }) {
   const [q, setQ] = useState('')
   const [picked, setPicked] = useState(null)
   const [focused, setFocused] = useState(false)
@@ -246,27 +261,25 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
             <span className="rf-hello-sub">{empty ? 'Tuesday, June 30' : `Tuesday, June 30 · ${lib.length} reflection${lib.length === 1 ? '' : 's'}`}</span>
           </div>
           <div className="rf-top-actions">
-            {!empty && (
-              <button
-                className="rf-icon-btn"
-                data-on={searchOpen || undefined}
-                aria-label={searchOpen ? 'Close search' : 'Search'}
-                onClick={() => setSearchOpen((o) => { const n = !o; if (!n) { setQ(''); setPicked(null) } return n })}
-              >
-                {searchOpen ? <X size={17} weight="bold" /> : <MagnifyingGlass size={18} weight="bold" />}
-              </button>
-            )}
+            <button
+              className="rf-icon-btn"
+              data-on={searchOpen || undefined}
+              aria-label={searchOpen ? 'Close search' : 'Ask about your life'}
+              onClick={() => setSearchOpen((o) => { const n = !o; if (!n) { setQ(''); setPicked(null) } return n })}
+            >
+              {searchOpen ? <X size={17} weight="bold" /> : <MagnifyingGlass size={18} weight="bold" />}
+            </button>
             <button className="rf-profile" aria-label="Profile">{name[0]}</button>
           </div>
         </div>
-        {!empty && searchOpen && (
+        {searchOpen && (
           <div className="rf-searchwrap">
-            <div className="rf-search" data-open>
-              <MagnifyingGlass size={16} weight="bold" />
+            <div className="rf-search" data-open={focused || searching || undefined}>
+              <Sparkle size={16} weight="fill" color="var(--warm-proof)" />
               <input
                 autoFocus
                 value={q}
-                placeholder="Ask your past anything…"
+                placeholder="Ask about your life…"
                 onChange={(e) => { setQ(e.target.value); setPicked(null) }}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setTimeout(() => setFocused(false), 130)}
@@ -290,25 +303,7 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
       </header>
 
       <div className="rf-scroll">
-        {empty && (
-          <div className="rf-first">
-            <div className="rf-first-art" aria-hidden="true">
-              <span className="rf-first-disc" data-i="0" style={{ '--tint': 'var(--mood-hurt)' }}><Heart size={22} weight="duotone" /></span>
-              <span className="rf-first-disc" data-i="1" style={{ '--tint': 'var(--warm-proof)' }}><Compass size={30} weight="duotone" /></span>
-              <span className="rf-first-disc" data-i="2" style={{ '--tint': 'var(--mood-low)' }}><CloudRain size={22} weight="duotone" /></span>
-            </div>
-            {firstVisit ? (
-              <>
-                <p className="rf-first-line">Your first reflection is waiting, {name}.</p>
-                <p className="rf-first-sub">Whenever you’re ready — I already know where we’d start.</p>
-                <button className="rf-first-cta" onClick={onNew}>Pick it back up <ArrowRight size={15} weight="bold" /></button>
-              </>
-            ) : (
-              <p className="rf-first-line">Your reflections will gather here.</p>
-            )}
-          </div>
-        )}
-        {!searching && mostRecent && (
+        {!searching && (
           <>
             {(() => {
               const p = PROMPTS[promptTone] || PROMPTS[autoTone()]
@@ -329,26 +324,24 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
                 </button>
               )
             })()}
-            {firstVisit && single && (
-              <div className="rf-milestone">
-                <span className="rf-milestone-ic"><Checks size={14} weight="bold" /></span>
-                <p>That’s your first one. It stays here — I remember all of it, and you can pick it back up anytime.</p>
-              </div>
+            {mostRecent && (
+              <>
+                <span className="rf-label">Ongoing</span>
+                <button className="rf-hero" style={{ '--mood': mostRecent.mood }} onClick={() => onOpen(mostRecent.id)}>
+                  <span className="rf-hero-meta"><MostRecentIcon size={14} weight="fill" />{mostRecent.when}</span>
+                  <span className="rf-hero-title">{mostRecent.title}</span>
+                  <span className="rf-hero-line">{mostRecent.line}</span>
+                  <span className="rf-hero-go"><ArrowRight size={16} weight="bold" /></span>
+                </button>
+              </>
             )}
-            <span className="rf-label">{single ? 'Your reflection' : 'Ongoing'}</span>
-            <button className="rf-hero" style={{ '--mood': mostRecent.mood }} onClick={() => onOpen(mostRecent.id)}>
-              <span className="rf-hero-meta"><MostRecentIcon size={14} weight="fill" />{mostRecent.when}</span>
-              <span className="rf-hero-title">{mostRecent.title}</span>
-              <span className="rf-hero-line">{mostRecent.line}</span>
-              <span className="rf-hero-go"><ArrowRight size={16} weight="bold" /></span>
-            </button>
-            {single ? (
-              <button className="rf-ghost" onClick={onNew}>
-                <span className="rf-ghost-ic"><Plus size={22} weight="bold" /></span>
-                <span className="rf-ghost-tx">Start another reflection</span>
-              </button>
-            ) : (
-              <span className="rf-label">All reflections</span>
+            <span className="rf-label">All reflections</span>
+            {rest.length === 0 && (
+              <div className="rf-first rf-first-inline">
+                <BuddingLeaf size={104} />
+                <p className="rf-first-line">Your story’s taking root.</p>
+                <p className="rf-first-sub">Everything you reflect on, kept in one place.</p>
+              </div>
             )}
           </>
         )}
@@ -376,8 +369,8 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
 }
 
 /* ── the reflection room — new or returning ── */
-export function Room({ mode, onBack, onNew }) {
-  const existing = mode.kind === 'old' ? LIBRARY.find((r) => r.id === mode.id) : null
+export function Room({ mode, onBack, onNew, name = NAME }) {
+  const existing = mode.reflection || (mode.kind === 'old' ? LIBRARY.find((r) => r.id === mode.id) : null)
   const [msgs, setMsgs] = useState(() => (existing ? [...existing.history] : []))
   const [meta, setMeta] = useState(existing
     ? { title: existing.title, line: existing.line, Icon: existing.Icon, accent: existing.mood }
@@ -452,7 +445,7 @@ export function Room({ mode, onBack, onNew }) {
   return (
     <div className="rf-screen rf-room">
       <header className="rf-room-head">
-        <button className="rf-back" onClick={onBack} aria-label="Back"><ArrowLeft size={19} /></button>
+        <button className="rf-back" onClick={() => onBack({ started, meta, msgs })} aria-label="Back"><ArrowLeft size={19} /></button>
         <div className="rf-room-id" key={meta.title}>
           <h2>{meta.title}</h2>
           <span>{meta.line}</span>
@@ -466,9 +459,9 @@ export function Room({ mode, onBack, onNew }) {
         {!started && !existing && (
           <div className="rf-start">
             <span className="rf-start-sun">{new Date().getHours() >= 17 || new Date().getHours() < 5 ? <Moon size={26} weight="duotone" /> : <Sun size={26} weight="duotone" />}</span>
-            <h3 className="rf-greet">{hourGreeting()}, {NAME}.</h3>
-            <p className="rf-greet-sub">How are you feeling right now?</p>
-            <p className="rf-greet-note">There’s no right way to start.</p>
+            <h3 className="rf-greet">{hourGreeting()}, {name}.</h3>
+            <p className="rf-greet-sub">What’s on your mind?</p>
+            <p className="rf-greet-note">Tap one below, or just say it in your words.</p>
             <div className="rf-tiles">
               {MOODS.map((m) => (
                 <button key={m.id} className="rf-tile" style={{ '--accent': m.accent }} onClick={() => start(m)}>
@@ -477,7 +470,7 @@ export function Room({ mode, onBack, onNew }) {
                 </button>
               ))}
             </div>
-            <span className="rf-or">or bring what’s going on</span>
+            <span className="rf-or">or something specific</span>
             <div className="rf-doors">
               {DOORS.map((d) => (
                 <button key={d.id} className="rf-door" style={{ '--accent': d.accent }} onClick={() => start(d)}>
@@ -533,34 +526,231 @@ export function Room({ mode, onBack, onNew }) {
   )
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   First-run flow — the post-paywall first experience, as one cohesive path:
+   paywall → a celebratory greeting from Kael → the first reflection (Kael
+   speaks first, personalized) → back to a Home that has 0 or 1 reflection.
+   PROFILES stands in for the V7 onboarding output.
+   ────────────────────────────────────────────────────────────────────────── */
+const PROFILES = {
+  overloaded: {
+    name: 'Maya', pattern: 'The Overloaded', Icon: Spiral, accent: 'var(--mood-overthinking)',
+    mirror: 'I’ve got a picture of you now, Maya. A mind that doesn’t clock off, running a little emptier than it should. You told me work’s been relentless and you can’t switch off.',
+    question: 'We don’t have to untangle all of it tonight. Let me start somewhere small: when did your head last actually feel quiet?',
+    chips: ['This morning', 'Can’t remember', 'Only around people', 'Not in a while'],
+    turns: [
+      'That tells me something. When it’s quiet only in certain moments, the noise usually isn’t about the work — it’s about what rushes in when you finally stop. What’s the first thought that shows up?',
+      'Mm. You don’t have to answer that neatly. Naming it out loud is the whole job tonight — I’ll hold onto this, the pattern living underneath the busyness.',
+    ],
+    hook: 'This is a good place to stop, Maya. I’ll be here tomorrow morning — want me to check in, and we pick this back up?',
+    saved: { title: 'Why my head won’t switch off', line: 'The day ends, but the mind keeps going.' },
+    reopen: 'You left this one mid-thought last night. Has the noise settled, or is it still running?',
+  },
+  critic: {
+    name: 'Sam', pattern: 'The Self-Critic', Icon: Scales, accent: 'var(--mood-ashamed)',
+    mirror: 'Here’s what I see, Sam. A voice in your head that’s far harder on you than you’d ever be on a friend. You said you keep replaying everything you get wrong.',
+    question: 'Let’s slow that tape down together. What’s the line it keeps repeating back to you?',
+    chips: ['That I’m too much', 'That I let people down', 'That I’m behind', 'I don’t know'],
+    turns: [
+      'And if a friend said that exact thing about themselves — would you believe it about them? Sit in that gap for a second. That gap is where we do our work.',
+      'You don’t have to win the argument with that voice tonight. You just caught it not telling the whole truth. That’s the first crack of light.',
+    ],
+    hook: 'Let’s leave it there for now, Sam. I’ll check in this evening — we can catch that voice in the act next time.',
+    saved: { title: 'The voice that’s hardest on me', line: 'Kinder to everyone but myself.' },
+    reopen: 'Last time we caught that inner voice mid-sentence. Has it been loud today, or quieter?',
+  },
+  numb: {
+    name: 'Alex', pattern: 'The Numb-out', Icon: Moon, accent: 'var(--mood-numb)',
+    mirror: 'I think I understand you a little already, Alex. When things get heavy, you reach for something to take the edge off rather than sit in it — and lately it’s all felt kind of flat.',
+    question: 'Flat is its own kind of signal. When’s the last time you felt something sharply — good or bad?',
+    chips: ['A while ago', 'When I’m alone', 'Can’t think of one', 'This week, actually'],
+    turns: [
+      'Okay. Flatness usually isn’t the absence of feeling — it’s feeling turned way down so it can’t reach you. What do you think you’d feel if you nudged the dial back up, even a little?',
+      'That’s brave to even guess at. We don’t rush it. Noticing the numbness instead of feeding it is already a different move than the old one.',
+    ],
+    hook: 'Let’s pause here, Alex. Want me to check in tomorrow? Small and steady is how this one loosens.',
+    saved: { title: 'Why everything feels flat', line: 'Turned the volume down to get through.' },
+    reopen: 'We started turning the dial back up last time. Anything reach you since — even faintly?',
+  },
+}
+
+/* a young sage sprout — the visual seed of the collection */
+function BuddingLeaf({ size = 96 }) {
+  return (
+    <span className="rf-leaf" style={{ width: size, height: size }} aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="rf-leaf-stem" d="M32 57 C32 47 32 41 32 33" />
+        <path className="rf-leaf-blade" d="M32 42 C20 43 11 35 11.5 21 C25 20.5 33 29 32 42 Z" />
+        <path className="rf-leaf-blade" d="M32 35 C43 35.5 52 28 52.5 15 C40 14.5 31 22 32 35 Z" />
+        <path className="rf-leaf-vein" d="M30.5 41 C24 38 18.5 32.5 14 23.5" />
+        <path className="rf-leaf-vein" d="M33.5 34 C40 31 45.5 25.5 50 17" />
+      </svg>
+    </span>
+  )
+}
+
+/* one-shot celebratory confetti, warm + sage */
+function Confetti({ count = 48 }) {
+  const pieces = useMemo(() => {
+    const colors = ['#c2a06a', '#c2734f', '#8a9d76', '#e6d4ad', '#a87d4e', '#6f8a5c']
+    return Array.from({ length: count }, (_, i) => ({
+      left: Math.random() * 100,
+      delay: Math.random() * 0.6,
+      dur: 2.4 + Math.random() * 1.9,
+      dx: (Math.random() - 0.5) * 130,
+      rot: 300 + Math.random() * 760,
+      color: colors[i % colors.length],
+      w: 6 + Math.random() * 5,
+      h: 9 + Math.random() * 7,
+      round: Math.random() > 0.72,
+    }))
+  }, [count])
+  return (
+    <div className="rf-confetti" aria-hidden="true">
+      {pieces.map((p, i) => (
+        <span key={i} className="rf-confetti-pc" style={{
+          left: `${p.left}%`, width: p.w, height: p.h, background: p.color,
+          borderRadius: p.round ? '50%' : '2px',
+          animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s`,
+          '--dx': `${p.dx}px`, '--rot': `${p.rot}deg`,
+        }} />
+      ))}
+    </div>
+  )
+}
+
+/* the paywall (stub) — stands in for the V7 paywall */
+function Paywall({ profile, onStart }) {
+  const Glyph = profile.Icon
+  return (
+    <div className="fr-paywall" style={{ '--accent': profile.accent }}>
+      <span className="fr-pw-badge"><Glyph size={30} weight="duotone" /></span>
+      <h2 className="fr-pw-title">Kael, in your corner.</h2>
+      <p className="fr-pw-sub">Unlimited check-ins with the coach who already knows your whole story.</p>
+      <ul className="fr-pw-feats">
+        <li><InfinityIcon size={20} weight="bold" /> Unlimited conversations</li>
+        <li><Brain size={20} weight="bold" /> Remembers everything you share</li>
+        <li><ChatCircleDots size={20} weight="bold" /> A daily note that knows you</li>
+        <li><Wind size={20} weight="bold" /> A calmer, steadier baseline</li>
+      </ul>
+      <div className="fr-pw-plan"><span>Annual · $99.99/yr</span><span className="fr-pw-save">Save 44%</span></div>
+      <p className="fr-pw-plan2">7 days free, then billed yearly</p>
+      <button className="fr-pw-cta" onClick={onStart}>Start 7-day free trial</button>
+      <p className="fr-pw-fine">Cancel anytime · Restore</p>
+    </div>
+  )
+}
+
+/* the greeting — a celebratory arrival. Kael streams one message (paragraphs
+   and all), like the V7 first screen: a single typewriter bubble, not a
+   drip of tiny human-style texts. */
+/* the welcome, as formatted segments so bold/italic survive the streamed reveal */
+const GREET_PARTS = [
+  { t: 'I’m Kael.' },
+  { t: '\n\n' },
+  { t: 'Thank you for sharing a little of yourself with me.' },
+  { t: '\n\n' },
+  { t: 'I’ll remember what matters, ' },
+  { t: 'connect the dots over time', b: true },
+  { t: ', and help you understand yourself, ' },
+  { t: 'one reflection at a time', i: true },
+  { t: '.' },
+  { t: '\n\n' },
+  { t: 'Let’s begin your first reflection.', b: true },
+]
+const GREET_TOTAL = GREET_PARTS.reduce((s, p) => s + p.t.length, 0)
+function Greeting({ name, onStart }) {
+  const n = useReveal(GREET_TOTAL, 14, 600)
+  const done = n >= GREET_TOTAL
+  let off = 0
+  return (
+    <div className="rf-greet-screen">
+      <Confetti />
+      <div className="io-screen rf-greet-io">
+        <div className="io-orb">
+          <span className="io-orb-ring" />
+          <span className="io-orb-ring io-orb-ring-2" />
+          <span className="io-orb-core"><Sparkle size={26} weight="fill" /></span>
+        </div>
+        <h1 className="io-title">Welcome, {name}.</h1>
+        <div className="io-bubble rf-greet-bubble">
+          <span className="io-bubble-av"><Sparkle size={12} weight="fill" /></span>
+          <p className="io-bubble-text">
+            {GREET_PARTS.map((p, idx) => {
+              const start = off; off += p.t.length
+              const vis = Math.max(0, Math.min(n - start, p.t.length))
+              if (vis <= 0) return null
+              const text = p.t.slice(0, vis)
+              if (p.b) return <b key={idx}>{text}</b>
+              if (p.i) return <em key={idx}>{text}</em>
+              return <Fragment key={idx}>{text}</Fragment>
+            })}
+            {!done && <span className="io-caret" />}
+          </p>
+        </div>
+      </div>
+      <div className="rf-greet-foot" data-show={done || undefined}>
+        <button className="rf-greet-cta" onClick={onStart}>Start my first reflection <ArrowRight size={16} weight="bold" /></button>
+      </div>
+    </div>
+  )
+}
+
 export default function ReflectConcept() {
-  const [view, setView] = useState({ kind: 'home' })
-  const [demo, setDemo] = useState('all') // all | one | none — first-run states
-  const [tone, setTone] = useState('auto') // auto | dawn | day | dusk | night — preview the invitation card across the day
-  const lib = demo === 'none' ? [] : demo === 'one' ? LIBRARY.slice(0, 1) : LIBRARY
+  const [pid, setPid] = useState('overloaded')
+  const [stage, setStage] = useState('paywall') // paywall | greeting | reflection | home
+  const [reflection, setReflection] = useState(null) // the one reflection they've started, if any
+  const [roomMode, setRoomMode] = useState({ kind: 'new' })
+  const [roomKey, setRoomKey] = useState(0)
+  const profile = PROFILES[pid]
+  const lib = reflection ? [reflection] : []
+
+  const startNew = () => { setRoomMode({ kind: 'new' }); setRoomKey((k) => k + 1); setStage('reflection') }
+  const openExisting = () => { setRoomMode({ kind: 'old', reflection }); setRoomKey((k) => k + 1); setStage('reflection') }
+  const restart = (id = pid) => { setPid(id); setReflection(null); setStage('paywall') }
+
+  /* leaving the room: if they actually started (picked a mood/door), that
+     becomes their one reflection — captured from the room's living metadata */
+  const onRoomExit = (exit) => {
+    if (exit && exit.started && exit.meta && exit.meta.Icon) {
+      setReflection({
+        id: 'first', when: 'just now',
+        title: exit.meta.title, line: exit.meta.line,
+        mood: exit.meta.accent, Icon: exit.meta.Icon,
+        history: (exit.msgs || []).map((m) => ({ ...m, time: m.time || '' })),
+        reopen: 'You were just here a moment ago. Want to keep going, or has it shifted?',
+      })
+    }
+    setStage('home')
+  }
+
   return (
     <div className="lib-page ov-page rf-page">
       <div className="rf-demo">
-        {[['all', 'Full'], ['one', 'One reflection'], ['none', 'First run']].map(([id, label]) => (
-          <button key={id} className="rf-demo-chip" data-on={demo === id || undefined} onClick={() => { setDemo(id); setView({ kind: 'home' }) }}>{label}</button>
+        {[['overloaded', 'Maya'], ['critic', 'Sam'], ['numb', 'Alex']].map(([id, label]) => (
+          <button key={id} className="rf-demo-chip" data-on={pid === id || undefined} onClick={() => restart(id)}>{label}</button>
         ))}
         <span className="rf-demo-sep" />
-        {[['auto', 'Auto'], ['dawn', 'Dawn'], ['day', 'Day'], ['dusk', 'Evening'], ['night', 'Night']].map(([id, label]) => (
-          <button key={id} className="rf-demo-chip" data-on={tone === id || undefined} onClick={() => { setTone(id); setView({ kind: 'home' }) }}>{label}</button>
-        ))}
+        <button className="rf-demo-chip" onClick={() => { setReflection(null); setStage('home') }}>Empty home</button>
+        <button className="rf-demo-chip" onClick={() => restart()}>Restart</button>
       </div>
       <div className="ov-stage">
         <div className="ov-screen rf-phone">
-          {view.kind === 'home'
-            ? <Home lib={lib} promptTone={tone === 'auto' ? undefined : tone} onNew={() => setView({ kind: 'new' })} onOpen={(id) => setView({ kind: 'old', id })} />
-            : (
-              <Room
-                key={view.kind === 'old' ? `old-${view.id}` : 'new'}
-                mode={view}
-                onBack={() => setView({ kind: 'home' })}
-                onNew={() => setView({ kind: 'new' })}
-              />
-            )}
+          {stage === 'paywall' && <Paywall profile={profile} onStart={() => setStage('greeting')} />}
+          {stage === 'greeting' && <Greeting name={profile.name} onStart={startNew} />}
+          {stage === 'reflection' && (
+            <Room key={roomKey} mode={roomMode} name={profile.name} onBack={onRoomExit} onNew={startNew} />
+          )}
+          {stage === 'home' && (
+            <Home
+              lib={lib}
+              name={profile.name}
+              onNew={startNew}
+              onInvite={startNew}
+              onReopen={openExisting}
+              onOpen={openExisting}
+            />
+          )}
         </div>
       </div>
     </div>

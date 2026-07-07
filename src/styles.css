@@ -67,6 +67,10 @@
   --mood-tired: #847f93;
   --mood-restless: #6f9088;
   --mood-angry: #b35f4a;
+
+  /* muted sage — the one green in a warm world, for the budding-leaf growth cue */
+  --sage: #8a9d76;
+  --sage-deep: #5e7350;
   --mood-calm: #869a7f;
   --mood-hopeful: #c2a05a;
   /* loop family accents */
@@ -10013,7 +10017,7 @@ svg {
 .k8-pay-links i { color: var(--line-strong); font-style: normal; }
 
 /* ── Reflect concept — one verb: New Reflection. Home is the collection ───── */
-.rf-phone { position: relative; display: flex; flex-direction: column; }
+.rf-phone { position: relative; display: flex; flex-direction: column; width: 430px; height: 932px; }
 .rf-screen { flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; }
 /* home top — compact wordmark bar, actions as quiet circles */
 .rf-top { flex: 0 0 auto; display: flex; flex-direction: column; padding: 22px 22px 6px; }
@@ -10023,7 +10027,7 @@ svg {
 .rf-hello-block { min-width: 0; }
 .rf-hello-row { display: flex; align-items: center; gap: 9px; }
 .rf-hello-ic { color: var(--warm-proof); display: flex; flex: 0 0 auto; }
-.rf-hello { font-family: var(--title); font-weight: 500; font-size: 29px; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rf-hello { font-family: var(--title); font-weight: 500; font-size: 29px; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink); }
 .rf-hello-sub { display: block; font: 600 10.5px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 10px; }
 .rf-top-actions { flex: 0 0 auto; }
 .rf-startbtn { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 9px; width: 100%; margin-top: 6px; padding: 16px; background: var(--invert-bg); color: var(--invert-ink); border: 0; border-radius: 14px; font: 600 15px var(--sans); box-shadow: var(--shadow-btn); cursor: pointer; transition: transform 0.15s var(--ease); }
@@ -10037,8 +10041,8 @@ svg {
 .rf-icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
 .rf-icon-btn[data-on] { background: var(--invert-bg); color: var(--invert-ink); border-color: var(--invert-bg); }
 .rf-meta { font: 600 9.5px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); margin-top: 8px; }
-.rf-searchwrap { padding-top: 15px; }
-.rf-search { display: flex; align-items: center; gap: 11px; width: 100%; padding: 14px 16px; border: 1px solid var(--line-2); border-radius: 16px; background: var(--field); color: var(--ink-3); transition: border-color 0.15s var(--ease), background 0.15s var(--ease); }
+.rf-searchwrap { padding-top: 10px; }
+.rf-search { display: flex; align-items: center; gap: 11px; width: 100%; padding: 13px 18px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--field); color: var(--ink-3); transition: border-color 0.15s var(--ease), background 0.15s var(--ease); }
 .rf-search[data-open] { border-color: var(--line-strong); background: var(--surface); }
 .rf-search input { flex: 1; border: 0; background: none; outline: none; font: 400 15px var(--sans); color: var(--ink); }
 .rf-search input::placeholder { color: var(--ink-3); font-family: var(--serif); }
@@ -10053,13 +10057,13 @@ svg {
 [data-theme='dark'] .rf-query:hover { border-color: var(--ink-3); }
 
 /* home body — the ongoing hero, then the collection as icon-tile cards */
-.rf-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 10px 22px 0; }
+.rf-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 10px 22px 0; display: flex; flex-direction: column; }
 .rf-scroll::-webkit-scrollbar { display: none; }
 /* ── time-aware invitation card ── */
 .rf-prompt {
   position: relative; overflow: hidden; isolation: isolate;
   display: block; width: 100%; text-align: left;
-  margin-top: 18px; padding: 30px 28px 28px;
+  margin-top: 10px; padding: 30px 28px 28px;
   border: 0; border-radius: 26px;
   color: #fff; cursor: pointer;
   transition: transform 0.18s var(--ease);
@@ -10110,11 +10114,6 @@ svg {
 /* first run — a spacious, visual welcome. An icon trio for warmth, two lines,
    one action. Nothing to read your way through. */
 .rf-first { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 52px 20px 40px; animation: rf-meta-in 0.6s var(--ease) both; }
-.rf-first-art { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 22px; }
-.rf-first-disc { display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--field); color: var(--ink-2); box-shadow: var(--shadow-float); }
-.rf-first-disc[data-i='0'] { width: 56px; height: 56px; transform: translateY(8px) rotate(-7deg); }
-.rf-first-disc[data-i='1'] { width: 76px; height: 76px; }
-.rf-first-disc[data-i='2'] { width: 56px; height: 56px; transform: translateY(8px) rotate(7deg); }
 .rf-first-line { font: 400 16px var(--serif); line-height: 1.55; color: var(--ink-3); }
 .rf-first-sub { margin-top: 9px; max-width: 240px; font: 400 13.5px var(--sans); line-height: 1.5; color: var(--ink-3); }
 .rf-first-cta { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; padding: 12px 20px; border: 0; border-radius: 999px; background: var(--invert-bg); color: var(--invert-ink); font: 600 13.5px var(--sans); cursor: pointer; box-shadow: var(--shadow-btn); transition: transform 0.15s var(--ease); }
@@ -10137,17 +10136,49 @@ svg {
 .fr-pw-plan { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 18px; border: 1.5px solid var(--ink); border-radius: 16px; font: 600 15px var(--sans); color: var(--ink); }
 .fr-pw-save { font: 700 10.5px var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--invert-ink); background: var(--invert-bg); padding: 5px 9px; border-radius: 999px; }
 .fr-pw-plan2 { margin-top: 9px; font: 400 12px var(--sans); color: var(--ink-3); }
-.fr-pw-cta { width: 100%; margin-top: 20px; padding: 16px; border: 0; border-radius: 15px; background: var(--invert-bg); color: var(--invert-ink); font: 600 15.5px var(--sans); cursor: pointer; box-shadow: var(--shadow-btn); transition: transform 0.15s var(--ease); }
+.fr-pw-cta { width: 100%; margin-top: 20px; padding: 18px; border: 0; border-radius: 999px; background: var(--invert-bg); color: var(--invert-ink); font: 600 16.5px var(--sans); letter-spacing: -0.01em; cursor: pointer; box-shadow: 0 14px 30px -18px rgba(20, 18, 14, 0.55); transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease); }
+.fr-pw-cta:hover { transform: translateY(-1px); box-shadow: 0 18px 36px -18px rgba(20, 18, 14, 0.6); }
+.fr-pw-cta:active { transform: scale(0.98); }
 .fr-pw-cta:hover { transform: translateY(-1px); }
 .fr-pw-fine { margin-top: 14px; font: 400 11.5px var(--sans); color: var(--ink-3); }
 
-.fr-threshold { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 34px; cursor: pointer; animation: rf-meta-in 0.7s var(--ease) both; }
-.fr-th-orb { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; color: #fff; background: radial-gradient(circle at 36% 32%, color-mix(in srgb, var(--accent) 70%, #fff) 0%, var(--accent) 60%, color-mix(in srgb, var(--accent) 60%, #000) 100%); box-shadow: 0 20px 46px -20px color-mix(in srgb, var(--accent) 70%, transparent); animation: fr-orb-in 1s var(--ease) both; }
-@keyframes fr-orb-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-.fr-th-title { margin-top: 26px; font-family: var(--title); font-weight: 500; font-size: 25px; line-height: 1.2; letter-spacing: -0.02em; color: var(--ink); }
-.fr-th-sub { margin-top: 14px; max-width: 280px; font: 400 15px var(--serif); line-height: 1.6; color: var(--ink-2); }
-.fr-th-hint { margin-top: 34px; font: 600 10px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); animation: fr-hint 2.4s var(--ease) infinite; }
-@keyframes fr-hint { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+/* ── budding-leaf empty & growth states ── */
+.rf-leaf { display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--sage) 16%, var(--field)); animation: rf-leaf-in 0.85s var(--ease) both; }
+.rf-leaf svg { width: 58%; height: 58%; overflow: visible; }
+.rf-leaf-blade { fill: var(--sage); }
+.rf-leaf-stem { stroke: var(--sage-deep); stroke-width: 2.6; stroke-linecap: round; fill: none; }
+.rf-leaf-vein { stroke: color-mix(in srgb, var(--sage-deep) 68%, transparent); stroke-width: 1.5; stroke-linecap: round; fill: none; }
+@keyframes rf-leaf-in { from { opacity: 0; transform: scale(0.62) translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* scroll children keep their size — the flex column must never squish cards
+   (items with overflow:hidden would otherwise shrink to nothing) */
+.rf-scroll > * { flex-shrink: 0; }
+/* leaf as the empty "all reflections" state — grows to fill and centers, quietly */
+.rf-first-inline { flex-grow: 1; justify-content: center; padding: 24px 20px 46px; }
+.rf-first-inline .rf-leaf { margin-bottom: 26px; }
+.rf-first-inline .rf-first-line { font-family: var(--title); font-weight: 500; font-size: 23px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
+.rf-first-inline .rf-first-sub { margin-top: 12px; max-width: 262px; font-size: 14.5px; line-height: 1.55; color: var(--ink-3); }
+
+/* ── first-run greeting — celebratory arrival, staged reveal ── */
+.rf-greet-screen { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.rf-greet-io { padding: 24px 30px 8px; gap: 20px; }
+.rf-greet-bubble { max-width: 300px; }
+.rf-greet-bubble .io-bubble-text { white-space: pre-line; line-height: 1.55; }
+.rf-greet-bubble .io-bubble-text em { font-size: 1.08em; }
+.rf-greet-foot { flex: 0 0 auto; padding: 16px 26px 30px; opacity: 0; transform: translateY(9px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+.rf-greet-foot[data-show] { opacity: 1; transform: none; }
+.rf-greet-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 18px; border: 0; border-radius: 999px; background: var(--invert-bg); color: var(--invert-ink); font: 600 16.5px var(--sans); letter-spacing: -0.01em; cursor: pointer; box-shadow: 0 14px 30px -18px rgba(20, 18, 14, 0.55); transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease); }
+.rf-greet-cta:hover { transform: translateY(-1px); box-shadow: 0 18px 36px -18px rgba(20, 18, 14, 0.6); }
+.rf-greet-cta:active { transform: scale(0.98); }
+
+/* ── confetti ── */
+.rf-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 4; }
+.rf-confetti-pc { position: absolute; top: 0; opacity: 0; animation-name: rf-confetti-fall; animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1); animation-fill-mode: forwards; }
+@keyframes rf-confetti-fall {
+  0% { transform: translate3d(0, -26px, 0) rotate(0deg); opacity: 0; }
+  8% { opacity: 1; }
+  100% { transform: translate3d(var(--dx, 0), 860px, 0) rotate(var(--rot, 540deg)); opacity: 0; }
+}
 
 .fr-saved { display: inline-flex; align-items: center; gap: 7px; align-self: center; margin-top: 4px; padding: 8px 14px; border-radius: 999px; background: var(--badge-fill); border: 1px solid var(--line-2); font: 600 11px var(--sans); letter-spacing: 0.04em; text-transform: uppercase; color: var(--badge-ink); }
 .fr-saved svg { color: var(--warm-proof); }
@@ -10181,7 +10212,7 @@ svg {
 .rf-start-sun { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: var(--badge-fill); color: var(--warm-proof); }
 .rf-start-sun svg { width: 24px; height: 24px; }
 .rf-greet { font-family: var(--title); font-weight: 500; font-size: 27px; letter-spacing: -0.02em; color: var(--ink); margin-top: 16px; }
-.rf-greet-sub { font: 400 14.5px var(--sans); color: var(--ink-2); margin-top: 9px; }
+.rf-greet-sub { font: 400 17px var(--sans); color: var(--ink-2); margin-top: 10px; }
 .rf-greet-note { font: 400 12.5px var(--sans); color: var(--ink-3); margin-top: 5px; }
 .rf-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; margin-top: 30px; }
 .rf-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 96px; padding: 15px 8px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 18px; cursor: pointer; box-shadow: var(--shadow-card); transition: border-color 0.16s var(--ease), transform 0.16s var(--ease), box-shadow 0.16s var(--ease); }
