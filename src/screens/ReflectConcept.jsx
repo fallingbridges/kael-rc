@@ -1,8 +1,8 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, MagnifyingGlass, Plus, Sparkle, PaperPlaneTilt, X,
-  Heartbeat, Spiral, Waves, CloudRain, Moon, Sun, CloudSun, ArrowsLeftRight,
-  Lightning, Scales, Question, ChatCircleDots,
+  Spiral, Leaf, CloudRain, Moon, Sun, HeartBreak, SmileyNervous, SunHorizon,
+  ChatCircleDots, Users, Binoculars, NotePencil,
   Compass, User, EnvelopeSimple, Briefcase, Heart, ClockCounterClockwise,
   Checks,
 } from '@phosphor-icons/react'
@@ -27,51 +27,55 @@ const NAME = 'Maya'
    the deeper fully scripted NEW_SCRIPT demo (`deep: true`). Free text in the
    composer covers everything these don't. */
 const MOODS = [
-  { id: 'anxious', label: 'Anxious', Icon: Heartbeat, accent: 'var(--mood-anxious)',
-    seed: 'I’m feeling anxious and I can’t tell why.',
-    open: 'Where do you feel it, in the thought or in the body? That usually tells us which one to follow first.',
-    title: 'Anxious, and not sure why', line: 'Finding where it actually lives.' },
-  { id: 'restless', label: 'Restless', Icon: Waves, accent: 'var(--mood-restless)',
-    seed: 'I’m restless and I can’t settle.',
-    open: 'Where do you notice it most right now: work, a relationship, your body, or just life in general?',
-    title: 'Restless, and not sure where to point it', line: 'Finding what the restlessness is actually about.' },
+  { id: 'anxious', label: 'Anxious', Icon: SmileyNervous, accent: 'var(--mood-anxious)',
+    seed: 'My thoughts are racing and I can’t slow them down.',
+    open: 'Let’s not chase every thought. Which one keeps coming back the loudest?',
+    title: 'Racing thoughts, hard to slow', line: 'Finding the one thought under the noise.' },
+  { id: 'hurt', label: 'Hurt', Icon: HeartBreak, accent: 'var(--mood-hurt)',
+    seed: 'I’m feeling hurt by something.',
+    open: 'I’m sorry it landed like that. What happened, and where does it still sting?',
+    title: 'Something that stung', line: 'Naming the hurt before it hardens.' },
   { id: 'heavy', label: 'Heavy', Icon: CloudRain, accent: 'var(--mood-low)',
     seed: 'Everything feels heavy today.',
     open: 'Heavy usually has a shape, even if it’s blurry right now. What’s the heaviest part of today?',
     title: 'Carrying more than usual', line: 'Naming what’s making today heavy.' },
-  { id: 'conflicted', label: 'Conflicted', Icon: ArrowsLeftRight, accent: 'var(--mood-ashamed)',
-    seed: 'Part of me wants one thing, and part of me wants the opposite.',
-    open: 'Two things pulling at once, probably. Tell me both sides, even the one that feels less reasonable.',
-    title: 'Torn between two things', line: 'Naming both sides before choosing either.' },
-  { id: 'lost', label: 'Lost', Icon: Moon, accent: 'var(--mood-lonely)',
-    seed: 'I feel a bit lost right now.',
-    open: 'Lost usually means you can name what you’re not more easily than what you are. Start there if it helps.',
-    title: 'Not sure what I actually want', line: 'Starting with what it isn’t.' },
-  { id: 'hopeful', label: 'Hopeful', Icon: CloudSun, accent: 'var(--mood-hopeful)',
+  { id: 'calm', label: 'Calm', Icon: Leaf, accent: 'var(--mood-calm)',
+    seed: 'I actually feel calm right now.',
+    open: 'Let’s not rush past it. What settled today, and what does the calm feel like?',
+    title: 'A steadier kind of day', line: 'Noticing what made room for the calm.' },
+  { id: 'hopeful', label: 'Hopeful', Icon: SunHorizon, accent: 'var(--mood-hopeful)',
     seed: 'I actually feel a little hopeful today.',
-    open: 'I’ll take it. What’s the hope attached to, so I understand what we’re protecting?',
-    title: 'Something worth protecting', line: 'Naming what the hope is resting on.' },
+    open: 'I’ll take it. What shifted, and what’s the hope resting on?',
+    title: 'Something starting to shift', line: 'Naming what the hope is resting on.' },
+  { id: 'grateful', label: 'Grateful', Icon: Heart, accent: 'var(--warm-proof)',
+    seed: 'I’m feeling grateful and I want to sit with it.',
+    open: 'Let’s slow down and savor it. What’s the thing you don’t want to rush past?',
+    title: 'Something worth savoring', line: 'Holding onto what’s good before it passes.' },
 ]
 
 const DOORS = [
-  { id: 'happened', label: 'Something happened', Icon: Lightning, accent: 'var(--warm-react)',
-    seed: 'Something happened today and I need to talk about it.',
-    open: 'Okay. Start wherever it starts, even if it’s just the moment right before it happened.',
-    title: 'Something happened today', line: 'Starting from the moment itself.' },
-  { id: 'stuck', label: 'I can’t stop thinking about this', Icon: Spiral, accent: 'var(--mood-overthinking)', deep: true,
-    seed: 'There’s something I can’t stop thinking about.' },
-  { id: 'decision', label: 'A decision I’m avoiding', Icon: Scales, accent: 'var(--warm-proof)',
-    seed: 'I have a decision to make and I keep going back and forth.',
-    open: 'Let’s slow it down before choosing. What are you deciding between?',
-    title: 'A decision I keep circling', line: 'Slowing down before choosing.' },
-  { id: 'unclear', label: 'I don’t know what I’m feeling', Icon: Question, accent: 'var(--mood-numb)',
-    seed: 'I don’t really know what I’m feeling right now.',
-    open: 'That’s enough to begin. What happened right before you started feeling off?',
-    title: 'Not sure what this feeling is', line: 'Working backward to where it started.' },
-  { id: 'talk', label: 'I just need to talk', Icon: ChatCircleDots, accent: 'var(--badge-ink)',
-    seed: 'I just need to talk for a bit.',
-    open: 'I’m here. No agenda, just talk. What’s on your mind?',
-    title: 'Just needed to talk', line: 'No particular direction yet, and that’s fine.' },
+  { id: 'overthinking', label: 'Overthinking', Icon: Spiral, accent: 'var(--mood-overthinking)', deep: true,
+    seed: 'There’s something I can’t stop overthinking.' },
+  { id: 'vent', label: 'Need to vent', Icon: ChatCircleDots, accent: 'var(--badge-ink)',
+    seed: 'I just need to vent for a minute.',
+    open: 'Go ahead, let it out. I’m not going anywhere. What’s got you?',
+    title: 'Just needed to let it out', line: 'No fixing yet, just saying it.' },
+  { id: 'relationship', label: 'Relationship stuff', Icon: Users, accent: 'var(--mood-hurt)',
+    seed: 'Something in one of my relationships is on my mind.',
+    open: 'Okay. Who is this about, and what happened between you?',
+    title: 'Something in a relationship', line: 'Untangling what’s going on between us.' },
+  { id: 'perspective', label: 'Need perspective', Icon: Binoculars, accent: 'var(--warm-proof)',
+    seed: 'I could use some perspective on something.',
+    open: 'Let’s step back a little. What are you too close to right now?',
+    title: 'Trying to step back', line: 'Getting some distance to see it clearly.' },
+  { id: 'good', label: 'Something good', Icon: Sun, accent: 'var(--mood-hopeful)',
+    seed: 'Something good happened and I want to sit with it.',
+    open: 'Let’s not rush past it. What happened, and what did it feel like in the moment?',
+    title: 'Something good, worth keeping', line: 'Holding onto it before it fades.' },
+  { id: 'open', label: 'Nothing in particular', Icon: NotePencil, accent: 'var(--mood-calm)',
+    seed: 'Nothing specific, I just feel like reflecting.',
+    open: 'That’s a good enough reason to be here. What’s been on your mind lately, even loosely?',
+    title: 'Just checking in', line: 'No agenda, just noticing where things are.' },
 ]
 
 /* the collection — living titles + one-liners, newest first. Nothing is ever
@@ -196,12 +200,29 @@ const hourGreeting = () => {
   return 'Good evening'
 }
 
+/* the invitation card — a time-aware nudge that sits above the collection and
+   changes its whole character across the day: what it asks, its gradient, and
+   the celestial body glowing at its edge. */
+const PROMPTS = {
+  dawn:  { tone: 'dawn',  Icon: SunHorizon, title: 'Start the day',   sub: 'Name what matters before the day starts pulling at you.',        done: 'You set today’s intention.' },
+  day:   { tone: 'day',   Icon: Sun,        title: 'A midday pause',  sub: 'Check in with where your head actually is right now.',           done: 'You paused this afternoon.' },
+  dusk:  { tone: 'dusk',  Icon: Moon,       title: 'End the day',     sub: 'Look back on what happened and close the loop before sleep.',    done: 'You closed the day.' },
+  night: { tone: 'night', Icon: Moon,       title: 'Still awake?',    sub: 'Something’s keeping you up. Set it down here before you sleep.',  done: 'You set it down for the night.' },
+}
+export const autoTone = () => {
+  const h = new Date().getHours()
+  if (h >= 22 || h < 5) return 'night'
+  if (h < 12) return 'dawn'
+  if (h < 17) return 'day'
+  return 'dusk'
+}
+
 /* ── home — the collection ── */
-export function Home({ onNew, onOpen, lib = LIBRARY }) {
+export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME, firstVisit = false }) {
   const [q, setQ] = useState('')
   const [picked, setPicked] = useState(null)
   const [focused, setFocused] = useState(false)
-  const [showSearch, setShowSearch] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const searching = q.length > 0 || picked
   const results = picked ? RESULTS[picked] : null
   const shown = results
@@ -216,35 +237,32 @@ export function Home({ onNew, onOpen, lib = LIBRARY }) {
   const mostRecent = lib[0]
   const MostRecentIcon = mostRecent ? mostRecent.Icon : null
   const rest = mostRecent ? shown.filter((r) => r.id !== mostRecent.id) : []
-  const hour = new Date().getHours()
-  const TimeIcon = hour >= 17 || hour < 5 ? Moon : Sun
-  const toggleSearch = () => {
-    setShowSearch((s) => {
-      if (s) { setQ(''); setPicked(null) }
-      return !s
-    })
-  }
   return (
     <div className="rf-screen">
       <header className="rf-top">
         <div className="rf-masthead">
           <div className="rf-hello-block">
-            <h1 className="rf-hello">{hourGreeting()}, {NAME}</h1>
+            <h1 className="rf-hello">{hourGreeting()}, {name}</h1>
             <span className="rf-hello-sub">{empty ? 'Tuesday, June 30' : `Tuesday, June 30 · ${lib.length} reflection${lib.length === 1 ? '' : 's'}`}</span>
           </div>
           <div className="rf-top-actions">
             {!empty && (
-              <button className="rf-iconbtn" data-on={showSearch || undefined} onClick={toggleSearch} aria-label="Search">
-                <MagnifyingGlass size={16} weight="bold" />
+              <button
+                className="rf-icon-btn"
+                data-on={searchOpen || undefined}
+                aria-label={searchOpen ? 'Close search' : 'Search'}
+                onClick={() => setSearchOpen((o) => { const n = !o; if (!n) { setQ(''); setPicked(null) } return n })}
+              >
+                {searchOpen ? <X size={17} weight="bold" /> : <MagnifyingGlass size={18} weight="bold" />}
               </button>
             )}
-            <button className="rf-profile" aria-label="Profile">M</button>
+            <button className="rf-profile" aria-label="Profile">{name[0]}</button>
           </div>
         </div>
-        {showSearch && (
+        {!empty && searchOpen && (
           <div className="rf-searchwrap">
-            <div className="rf-search">
-              <MagnifyingGlass size={15} weight="bold" />
+            <div className="rf-search" data-open>
+              <MagnifyingGlass size={16} weight="bold" />
               <input
                 autoFocus
                 value={q}
@@ -279,12 +297,45 @@ export function Home({ onNew, onOpen, lib = LIBRARY }) {
               <span className="rf-first-disc" data-i="1" style={{ '--tint': 'var(--warm-proof)' }}><Compass size={30} weight="duotone" /></span>
               <span className="rf-first-disc" data-i="2" style={{ '--tint': 'var(--mood-low)' }}><CloudRain size={22} weight="duotone" /></span>
             </div>
-            <p className="rf-first-line">Your reflections will gather here.</p>
+            {firstVisit ? (
+              <>
+                <p className="rf-first-line">Your first reflection is waiting, {name}.</p>
+                <p className="rf-first-sub">Whenever you’re ready — I already know where we’d start.</p>
+                <button className="rf-first-cta" onClick={onNew}>Pick it back up <ArrowRight size={15} weight="bold" /></button>
+              </>
+            ) : (
+              <p className="rf-first-line">Your reflections will gather here.</p>
+            )}
           </div>
         )}
         {!searching && mostRecent && (
           <>
-            <span className="rf-label">Ongoing</span>
+            {(() => {
+              const p = PROMPTS[promptTone] || PROMPTS[autoTone()]
+              if (reflected) {
+                return (
+                  <div className="rf-prompt-slim" data-tone={p.tone}>
+                    <span className="rf-prompt-slim-ic"><p.Icon size={15} weight="fill" /></span>
+                    <span className="rf-prompt-slim-tx">{p.done}</span>
+                  </div>
+                )
+              }
+              return (
+                <button className="rf-prompt" data-tone={p.tone} onClick={onInvite || onNew}>
+                  <span className="rf-prompt-glyph" aria-hidden="true"><p.Icon size={176} weight="fill" /></span>
+                  <span className="rf-prompt-title">{p.title}</span>
+                  <span className="rf-prompt-sub">{p.sub}</span>
+                  <span className="rf-prompt-cta">Begin reflection <ArrowRight size={14} weight="bold" /></span>
+                </button>
+              )
+            })()}
+            {firstVisit && single && (
+              <div className="rf-milestone">
+                <span className="rf-milestone-ic"><Checks size={14} weight="bold" /></span>
+                <p>That’s your first one. It stays here — I remember all of it, and you can pick it back up anytime.</p>
+              </div>
+            )}
+            <span className="rf-label">{single ? 'Your reflection' : 'Ongoing'}</span>
             <button className="rf-hero" style={{ '--mood': mostRecent.mood }} onClick={() => onOpen(mostRecent.id)}>
               <span className="rf-hero-meta"><MostRecentIcon size={14} weight="fill" />{mostRecent.when}</span>
               <span className="rf-hero-title">{mostRecent.title}</span>
@@ -421,17 +472,17 @@ export function Room({ mode, onBack, onNew }) {
             <div className="rf-tiles">
               {MOODS.map((m) => (
                 <button key={m.id} className="rf-tile" style={{ '--accent': m.accent }} onClick={() => start(m)}>
-                  <m.Icon size={22} weight="duotone" />
-                  <span>{m.label}</span>
+                  <span className="rf-tile-ic"><m.Icon size={23} weight="duotone" /></span>
+                  <span className="rf-tile-tx">{m.label}</span>
                 </button>
               ))}
             </div>
-            <span className="rf-or">or</span>
+            <span className="rf-or">or bring what’s going on</span>
             <div className="rf-doors">
               {DOORS.map((d) => (
                 <button key={d.id} className="rf-door" style={{ '--accent': d.accent }} onClick={() => start(d)}>
-                  <d.Icon size={18} weight="duotone" />
-                  {d.label}
+                  <span className="rf-door-ic"><d.Icon size={18} weight="duotone" /></span>
+                  <span className="rf-door-tx">{d.label}</span>
                 </button>
               ))}
             </div>
@@ -485,6 +536,7 @@ export function Room({ mode, onBack, onNew }) {
 export default function ReflectConcept() {
   const [view, setView] = useState({ kind: 'home' })
   const [demo, setDemo] = useState('all') // all | one | none — first-run states
+  const [tone, setTone] = useState('auto') // auto | dawn | day | dusk | night — preview the invitation card across the day
   const lib = demo === 'none' ? [] : demo === 'one' ? LIBRARY.slice(0, 1) : LIBRARY
   return (
     <div className="lib-page ov-page rf-page">
@@ -492,11 +544,15 @@ export default function ReflectConcept() {
         {[['all', 'Full'], ['one', 'One reflection'], ['none', 'First run']].map(([id, label]) => (
           <button key={id} className="rf-demo-chip" data-on={demo === id || undefined} onClick={() => { setDemo(id); setView({ kind: 'home' }) }}>{label}</button>
         ))}
+        <span className="rf-demo-sep" />
+        {[['auto', 'Auto'], ['dawn', 'Dawn'], ['day', 'Day'], ['dusk', 'Evening'], ['night', 'Night']].map(([id, label]) => (
+          <button key={id} className="rf-demo-chip" data-on={tone === id || undefined} onClick={() => { setTone(id); setView({ kind: 'home' }) }}>{label}</button>
+        ))}
       </div>
       <div className="ov-stage">
         <div className="ov-screen rf-phone">
           {view.kind === 'home'
-            ? <Home lib={lib} onNew={() => setView({ kind: 'new' })} onOpen={(id) => setView({ kind: 'old', id })} />
+            ? <Home lib={lib} promptTone={tone === 'auto' ? undefined : tone} onNew={() => setView({ kind: 'new' })} onOpen={(id) => setView({ kind: 'old', id })} />
             : (
               <Room
                 key={view.kind === 'old' ? `old-${view.id}` : 'new'}

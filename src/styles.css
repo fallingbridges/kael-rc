@@ -10016,28 +10016,32 @@ svg {
 .rf-phone { position: relative; display: flex; flex-direction: column; }
 .rf-screen { flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; }
 /* home top — compact wordmark bar, actions as quiet circles */
-.rf-top { flex: 0 0 auto; display: flex; flex-direction: column; padding: 18px 22px 4px; }
+.rf-top { flex: 0 0 auto; display: flex; flex-direction: column; padding: 22px 22px 6px; }
 /* one composed masthead row: greeting on the left, actions on the right,
    the avatar centered against the two-line greeting block */
 .rf-masthead { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .rf-hello-block { min-width: 0; }
 .rf-hello-row { display: flex; align-items: center; gap: 9px; }
 .rf-hello-ic { color: var(--warm-proof); display: flex; flex: 0 0 auto; }
-.rf-hello { font-family: var(--title); font-weight: 500; font-size: 25px; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rf-hello-sub { display: block; font: 600 9.5px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 7px; }
+.rf-hello { font-family: var(--title); font-weight: 500; font-size: 29px; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rf-hello-sub { display: block; font: 600 10.5px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 10px; }
 .rf-top-actions { flex: 0 0 auto; }
 .rf-startbtn { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 9px; width: 100%; margin-top: 6px; padding: 16px; background: var(--invert-bg); color: var(--invert-ink); border: 0; border-radius: 14px; font: 600 15px var(--sans); box-shadow: var(--shadow-btn); cursor: pointer; transition: transform 0.15s var(--ease); }
 .rf-startbtn:hover { transform: translateY(-1px); }
 .rf-startbtn svg { color: var(--warm-proof); }
 .rf-top-actions { display: flex; align-items: center; gap: 9px; }
-.rf-iconbtn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s var(--ease), color 0.15s var(--ease); }
+.rf-iconbtn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s var(--ease), color 0.15s var(--ease); }
 .rf-iconbtn[data-on] { background: var(--invert-bg); border-color: var(--invert-bg); color: var(--invert-ink); }
-.rf-profile { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--invert-bg); color: var(--invert-ink); font-family: var(--title); font-weight: 500; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: 0 0 auto; }
+.rf-profile { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--invert-bg); color: var(--invert-ink); font-family: var(--title); font-weight: 500; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: 0 0 auto; }
+.rf-icon-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex: 0 0 auto; transition: border-color 0.15s var(--ease), background 0.15s var(--ease), color 0.15s var(--ease); }
+.rf-icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.rf-icon-btn[data-on] { background: var(--invert-bg); color: var(--invert-ink); border-color: var(--invert-bg); }
 .rf-meta { font: 600 9.5px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); margin-top: 8px; }
-.rf-searchwrap { padding-top: 12px; }
-.rf-search { display: flex; align-items: center; gap: 10px; width: 100%; padding: 13px 15px; border: 1px solid var(--line-2); border-radius: 17px; background: var(--field); color: var(--ink-3); }
-.rf-search input { flex: 1; border: 0; background: none; outline: none; font: 400 14.5px var(--sans); color: var(--ink); }
-.rf-search input::placeholder { color: var(--ink-3); font-style: italic; font-family: var(--serif); }
+.rf-searchwrap { padding-top: 15px; }
+.rf-search { display: flex; align-items: center; gap: 11px; width: 100%; padding: 14px 16px; border: 1px solid var(--line-2); border-radius: 16px; background: var(--field); color: var(--ink-3); transition: border-color 0.15s var(--ease), background 0.15s var(--ease); }
+.rf-search[data-open] { border-color: var(--line-strong); background: var(--surface); }
+.rf-search input { flex: 1; border: 0; background: none; outline: none; font: 400 15px var(--sans); color: var(--ink); }
+.rf-search input::placeholder { color: var(--ink-3); font-family: var(--serif); }
 .rf-search-x { width: 20px; height: 20px; border-radius: 50%; border: 0; background: var(--line-2); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .rf-queries { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 7px; margin-top: 12px; animation: rf-meta-in 0.35s var(--ease) both; }
 .rf-query { font: 500 12.5px var(--sans); color: var(--ink-2); background: none; border: 1px solid var(--line-2); border-radius: 99px; padding: 7px 12px; cursor: pointer; }
@@ -10051,21 +10055,57 @@ svg {
 /* home body — the ongoing hero, then the collection as icon-tile cards */
 .rf-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 10px 22px 0; }
 .rf-scroll::-webkit-scrollbar { display: none; }
-.rf-label { display: block; font: 600 10.5px var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); margin: 24px 2px 12px; }
-.rf-hero { position: relative; display: flex; flex-direction: column; gap: 9px; width: 100%; text-align: left; background: var(--badge-fill); border: 1px solid var(--line-strong); border-radius: 22px; padding: 21px 20px 23px; box-shadow: var(--shadow-card); cursor: pointer; }
+/* ── time-aware invitation card ── */
+.rf-prompt {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: block; width: 100%; text-align: left;
+  margin-top: 18px; padding: 30px 28px 28px;
+  border: 0; border-radius: 26px;
+  color: #fff; cursor: pointer;
+  transition: transform 0.18s var(--ease);
+}
+.rf-prompt:hover { transform: translateY(-2px); }
+/* the surface walks the day — golden yellow at dawn/day, warm brown at dusk, dark brown at night */
+.rf-prompt[data-tone="dawn"]  { background: linear-gradient(140deg, #f4d180 0%, #ecbb63 55%, #e0a54e 100%); }
+.rf-prompt[data-tone="day"]   { background: linear-gradient(140deg, #f7d269 0%, #eaba53 55%, #d9a344 100%); }
+.rf-prompt[data-tone="dusk"]  { background: linear-gradient(140deg, #8a5c37 0%, #5f3f28 58%, #432c1c 100%); }
+.rf-prompt[data-tone="night"] { background: linear-gradient(140deg, #3d2b1d 0%, #241711 60%, #140d08 100%); }
+/* daytime cards are light — flip copy, button and glyph to dark ink for legibility */
+.rf-prompt[data-tone="dawn"], .rf-prompt[data-tone="day"] { color: #3a2712; }
+.rf-prompt[data-tone="dawn"] .rf-prompt-sub, .rf-prompt[data-tone="day"] .rf-prompt-sub { color: rgba(58, 39, 18, 0.82); }
+.rf-prompt[data-tone="dawn"] .rf-prompt-cta, .rf-prompt[data-tone="day"] .rf-prompt-cta { background: #2a2013; color: #f6ecd8; }
+.rf-prompt[data-tone="dawn"] .rf-prompt-glyph, .rf-prompt[data-tone="day"] .rf-prompt-glyph { color: rgba(58, 39, 18, 0.13); }
+/* the celestial icon as a large, faint watermark glyph behind the copy */
+.rf-prompt-glyph {
+  position: absolute; right: -16px; bottom: -34px;
+  display: block; color: rgba(255, 246, 224, 0.11);
+  z-index: -1; pointer-events: none;
+}
+.rf-prompt-glyph svg { width: 176px; height: 176px; }
+.rf-prompt-title { display: block; position: relative; font-family: var(--title); font-weight: 500; font-size: 28px; letter-spacing: -0.015em; }
+.rf-prompt-sub { display: block; position: relative; margin-top: 11px; max-width: 60%; font: 400 15px var(--sans); line-height: 1.5; color: rgba(255, 255, 255, 0.85); }
+.rf-prompt-cta { display: inline-flex; align-items: center; gap: 6px; position: relative; margin-top: 24px; padding: 11px 18px; border-radius: 999px; background: #f6f0e4; color: #1b1a17; font: 600 13.5px var(--sans); }
+
+/* collapsed strip — shown once the current window's reflection is done, handing space back to the collection */
+.rf-prompt-slim { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; margin-top: 18px; padding: 11px 13px 11px 11px; border-radius: 15px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow-card); }
+.rf-prompt-slim-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; flex: 0 0 auto; background: linear-gradient(140deg, #423829, #1c1811); color: #e2c68e; }
+.rf-prompt-slim-tx { flex: 1; min-width: 0; font: 500 13.5px var(--sans); letter-spacing: -0.005em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.rf-label { display: block; font: 600 10.5px var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); margin: 28px 2px 14px; }
+.rf-hero { position: relative; display: flex; flex-direction: column; gap: 11px; width: 100%; text-align: left; background: var(--badge-fill); border: 1px solid var(--line-strong); border-radius: 22px; padding: 23px 22px 25px; box-shadow: var(--shadow-card); cursor: pointer; }
 .rf-hero-meta { display: inline-flex; align-items: center; gap: 7px; font: 600 11px var(--sans); letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-3); }
-.rf-hero-title { font-family: var(--title); font-weight: 500; font-size: 26px; line-height: 1.14; letter-spacing: -0.015em; color: var(--ink); }
-.rf-hero-line { font: italic 400 15px var(--serif); line-height: 1.5; color: var(--ink-2); max-width: 86%; }
+.rf-hero-title { font-family: var(--title); font-weight: 500; font-size: 27px; line-height: 1.18; letter-spacing: -0.015em; color: var(--ink); }
+.rf-hero-line { font: 400 16px var(--serif); line-height: 1.62; color: var(--ink-2); max-width: 88%; }
 .rf-hero-go { position: absolute; right: 17px; bottom: 17px; width: 42px; height: 42px; border-radius: 50%; background: var(--invert-bg); color: var(--invert-ink); display: grid; place-items: center; }
-.rf-cards { display: flex; flex-direction: column; gap: 12px; }
-.rf-card { display: flex; align-items: flex-start; gap: 14px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line-2); border-radius: 20px; padding: 17px 16px; box-shadow: var(--shadow-card); cursor: pointer; transition: border-color 0.15s var(--ease); }
+.rf-cards { display: flex; flex-direction: column; gap: 14px; }
+.rf-card { display: flex; align-items: flex-start; gap: 15px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line-2); border-radius: 20px; padding: 20px 18px; box-shadow: var(--shadow-card); cursor: pointer; transition: border-color 0.15s var(--ease); }
 .rf-card:hover { border-color: var(--line-strong); }
 .rf-card-ic { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-top: 1px; background: var(--field); color: var(--ink-2); }
-.rf-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.rf-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
 .rf-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.rf-card-title { font-family: var(--title); font-weight: 500; font-size: 18.5px; line-height: 1.22; letter-spacing: -0.01em; color: var(--ink); }
+.rf-card-title { font-family: var(--title); font-weight: 500; font-size: 19px; line-height: 1.28; letter-spacing: -0.01em; color: var(--ink); }
 .rf-card-when { flex: 0 0 auto; font: 500 11.5px var(--sans); color: var(--ink-3); }
-.rf-card-line { font: italic 400 14px var(--serif); line-height: 1.45; color: var(--ink-3); }
+.rf-card-line { font: 400 14.5px var(--serif); line-height: 1.56; color: var(--ink-3); }
 .rf-none { padding: 26px 10px; font: italic 400 13.5px var(--serif); line-height: 1.5; color: var(--ink-3); text-align: center; }
 /* first run — a spacious, visual welcome. An icon trio for warmth, two lines,
    one action. Nothing to read your way through. */
@@ -10075,18 +10115,55 @@ svg {
 .rf-first-disc[data-i='0'] { width: 56px; height: 56px; transform: translateY(8px) rotate(-7deg); }
 .rf-first-disc[data-i='1'] { width: 76px; height: 76px; }
 .rf-first-disc[data-i='2'] { width: 56px; height: 56px; transform: translateY(8px) rotate(7deg); }
-.rf-first-line { font: italic 400 15px var(--serif); line-height: 1.5; color: var(--ink-3); }
+.rf-first-line { font: 400 16px var(--serif); line-height: 1.55; color: var(--ink-3); }
+.rf-first-sub { margin-top: 9px; max-width: 240px; font: 400 13.5px var(--sans); line-height: 1.5; color: var(--ink-3); }
+.rf-first-cta { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; padding: 12px 20px; border: 0; border-radius: 999px; background: var(--invert-bg); color: var(--invert-ink); font: 600 13.5px var(--sans); cursor: pointer; box-shadow: var(--shadow-btn); transition: transform 0.15s var(--ease); }
+.rf-first-cta:hover { transform: translateY(-1px); }
+
+/* first-visit milestone — the one-time coach line above the first reflection */
+.rf-milestone { display: flex; align-items: flex-start; gap: 10px; margin-top: 4px; margin-bottom: 4px; padding: 13px 15px; border-radius: 15px; background: var(--badge-fill); border: 1px solid var(--line-2); animation: rf-meta-in 0.6s var(--ease) both; }
+.rf-milestone-ic { flex: 0 0 auto; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(140deg, #423829, #1c1811); color: #e2c68e; margin-top: 1px; }
+.rf-milestone p { font: 400 13px var(--sans); line-height: 1.5; letter-spacing: -0.005em; color: var(--ink-2); }
+
+/* ── first-run flow: paywall stub · threshold · chat close ── */
+.fr-paywall { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 26px 26px; }
+.fr-paywall::-webkit-scrollbar { display: none; }
+.fr-pw-badge { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 18%, var(--field)); color: var(--accent); margin-bottom: 20px; }
+.fr-pw-title { font-family: var(--title); font-weight: 500; font-size: 27px; letter-spacing: -0.02em; color: var(--ink); }
+.fr-pw-sub { margin-top: 10px; max-width: 260px; font: 400 14px var(--sans); line-height: 1.5; color: var(--ink-2); }
+.fr-pw-feats { list-style: none; width: 100%; margin: 26px 0 22px; display: flex; flex-direction: column; gap: 15px; text-align: left; }
+.fr-pw-feats li { display: flex; align-items: center; gap: 12px; font: 500 14px var(--sans); color: var(--ink); }
+.fr-pw-feats li svg { flex: 0 0 auto; color: var(--warm-proof); }
+.fr-pw-plan { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 18px; border: 1.5px solid var(--ink); border-radius: 16px; font: 600 15px var(--sans); color: var(--ink); }
+.fr-pw-save { font: 700 10.5px var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--invert-ink); background: var(--invert-bg); padding: 5px 9px; border-radius: 999px; }
+.fr-pw-plan2 { margin-top: 9px; font: 400 12px var(--sans); color: var(--ink-3); }
+.fr-pw-cta { width: 100%; margin-top: 20px; padding: 16px; border: 0; border-radius: 15px; background: var(--invert-bg); color: var(--invert-ink); font: 600 15.5px var(--sans); cursor: pointer; box-shadow: var(--shadow-btn); transition: transform 0.15s var(--ease); }
+.fr-pw-cta:hover { transform: translateY(-1px); }
+.fr-pw-fine { margin-top: 14px; font: 400 11.5px var(--sans); color: var(--ink-3); }
+
+.fr-threshold { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 34px; cursor: pointer; animation: rf-meta-in 0.7s var(--ease) both; }
+.fr-th-orb { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; color: #fff; background: radial-gradient(circle at 36% 32%, color-mix(in srgb, var(--accent) 70%, #fff) 0%, var(--accent) 60%, color-mix(in srgb, var(--accent) 60%, #000) 100%); box-shadow: 0 20px 46px -20px color-mix(in srgb, var(--accent) 70%, transparent); animation: fr-orb-in 1s var(--ease) both; }
+@keyframes fr-orb-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+.fr-th-title { margin-top: 26px; font-family: var(--title); font-weight: 500; font-size: 25px; line-height: 1.2; letter-spacing: -0.02em; color: var(--ink); }
+.fr-th-sub { margin-top: 14px; max-width: 280px; font: 400 15px var(--serif); line-height: 1.6; color: var(--ink-2); }
+.fr-th-hint { margin-top: 34px; font: 600 10px var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); animation: fr-hint 2.4s var(--ease) infinite; }
+@keyframes fr-hint { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+
+.fr-saved { display: inline-flex; align-items: center; gap: 7px; align-self: center; margin-top: 4px; padding: 8px 14px; border-radius: 999px; background: var(--badge-fill); border: 1px solid var(--line-2); font: 600 11px var(--sans); letter-spacing: 0.04em; text-transform: uppercase; color: var(--badge-ink); }
+.fr-saved svg { color: var(--warm-proof); }
 /* one reflection — a dashed placeholder card showing where the next will land */
 .rf-ghost { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: none; border: 1.5px dashed var(--line-strong); border-radius: 20px; padding: 18px 16px; margin-top: 2px; cursor: pointer; transition: border-color 0.15s var(--ease), background 0.15s var(--ease); }
 .rf-ghost:hover { border-color: var(--ink-3); background: color-mix(in srgb, var(--ink) 2.5%, transparent); }
 .rf-ghost-ic { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: var(--field); color: var(--ink-3); }
 .rf-ghost-tx { font: 500 15px var(--sans); color: var(--ink-2); }
 /* studio demo-state chips */
-.rf-demo { display: flex; justify-content: center; gap: 8px; padding: 14px 12px 2px; }
+.rf-demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 14px 12px 2px; }
+.rf-demo-sep { width: 1px; height: 20px; background: var(--line-strong); margin: 0 2px; }
+.reflect-tone-demo { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 40; display: flex; gap: 7px; padding: 7px; border-radius: 99px; background: color-mix(in srgb, var(--paper) 78%, transparent); backdrop-filter: blur(10px); box-shadow: var(--shadow-float); }
 .rf-demo-chip { font: 600 12px var(--sans); color: var(--ink-2); background: var(--surface); border: 1px solid var(--line-2); border-radius: 99px; padding: 7px 14px; cursor: pointer; }
 .rf-demo-chip[data-on] { background: var(--invert-bg); border-color: var(--invert-bg); color: var(--invert-ink); }
 .rf-foot-sp { height: 110px; }
-.rf-fab { position: absolute; right: 22px; bottom: 28px; z-index: 2; width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--invert-bg); color: var(--invert-ink); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-btn); cursor: pointer; transition: transform 0.15s var(--ease); }
+.rf-fab { position: absolute; right: 22px; bottom: 26px; z-index: 2; width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--invert-bg); color: var(--invert-ink); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-btn); cursor: pointer; transition: transform 0.15s var(--ease); }
 .rf-fab:hover { transform: scale(1.04); }
 
 /* the room — a reflection you're inside */
@@ -10095,27 +10172,31 @@ svg {
 .rf-room-new { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 50%; background: var(--field); border: 1px solid var(--line-2); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .rf-room-id { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; animation: rf-meta-in 0.55s var(--ease) both; }
 .rf-room-id h2 { max-width: 100%; font-family: var(--title); font-weight: 500; font-size: 16px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rf-room-id span { display: block; max-width: 100%; font: italic 400 11.5px var(--serif); color: var(--ink-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rf-room-id span { display: block; max-width: 100%; font: 400 12px var(--serif); color: var(--ink-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @keyframes rf-meta-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .rf-body { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 12px; }
 .rf-body::-webkit-scrollbar { display: none; }
-/* the start space — greeting + one unified grid of nine doorways */
-.rf-start { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px 4px 6px; }
-.rf-start-sun { color: var(--warm-proof); display: flex; }
-.rf-greet { font-family: var(--title); font-weight: 500; font-size: 28px; letter-spacing: -0.02em; color: var(--ink); margin-top: 14px; }
-.rf-greet-sub { font: italic 400 16px var(--serif); color: var(--ink-2); margin-top: 8px; }
-.rf-greet-note { font: italic 400 13.5px var(--serif); color: var(--ink-3); margin-top: 3px; }
-.rf-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; width: 100%; margin-top: 28px; }
-.rf-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 100px; padding: 14px 8px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 18px; cursor: pointer; box-shadow: var(--shadow-card); transition: border-color 0.15s var(--ease), transform 0.15s var(--ease); }
-.rf-tile:hover { border-color: var(--line-strong); transform: translateY(-1px); }
-.rf-tile svg { color: var(--ink-2); }
-.rf-tile span { font: 500 12.5px var(--sans); line-height: 1.3; color: var(--ink); text-align: center; }
-.rf-or { display: flex; align-items: center; gap: 13px; width: 100%; margin: 20px 0 14px; font: 600 10px var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); }
+/* the start space — a threshold: name a feeling, or bring a situation. two ways in, no scroll */
+.rf-start { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 18px 6px 8px; }
+.rf-start-sun { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: var(--badge-fill); color: var(--warm-proof); }
+.rf-start-sun svg { width: 24px; height: 24px; }
+.rf-greet { font-family: var(--title); font-weight: 500; font-size: 27px; letter-spacing: -0.02em; color: var(--ink); margin-top: 16px; }
+.rf-greet-sub { font: 400 14.5px var(--sans); color: var(--ink-2); margin-top: 9px; }
+.rf-greet-note { font: 400 12.5px var(--sans); color: var(--ink-3); margin-top: 5px; }
+.rf-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; margin-top: 30px; }
+.rf-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 96px; padding: 15px 8px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 18px; cursor: pointer; box-shadow: var(--shadow-card); transition: border-color 0.16s var(--ease), transform 0.16s var(--ease), box-shadow 0.16s var(--ease); }
+.rf-tile:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow-float); }
+.rf-tile-ic { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: var(--field); color: var(--ink-2); }
+.rf-tile-ic svg { width: 22px; height: 22px; }
+.rf-tile-tx { font: 500 14px var(--sans); line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
+.rf-or { display: flex; align-items: center; gap: 14px; width: 100%; margin: 24px 0 15px; font: 600 10px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
 .rf-or::before, .rf-or::after { content: ''; flex: 1; height: 1px; background: var(--line-2); }
-.rf-doors { display: flex; flex-direction: column; gap: 9px; width: 100%; }
-.rf-door { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: var(--shadow-card); cursor: pointer; font: 400 15px var(--serif); color: var(--ink); text-align: left; transition: border-color 0.15s var(--ease); }
-.rf-door:hover { border-color: var(--line-strong); }
-.rf-door svg { color: var(--ink-2); flex: 0 0 auto; }
+.rf-doors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.rf-door { display: flex; align-items: center; gap: 8px; padding: 12px 11px; min-width: 0; background: var(--surface); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: var(--shadow-card); cursor: pointer; text-align: left; transition: border-color 0.16s var(--ease), transform 0.16s var(--ease); }
+.rf-door:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.rf-door-ic { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--field); color: var(--ink-2); flex: 0 0 auto; }
+.rf-door-ic svg { width: 15px; height: 15px; }
+.rf-door-tx { flex: 1; min-width: 0; font: 500 12.5px var(--sans); line-height: 1.25; letter-spacing: -0.01em; color: var(--ink); }
 .rf-then { text-align: center; font: 600 10px var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); padding: 4px 0; }
 .rf-now { margin-top: 6px; color: var(--badge-ink); }
 .rf-chips { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 30px; }

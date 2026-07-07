@@ -12,7 +12,8 @@ import OnboardingV5 from './screens/OnboardingV5.jsx'
 import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
-import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom } from './screens/ReflectConcept.jsx'
+import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, autoTone } from './screens/ReflectConcept.jsx'
+import FirstRunConcept from './screens/FirstRunConcept.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
@@ -25,7 +26,11 @@ export default function App() {
   const [view, setView] = useState('app')
   const [studioTab, setStudioTab] = useState('components')
   const [reflectView, setReflectView] = useState({ kind: 'home' })
+  const [reflectTone, setReflectTone] = useState('auto') // preview the invitation card across the day
+  const [doneTones, setDoneTones] = useState({}) // which time-windows already have a reflection → card collapses
   const [scale, setScale] = useState(0.72)
+
+  const currentTone = reflectTone === 'auto' ? autoTone() : reflectTone
 
   useLayoutEffect(() => {
     const fit = () => {
@@ -188,6 +193,13 @@ export default function App() {
               </button>
               <button
                 className="studio-tab"
+                data-on={studioTab === 'firstrun'}
+                onClick={() => setStudioTab('firstrun')}
+              >
+                First run
+              </button>
+              <button
+                className="studio-tab"
                 data-on={studioTab === 'paywall'}
                 onClick={() => setStudioTab('paywall')}
               >
@@ -245,6 +257,8 @@ export default function App() {
                 <CloseV8 />
               ) : studioTab === 'reflect' ? (
                 <ReflectConcept />
+              ) : studioTab === 'firstrun' ? (
+                <FirstRunConcept />
               ) : studioTab === 'paywall' ? (
                 <PaywallLab />
               ) : studioTab === 'cards' ? (
@@ -261,6 +275,22 @@ export default function App() {
             </div>
           </div>
         ) : (
+        <>
+        {reflectView.kind === 'home' && (
+          <div className="reflect-tone-demo">
+            {[['auto', 'Auto'], ['dawn', 'Dawn'], ['day', 'Day'], ['dusk', 'Evening'], ['night', 'Night']].map(([id, label]) => (
+              <button key={id} className="rf-demo-chip" data-on={reflectTone === id || undefined} onClick={() => setReflectTone(id)}>{label}</button>
+            ))}
+            <span className="rf-demo-sep" />
+            <button
+              className="rf-demo-chip"
+              data-on={doneTones[currentTone] || undefined}
+              onClick={() => setDoneTones((d) => ({ ...d, [currentTone]: !d[currentTone] }))}
+            >
+              Reflected
+            </button>
+          </div>
+        )}
         <motion.div
           className="stage-device"
           style={{ '--scale': scale }}
@@ -271,6 +301,10 @@ export default function App() {
           <PhoneFrame theme={theme} hideNav>
             {reflectView.kind === 'home' ? (
               <ReflectHome
+                promptTone={reflectTone === 'auto' ? undefined : reflectTone}
+                reflected={!!doneTones[currentTone]}
+                onInvite={() => { setDoneTones((d) => ({ ...d, [currentTone]: true })); setReflectView({ kind: 'new' }) }}
+                onReopen={() => setReflectView({ kind: 'new' })}
                 onNew={() => setReflectView({ kind: 'new' })}
                 onOpen={(id) => setReflectView({ kind: 'old', id })}
               />
@@ -284,6 +318,7 @@ export default function App() {
             )}
           </PhoneFrame>
         </motion.div>
+        </>
         )}
       </main>
     </div>
