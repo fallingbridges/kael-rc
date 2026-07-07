@@ -93,6 +93,32 @@ const DOORS = [
     title: 'Just checking in', line: 'No agenda, just noticing where things are.' },
 ]
 
+/* "Ask me something" — Kael leads with a deep, reflective question when the user
+   has nothing specific to bring. A rotating bank, so it feels fresh each time. */
+const ASK_LEADS = [
+  'Okay. Sit with this one for a second.',
+  'Here’s one I’d genuinely like to know.',
+  'Let’s try this. There’s no wrong answer.',
+  'Alright. Take your time with this.',
+]
+const ASK_QUESTIONS = [
+  'What’s something you’ve been avoiding thinking about?',
+  'When did you last feel truly like yourself?',
+  'What’s taking up the most space in your head right now, even if it seems small?',
+  'What’s something you’re pretending is fine?',
+  'What’s a feeling you’ve had all week but haven’t named?',
+  'What are you holding onto that you might be ready to put down?',
+  'What’s been quietly draining you lately?',
+  'What’s something good that happened that you brushed past too quickly?',
+  'If you were being completely honest with yourself right now, what would you admit?',
+  'What’s a version of yourself you miss?',
+  'What do you keep hoping someone will notice?',
+  'What’s the story you’ve been telling yourself lately, and is it actually true?',
+  'What would you do differently this week if no one would judge you for it?',
+  'What’s something you know you need, but keep putting off?',
+  'When did you last surprise yourself, in a good way?',
+]
+
 /* the collection — living titles + one-liners, newest first. Nothing is ever
    "closed"; the most recent one just surfaces first (LIBRARY[0]), the same
    as every other reflection, only more recently touched. */
@@ -422,6 +448,16 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
     }
   }
 
+  /* "Ask me something" — like tapping a door, but Kael leads with a question */
+  const askMe = () => {
+    const q = ASK_QUESTIONS[Math.floor(Math.random() * ASK_QUESTIONS.length)]
+    const lead = ASK_LEADS[Math.floor(Math.random() * ASK_LEADS.length)]
+    setMsgs((m) => [...m, { who: 'user', text: 'Ask me a personal question I wouldn’t think to ask myself, drawing on what you know about me. Make it specific and open-ended, not generic.', time: nowStr() }])
+    setStarted(true)
+    setMeta({ title: 'A question to sit with', line: 'Following where Kael’s question leads.', Icon: Sparkle, accent: 'var(--warm-proof)' })
+    kaelSays(`${lead}\n\n${q}`)
+  }
+
   const say = (text) => {
     if (!text.trim()) return
     setMsgs((m) => [...m, { who: 'user', text: text.trim(), time: nowStr() }])
@@ -444,24 +480,28 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
 
   return (
     <div className="rf-screen rf-room">
-      <header className="rf-room-head">
-        <button className="rf-back" onClick={() => onBack({ started, meta, msgs })} aria-label="Back"><ArrowLeft size={19} /></button>
-        <div className="rf-room-id" key={meta.title}>
-          <h2>{meta.title}</h2>
-          <span>{meta.line}</span>
-        </div>
-        <button className="rf-room-new" onClick={onNew} aria-label="New reflection">
-          <Plus size={17} weight="bold" />
-        </button>
-      </header>
+      {!started && !existing ? (
+        <button className="rf-back rf-back-float" onClick={() => onBack({ started, meta, msgs })} aria-label="Back"><ArrowLeft size={19} /></button>
+      ) : (
+        <header className="rf-room-head">
+          <button className="rf-back" onClick={() => onBack({ started, meta, msgs })} aria-label="Back"><ArrowLeft size={19} /></button>
+          <div className="rf-room-id" key={meta.title}>
+            <h2>{meta.title}</h2>
+            <span>{meta.line}</span>
+          </div>
+          <button className="rf-room-new" onClick={onNew} aria-label="New reflection">
+            <Plus size={17} weight="bold" />
+          </button>
+        </header>
+      )}
 
       <div className="rf-body" ref={bodyRef}>
         {!started && !existing && (
           <div className="rf-start">
             <span className="rf-start-sun">{new Date().getHours() >= 17 || new Date().getHours() < 5 ? <Moon size={26} weight="duotone" /> : <Sun size={26} weight="duotone" />}</span>
             <h3 className="rf-greet">{hourGreeting()}, {name}.</h3>
-            <p className="rf-greet-sub">What’s on your mind?</p>
-            <p className="rf-greet-note">Tap one below, or just say it in your words.</p>
+            <p className="rf-greet-sub">How are you feeling right now?</p>
+            <p className="rf-greet-note">There’s no right way to start.</p>
             <div className="rf-tiles">
               {MOODS.map((m) => (
                 <button key={m.id} className="rf-tile" style={{ '--accent': m.accent }} onClick={() => start(m)}>
@@ -470,7 +510,7 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
                 </button>
               ))}
             </div>
-            <span className="rf-or">or something specific</span>
+            <span className="rf-or">or bring what’s going on</span>
             <div className="rf-doors">
               {DOORS.map((d) => (
                 <button key={d.id} className="rf-door" style={{ '--accent': d.accent }} onClick={() => start(d)}>
@@ -479,6 +519,10 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
                 </button>
               ))}
             </div>
+            <button className="rf-askme" onClick={askMe}>
+              <span className="rf-askme-title"><Sparkle size={17} weight="fill" /> Not sure where to start? <ArrowRight size={14} weight="bold" /></span>
+              <span className="rf-askme-sub">I’ll ask you a question to get us going.</span>
+            </button>
           </div>
         )}
 
