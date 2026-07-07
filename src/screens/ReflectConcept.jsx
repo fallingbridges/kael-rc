@@ -1,8 +1,8 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, MagnifyingGlass, Plus, Sparkle, PaperPlaneTilt, X, Check,
-  Spiral, Leaf, CloudRain, Moon, Sun, HeartBreak, SmileyNervous, SunHorizon,
-  ChatCircleDots, Users, Binoculars, NotePencil, Scales,
+  Spiral, CloudRain, BatteryLow, Fire, Moon, Sun, SmileyNervous, SunHorizon, Users,
+  ChatCircleDots, Scales,
   Compass, User, EnvelopeSimple, Briefcase, Heart, ClockCounterClockwise,
   Checks, Infinity as InfinityIcon, Brain, Wind,
 } from '@phosphor-icons/react'
@@ -47,21 +47,36 @@ const MOODS = [
     open: 'Let’s not chase every thought. Which one keeps coming back the loudest?',
     chips: ['Work, probably', 'Something I said', 'I can’t pin it down'],
     title: 'Racing thoughts, hard to slow', line: 'Finding the one thought under the noise.' },
-  { id: 'hurt', label: 'Hurt', Icon: HeartBreak, accent: 'var(--mood-hurt)',
-    seed: 'I’m feeling hurt by something.',
-    open: 'I’m sorry it landed like that. What happened, and where does it still sting?',
-    chips: ['Someone close to me', 'Something at work', 'I’d rather not name it yet'],
-    title: 'Something that stung', line: 'Naming the hurt before it hardens.' },
-  { id: 'heavy', label: 'Heavy', Icon: CloudRain, accent: 'var(--mood-low)',
-    seed: 'Everything feels heavy today.',
-    open: 'Heavy usually has a shape, even if it’s blurry right now. What’s the heaviest part of today?',
-    chips: ['Everything at once', 'One thing, mostly', 'I honestly don’t know'],
-    title: 'Carrying more than usual', line: 'Naming what’s making today heavy.' },
-  { id: 'calm', label: 'Calm', Icon: Leaf, accent: 'var(--mood-calm)',
-    seed: 'I actually feel calm right now.',
-    open: 'Let’s not rush past it. What settled today, and what does the calm feel like?',
-    chips: ['Something went right', 'I just feel steady', 'Not sure, but I’ll take it'],
-    title: 'A steadier kind of day', line: 'Noticing what made room for the calm.' },
+  { id: 'overthinking', label: 'Overthinking', Icon: Spiral, accent: 'var(--mood-overthinking)',
+    seed: 'There’s something I can’t stop overthinking.',
+    open: 'Round and round. What’s the thing your mind keeps circling back to?',
+    chips: ['A conversation', 'A decision', 'Something I can’t change'],
+    title: 'Caught in a loop', line: 'Finding what the mind keeps circling.' },
+  { id: 'frustrated', label: 'Frustrated', Icon: Fire, accent: 'var(--mood-angry)',
+    seed: 'I’m frustrated and I can’t shake it.',
+    open: 'Okay. Frustration usually points at something. What’s getting in the way?',
+    chips: ['Someone', 'A situation', 'Myself, honestly'],
+    title: 'Frustrated with something', line: 'Finding what the frustration is really about.' },
+  { id: 'burntout', label: 'Burnt out', Icon: BatteryLow, accent: 'var(--mood-stressed)',
+    seed: 'I’m completely burnt out. I’ve got nothing left.',
+    open: 'Sounds like the tank is empty. What’s been draining you the most?',
+    chips: ['Work', 'Everything, honestly', 'I can’t switch off'],
+    title: 'Running on empty', line: 'Noticing what’s been draining you.' },
+  { id: 'low', label: 'Feeling low', Icon: CloudRain, accent: 'var(--mood-low)',
+    seed: 'I’ve just been feeling low.',
+    open: 'I’m here for the low days. Does it have a reason attached, or is it just sitting there?',
+    chips: ['Something happened', 'No reason I can name', 'A bit of both'],
+    title: 'A quieter, lower day', line: 'Sitting with it instead of rushing past.' },
+  { id: 'relationship', label: 'A relationship', Icon: Users, accent: 'var(--mood-hurt)',
+    seed: 'Something in a relationship is on my mind.',
+    open: 'Okay. Who is this about, and what’s happening between you?',
+    chips: ['My partner', 'Family', 'A friend'],
+    title: 'Something in a relationship', line: 'Untangling what’s going on between us.' },
+  { id: 'decision', label: 'A decision', Icon: Scales, accent: 'var(--warm-react)',
+    seed: 'I have a decision to make and I keep going back and forth.',
+    open: 'Let’s slow it down before choosing. What are you deciding between?',
+    chips: ['Two clear options', 'I’m not even sure', 'Whether to at all'],
+    title: 'A decision I keep circling', line: 'Slowing down before choosing.' },
   { id: 'hopeful', label: 'Hopeful', Icon: SunHorizon, accent: 'var(--mood-hopeful)',
     seed: 'I actually feel a little hopeful today.',
     open: 'I’ll take it. What shifted, and what’s the hope resting on?',
@@ -74,35 +89,6 @@ const MOODS = [
     title: 'Something worth savoring', line: 'Holding onto what’s good before it passes.' },
 ]
 
-const DOORS = [
-  { id: 'overthinking', label: 'Overthinking', Icon: Spiral, accent: 'var(--mood-overthinking)', deep: true,
-    seed: 'There’s something I can’t stop overthinking.' },
-  { id: 'vent', label: 'Need to vent', Icon: ChatCircleDots, accent: 'var(--badge-ink)',
-    seed: 'I just need to vent for a minute.',
-    open: 'Go ahead, let it out. I’m not going anywhere. What’s got you?',
-    chips: ['Work', 'Someone', 'Honestly, everything'],
-    title: 'Just needed to let it out', line: 'No fixing yet, just saying it.' },
-  { id: 'relationship', label: 'Relationship stuff', Icon: Users, accent: 'var(--mood-hurt)',
-    seed: 'Something in one of my relationships is on my mind.',
-    open: 'Okay. Who is this about, and what happened between you?',
-    chips: ['My partner', 'Family', 'A friend'],
-    title: 'Something in a relationship', line: 'Untangling what’s going on between us.' },
-  { id: 'perspective', label: 'Need perspective', Icon: Binoculars, accent: 'var(--warm-proof)',
-    seed: 'I could use some perspective on something.',
-    open: 'Let’s step back a little. What are you too close to right now?',
-    chips: ['A decision', 'A situation', 'Myself, maybe'],
-    title: 'Trying to step back', line: 'Getting some distance to see it clearly.' },
-  { id: 'good', label: 'Good news', Icon: Sun, accent: 'var(--mood-hopeful)',
-    seed: 'I got some good news and I want to sit with it.',
-    open: 'Let’s not rush past it. What’s the news, and what did it feel like in the moment?',
-    chips: ['Work news', 'Something personal', 'Small but good'],
-    title: 'Some good news, worth keeping', line: 'Holding onto it before it fades.' },
-  { id: 'open', label: 'Just checking in', Icon: NotePencil, accent: 'var(--mood-calm)',
-    seed: 'I just felt like checking in.',
-    open: 'That’s a good enough reason to be here. What’s been on your mind lately, even loosely?',
-    chips: ['A few things', 'Nothing specific', 'Not sure yet'],
-    title: 'Just checking in', line: 'No agenda, just noticing where things are.' },
-]
 
 /* "Ask me something" — Kael leads with a deep, reflective question when the user
    has nothing specific to bring. A rotating bank, so it feels fresh each time. */
@@ -526,22 +512,13 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
           <div className="rf-start">
             <span className="rf-start-sun">{new Date().getHours() >= 17 || new Date().getHours() < 5 ? <Moon size={26} weight="duotone" /> : <Sun size={26} weight="duotone" />}</span>
             <h3 className="rf-greet">{hourGreeting()}, {name}.</h3>
-            <p className="rf-greet-sub">How are you feeling right now?</p>
+            <p className="rf-greet-sub">What’s alive right now?</p>
             <p className="rf-greet-note">There’s no right way to start.</p>
             <div className="rf-tiles">
               {MOODS.map((m) => (
                 <button key={m.id} className="rf-tile" style={{ '--accent': m.accent }} onClick={() => start(m)}>
                   <span className="rf-tile-ic"><m.Icon size={23} weight="duotone" /></span>
                   <span className="rf-tile-tx">{m.label}</span>
-                </button>
-              ))}
-            </div>
-            <span className="rf-or">or bring what’s going on</span>
-            <div className="rf-doors">
-              {DOORS.map((d) => (
-                <button key={d.id} className="rf-door" style={{ '--accent': d.accent }} onClick={() => start(d)}>
-                  <span className="rf-door-ic"><d.Icon size={18} weight="duotone" /></span>
-                  <span className="rf-door-tx">{d.label}</span>
                 </button>
               ))}
             </div>
