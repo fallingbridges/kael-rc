@@ -339,19 +339,24 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
           <>
             {(() => {
               const p = PROMPTS[promptTone] || PROMPTS[autoTone()]
-              if (reflected) {
+              /* before this window's ritual: the time-aware invitation (unchanged) */
+              if (!reflected) {
                 return (
-                  <div className="rf-prompt-slim" data-tone={p.tone}>
-                    <span className="rf-prompt-slim-ic"><p.Icon size={15} weight="fill" /></span>
-                    <span className="rf-prompt-slim-tx">{p.done}</span>
-                  </div>
+                  <button className="rf-prompt" data-tone={p.tone} onClick={onInvite || onNew}>
+                    <span className="rf-prompt-glyph" aria-hidden="true"><p.Icon size={176} weight="fill" /></span>
+                    <span className="rf-prompt-title">{p.title}</span>
+                    <span className="rf-prompt-sub">{p.sub}</span>
+                    <span className="rf-prompt-cta">Begin reflection <ArrowRight size={14} weight="bold" /></span>
+                  </button>
                 )
               }
+              /* after it: instead of collapsing to a strip, a steady "come back whenever" invite —
+                 same time-of-day glyph and tone, only the copy changes, so home never feels empty */
               return (
                 <button className="rf-prompt" data-tone={p.tone} onClick={onInvite || onNew}>
                   <span className="rf-prompt-glyph" aria-hidden="true"><p.Icon size={176} weight="fill" /></span>
-                  <span className="rf-prompt-title">{p.title}</span>
-                  <span className="rf-prompt-sub">{p.sub}</span>
+                  <span className="rf-prompt-title">Always right here.</span>
+                  <span className="rf-prompt-sub">Big, small, clear, messy. Whenever you’re ready.</span>
                   <span className="rf-prompt-cta">Begin reflection <ArrowRight size={14} weight="bold" /></span>
                 </button>
               )
