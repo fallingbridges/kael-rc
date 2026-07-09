@@ -281,7 +281,7 @@ function Hero({ s }) {
   return (
     <div className="ov4-hero ov4-hero-type">
       <span className="ov4-hero-kicker">{s.kicker || 'Now, a promise'}</span>
-      <h1 className="ov4-hero-title ov4-hero-title-lg">
+      <h1 className="ov4-hero-title">
         {lines(s.title).map((l, idx) => (<Fragment key={idx}>{idx > 0 && <br />}{s.em ? emLine(l, s.em) : l}</Fragment>))}
       </h1>
       <p className="ov4-hero-sub">{s.sub}</p>

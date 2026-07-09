@@ -199,7 +199,8 @@ export function DifferenceBody() {
 export function MechanismBody() {
   return (
     <div className="pp2 pp2-c">
-      <h1 className="pp2-title pp2-title-lg">See yourself<br />more <em>clearly</em></h1>
+      <h1 className="pp2-title pp2-title-lg">Your safe space to<br /><em>reflect</em> on your life.</h1>
+      <p className="pp2-sub pp2-sub-nar">Big feelings, small thoughts, hard days, quiet wins. It all belongs here.</p>
       <div className="pp2-stack" aria-hidden="true">
         {[
           { t: 'The call I keep putting off', Icon: Phone },
@@ -215,7 +216,6 @@ export function MechanismBody() {
           </div>
         ))}
       </div>
-      <p className="pp2-title-sm">One reflection at a time.</p>
     </div>
   )
 }

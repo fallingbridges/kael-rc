@@ -8947,12 +8947,12 @@ svg {
 .pp2 { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: 15px; }
 .pp2-c { align-items: center; text-align: center; }
 .pp2-title { font-family: var(--title); font-weight: 500; font-size: 30px; line-height: 1.14; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; animation: ov4-rise 0.5s var(--ease) 0.08s both; }
-.pp2-title-lg { font-size: 34px; line-height: 1.12; letter-spacing: -0.022em; }
-/* the mechanism's coda — a smaller title landing under the cards, after they settle */
-.pp2-title-sm { font-family: var(--serif); font-weight: 400; font-size: 21px; line-height: 1.2; letter-spacing: -0.015em; color: var(--ink-2); margin-top: 8px; animation: ov4-rise 0.5s var(--ease) 1.45s both; }
+.pp2-title-lg { font-size: 36px; line-height: 1.1; letter-spacing: -0.022em; }
 .pp2-title em { font-style: italic; }
 .pp2-sub { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: var(--ink-2); margin-top: -7px; animation: ov4-rise 0.5s var(--ease) 0.16s both; }
 .pp2-c .pp2-sub { max-width: 38ch; }
+/* matches the intro screens' io-sub measure exactly (16px serif, 30ch) */
+.pp2-c .pp2-sub.pp2-sub-nar { font-size: 16px; max-width: 30ch; }
 
 /* 1 · therapist rides the stock ov4 card list (stacked, auto-advance) */
 
