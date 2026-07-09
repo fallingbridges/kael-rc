@@ -127,7 +127,7 @@ export function Hope() {
   return (
     <div className="io-screen io-hope">
       <h1 className="io-title io-hope-title">Break the <em>patterns</em> keeping you stuck.</h1>
-      <p className="io-sub">Kael remembers, so the same loop plays out differently.</p>
+      <p className="io-sub">Kael remembers. Connects patterns. Offers insights that deepen over time.</p>
       <div className="io-chat">
         <span className="io-chat-when">Sunday · 9:14 PM</span>
         {THREAD.map((m, k) => (
@@ -137,6 +137,7 @@ export function Hope() {
           </div>
         ))}
       </div>
+      <p className="io-ask-note io-hope-note">Same Sunday. Different ending.</p>
     </div>
   )
 }

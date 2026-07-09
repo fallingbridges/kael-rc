@@ -201,13 +201,14 @@ export function MechanismBody() {
     <div className="pp2 pp2-c">
       <h1 className="pp2-title pp2-title-lg">Your safe space to<br /><em>reflect</em> on your life.</h1>
       <p className="pp2-sub pp2-sub-nar">Big feelings, small thoughts, hard days, quiet wins. It all belongs here.</p>
-      <div className="pp2-stack" aria-hidden="true">
+      <div className="pp2-lib" aria-hidden="true">
+        <span className="pp2-lib-label">Your reflections</span>
         {[
           { t: 'The call I keep putting off', Icon: Phone },
           { t: 'Sunday nights feel heavy', Icon: Moon },
           { t: 'Why do I push people away?', Icon: Heart },
         ].map((m, k) => (
-          <div key={m.t} className="pp2-mini" style={{ '--d': `${0.34 * k + 0.2}s`, '--r': `${(k - 1) * 2.5}deg` }}>
+          <div key={m.t} className="pp2-lib-row" style={{ '--d': `${0.34 * k + 0.25}s` }}>
             <span className="pp2-mini-av"><m.Icon size={15} weight="duotone" /></span>
             <span className="pp2-mini-lines">
               <b className="pp2-mini-t">{m.t}</b>
@@ -216,6 +217,7 @@ export function MechanismBody() {
           </div>
         ))}
       </div>
+      <p className="pp2-coda">Every reflection helps Kael understand you better.</p>
     </div>
   )
 }
