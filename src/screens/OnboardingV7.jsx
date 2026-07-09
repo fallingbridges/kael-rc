@@ -27,7 +27,7 @@ const cap = (w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w)
 const lowerFirst = (w) => (w ? w.charAt(0).toLowerCase() + w.slice(1) : w)
 const proseList = (arr) => { const a = (arr || []).filter(Boolean); if (!a.length) return ''; if (a.length === 1) return a[0]; if (a.length === 2) return `${a[0]} and ${a[1]}`; return `${a.slice(0, -1).join(', ')}, and ${a[a.length - 1]}` }
 const lines = (str) => (str || '').split('\n')
-const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender', 'therapist']
+const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender', 'therapist', 'dailygoal']
 
 function hash(str) {
   let h = 2166136261
@@ -388,12 +388,13 @@ function Aspects({ s, answers, set, fillSit }) {
   )
 }
 
-/* the daily-time commitment — minutes paired with outcomes, shared with the pre-paywall lab */
-function DailyGoal({ s, answers, set, fillSit }) {
+/* the daily-time commitment — minutes paired with outcomes, shared with the
+   pre-paywall lab; picking a tier commits and auto-advances, V7-style */
+function DailyGoal({ s, answers, pickAuto, fillSit }) {
   return (
     <>
       <Header title={s.title} sub={s.sub} fillSit={fillSit} />
-      <GoalTiers value={answers.dailygoal} onPick={(v) => set('dailygoal', v)} />
+      <GoalTiers value={answers.dailygoal} onPick={(v) => pickAuto('dailygoal', v)} />
     </>
   )
 }

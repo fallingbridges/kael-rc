@@ -90,7 +90,7 @@ export function Safety() {
         <span className="io-bubble-av"><Sparkle size={12} weight="fill" /></span>
         <p className="io-bubble-text">{typed}{typed.length < INTRO.length && <span className="io-caret" />}</p>
       </div>
-      <p className="io-contrast">Not a chatbot. Not a journal that sits there. <b>A coach that truly gets to know you.</b></p>
+      <p className="io-contrast">Not a chatbot. Not a journal that sits there. <b>A coach who pays attention.</b></p>
     </div>
   )
 }
@@ -99,8 +99,7 @@ export function Recognition() {
   const [picked, setPicked] = useState(null)
   return (
     <div className="io-screen io-recog">
-      <h1 className="io-title io-recog-title">Any mood.<br />Any moment.<br /><em>Reflect</em> with Kael.</h1>
-      <p className="io-sub">Big feelings, small thoughts, hard days, quiet wins. Kael listens.</p>
+      <h1 className="io-title io-recog-title">Any mood.<br />Any moment.<br />Kael <em>meets</em> you there.</h1>
       <div className="io-entry">
       <div className="io-pills">
         {MOODS.map((m, k) => (

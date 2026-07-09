@@ -61,7 +61,7 @@ export default function PrePaywall({ noanim = false }) {
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
   const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : kind === 'trial' ? 'Start my free trial' : 'Continue'
-  const showFooter = !['therapist', 'allset'].includes(kind) // therapist and allset advance themselves
+  const showFooter = !['therapist', 'goal', 'allset'].includes(kind) // these screens advance themselves
   const ready = kind === 'goal' ? Boolean(ans.goal)
     : kind === 'promise' ? Boolean(ans.signed) : true
 
@@ -106,7 +106,7 @@ export default function PrePaywall({ noanim = false }) {
 function Screen({ kind, ans, set, pickAuto, onNext }) {
   switch (kind) {
     case 'therapist': return <Therapist ans={ans} pickAuto={pickAuto} />
-    case 'goal': return <Goal ans={ans} set={set} />
+    case 'goal': return <Goal ans={ans} pickAuto={pickAuto} />
     case 'difference': return <DifferenceBody />
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} />
@@ -138,15 +138,15 @@ function Therapist({ ans, pickAuto }) {
   )
 }
 
-/* 2 · daily goal — top-aligned like the V7 quiz, with a Continue button */
-function Goal({ ans, set }) {
+/* 2 · daily goal — top-aligned like the V7 quiz; picking auto-advances */
+function Goal({ ans, pickAuto }) {
   return (
     <>
       <div className="ov4-titles">
         <h1 className="ov4-q">Set your daily goal.</h1>
         <p className="ov4-sub">A few honest minutes is enough.</p>
       </div>
-      <GoalTiers value={ans.goal} onPick={(v) => set('goal', v)} />
+      <GoalTiers value={ans.goal} onPick={(v) => pickAuto('goal', v)} />
     </>
   )
 }
@@ -194,14 +194,12 @@ export function DifferenceBody() {
   )
 }
 
-/* 4 · mechanism — the screen performs the compounding: mini reflection cards
-   (skeleton lines, nothing to read) cascade in one at a time, and each landing
-   card lights one insight line. Reflection in, sight out, three times over. */
+/* 4 · mechanism — one sentence with the proof inside it: the title claims,
+   real reflection cards cascade in as evidence, the coda finishes the thought. */
 export function MechanismBody() {
   return (
     <div className="pp2 pp2-c">
-      <h1 className="pp2-title pp2-title-lg">A coach who<br /><em>truly</em> gets you.</h1>
-      <p className="pp2-sub pp2-sub-nar">Every reflection helps Kael understand you better.</p>
+      <h1 className="pp2-title pp2-title-lg">See yourself<br />more <em>clearly</em></h1>
       <div className="pp2-stack" aria-hidden="true">
         {[
           { t: 'The call I keep putting off', Icon: Phone },
@@ -217,6 +215,7 @@ export function MechanismBody() {
           </div>
         ))}
       </div>
+      <p className="pp2-title-sm">One reflection at a time.</p>
     </div>
   )
 }

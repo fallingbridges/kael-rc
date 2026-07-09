@@ -476,7 +476,7 @@ export const FLOW = [
      so the loader reads as building a plan from everything they just gave */
   { id: 'aspects', kind: 'aspects', act: 2, field: 'aspects', title: 'What’s been showing up lately?', sub: 'Choose all that apply.', cta: 'Continue' },
   { id: 'therapist', kind: 'therapist', act: 2, field: 'therapist', title: 'Did you hear about Kael from a therapist?', sub: 'Either way, you’re in the right place.' },
-  { id: 'dailygoal', kind: 'dailygoal', act: 2, field: 'dailygoal', title: 'Set your daily goal.', sub: 'A few honest minutes is enough.', cta: 'Continue' },
+  { id: 'dailygoal', kind: 'dailygoal', act: 2, field: 'dailygoal', title: 'Set your daily goal.', sub: 'A few honest minutes is enough.' },
   { id: 'notif', kind: 'notif', act: 2, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
   { id: 'calibration', kind: 'calibration', act: 2, title: 'Finding your pattern.' },
 

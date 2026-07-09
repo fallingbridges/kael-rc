@@ -8948,8 +8948,8 @@ svg {
 .pp2-c { align-items: center; text-align: center; }
 .pp2-title { font-family: var(--title); font-weight: 500; font-size: 30px; line-height: 1.14; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; animation: ov4-rise 0.5s var(--ease) 0.08s both; }
 .pp2-title-lg { font-size: 34px; line-height: 1.12; letter-spacing: -0.022em; }
-/* the mechanism subtitle matches screen 2's measure (io-sub is 30ch) */
-.pp2-c .pp2-sub.pp2-sub-nar { max-width: 30ch; }
+/* the mechanism's coda — a smaller title landing under the cards, after they settle */
+.pp2-title-sm { font-family: var(--serif); font-weight: 400; font-size: 21px; line-height: 1.2; letter-spacing: -0.015em; color: var(--ink-2); margin-top: 8px; animation: ov4-rise 0.5s var(--ease) 1.45s both; }
 .pp2-title em { font-style: italic; }
 .pp2-sub { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: var(--ink-2); margin-top: -7px; animation: ov4-rise 0.5s var(--ease) 0.16s both; }
 .pp2-c .pp2-sub { max-width: 38ch; }
