@@ -12,7 +12,7 @@ import {
   resolveRead, answeredCount,
 } from '../obv7.js'
 import { Safety as IntroSafety, Recognition as IntroRecognition, Hope as IntroHope } from './IntroConcept.jsx'
-import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, TrialBody } from './PrePaywall.jsx'
+import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody } from './PrePaywall.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Kael Onboarding V7 — the merge: V6's balanced 16-question quiz + axis-bar
@@ -206,7 +206,7 @@ function Body(props) {
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} />
     case 'allset': return <AllSetBody onDone={props.onAdvance} />
-    case 'trial': return <TrialBody />
+    case 'journey': return <JourneyBody />
     case 'trust': return <Trust {...props} />
     case 'relcontext': return <CardList {...props} field="rel" items={REL_CONTEXT} />
     case 'prep': return <Prep {...props} />

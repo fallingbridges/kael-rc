@@ -490,7 +490,7 @@ export const FLOW = [
   { id: 'difference', kind: 'difference', act: 4, cta: 'I want that' },
   { id: 'promise', kind: 'promise', act: 4, cta: 'I commit to myself' },
   { id: 'allset', kind: 'allset', act: 4 },
-  { id: 'trial', kind: 'trial', act: 4, cta: 'Start my free trial' },
+  { id: 'thirtydays', kind: 'journey', act: 4, cta: 'Continue' },
 ]
 
 /* derived from FLOW — single source of truth for the segmented progress bar. */

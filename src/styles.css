@@ -9054,8 +9054,8 @@ svg {
 /* 8 · the trial journey — a thick pill rail; the stretch already travelled is
    filled with the gold gradient, dark nodes sit on the rail, step one is done */
 .pp2-journey { list-style: none; position: relative; display: flex; flex-direction: column; gap: 24px; width: 100%; margin-top: 16px; padding: 20px 18px; text-align: left; background: var(--surface); border: 1px solid var(--line-2); border-radius: 20px; }
-.pp2-journey::before { content: ''; position: absolute; left: 18px; top: 16px; bottom: 36px; width: 28px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 7%, var(--paper)); }
-.pp2-journey::after { content: ''; position: absolute; left: 18px; top: 16px; height: 118px; width: 28px; border-radius: 999px; background: var(--ink); }
+.pp2-journey::before { content: ''; position: absolute; left: 18px; top: 16px; bottom: 55px; width: 28px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 7%, var(--paper)); }
+.pp2-journey::after { content: ''; position: absolute; left: 18px; top: 16px; height: 52px; width: 28px; border-radius: 999px; background: var(--ink); }
 .pp2-journey li { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 16px; animation: ov4-rise 0.55s var(--ease) var(--d) both; }
 .pp2-jy-node { flex: 0 0 auto; width: 28px; display: flex; justify-content: center; padding-top: 1px; color: var(--ink); }
 .pp2-jy-node[data-fill] { color: var(--paper); }
@@ -9063,10 +9063,6 @@ svg {
 .pp2-jy-pre { font-weight: 700; color: var(--ink); }
 .pp2-jy-tx b { font: 400 15px var(--serif); letter-spacing: -0.005em; color: var(--ink); }
 .pp2-jy-d { font: 400 13px var(--sans); line-height: 1.45; color: var(--ink-2); }
-.pp2-cancelcard { display: flex; align-items: flex-start; gap: 13px; width: 100%; margin-top: 4px; padding: 15px 17px; border-radius: 16px; text-align: left; background: color-mix(in srgb, var(--warm-proof) 9%, var(--paper)); border: 1px solid color-mix(in srgb, var(--warm-proof) 26%, var(--line-2)); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
-.pp2-cancel-ic { flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: color-mix(in srgb, var(--warm-proof) 18%, var(--paper)); color: var(--badge-ink); }
-.pp2-cancel-tx b { display: block; font: 700 13.5px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
-.pp2-cancel-tx p { margin-top: 3px; font: 400 13px var(--sans); line-height: 1.5; color: var(--ink-2); }
 
 /* ── refinement round 2 ── */
 

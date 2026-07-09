@@ -1,19 +1,19 @@
 import { useState, useRef, useEffect } from 'react'
 import {
-  ArrowLeft, Check, CheckCircle, X, Sparkle, BellSimple, Star, Sun, CloudRain,
-  Leaf, Waves, Mountains, DoorOpen, Phone, Moon, Heart,
+  ArrowLeft, Check, X, Sparkle, Star, Sun, CloudRain,
+  Leaf, Waves, Mountains, Phone, Moon, Heart, ArrowsClockwise,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Pre-paywall flow — the bridge from the read to Superwall, on V7's design
    language. One idea per screen, a handful of words each, all of it generic
    (nothing derived from the quiz — only the name). Order: trust → goal →
-   difference → mechanism → ready → promise → all set → the 7 days, then
+   difference → mechanism → ready → promise → all set → the 30 days, then
    Superwall takes the actual paywall.
    ────────────────────────────────────────────────────────────────────────── */
 
 const NAME = 'Maya'
-const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'trial']
+const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'journey']
 
 /* each tier pairs the minutes with what they buy — the commitment sells its outcome */
 const GOALS = [
@@ -30,14 +30,14 @@ const WITH = ['A settled mind', 'Steadier days', 'A kinder voice', 'Room to feel
 /* vows are about the inner work, not about using the product */
 const VOWS = ['Be honest about what I’m feeling', 'Face the hard stuff instead of burying it', 'Be kinder to myself along the way']
 
-/* renewal-relative language — works for a 3, 7 or 30 day trial unchanged.
-   `fill` marks the travelled stretch of the rail (done + today). Each step is
-   one merged bold line (when in clay, what in ink) plus a short sub. */
-const TRIAL = [
-  { t: 'Installed the app', d: 'You found your pattern and made your promise.', done: true, fill: true },
-  { when: 'Today', t: 'Start your free trial', d: 'Full access to everything. Nothing is charged.', icon: Sparkle, fill: true },
-  { when: 'Before it ends', t: 'We remind you', d: 'So you can decide before anything is charged.', icon: BellSimple },
-  { when: 'Renewal day', t: 'Continue with Kael', d: 'Your plan begins, if you chose to stay.', icon: Star },
+/* the 30 days — the program the price will belong to. Offer-agnostic
+   (no billing events; Superwall owns those), transformation milestones on
+   the travelled rail — today is already lit, because the journey has begun. */
+const JOURNEY = [
+  { when: 'Today', t: 'Bring what’s on your mind', d: 'Start anywhere. Kael starts learning.', icon: Sparkle, fill: true },
+  { when: 'Day 3', t: 'Your loops get caught early', d: 'Kael spots them before you finish naming them.', icon: ArrowsClockwise },
+  { when: 'Day 7', t: 'Your first shift, named', d: 'One spiral caught, one kinder word to yourself.', icon: Star },
+  { when: 'Day 30', t: 'The pattern loosens its grip', d: 'The old reflex shows up. You catch it, and choose.', icon: Leaf },
 ]
 
 export default function PrePaywall({ noanim = false }) {
@@ -60,7 +60,7 @@ export default function PrePaywall({ noanim = false }) {
   useEffect(() => { clearTimeout(advanceRef.current) }, [i])
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
-  const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : kind === 'trial' ? 'Start my free trial' : 'Continue'
+  const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : 'Continue'
   const showFooter = !['therapist', 'goal', 'allset'].includes(kind) // these screens advance themselves
   const ready = kind === 'goal' ? Boolean(ans.goal)
     : kind === 'promise' ? Boolean(ans.signed) : true
@@ -111,7 +111,7 @@ function Screen({ kind, ans, set, pickAuto, onNext }) {
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} />
     case 'allset': return <AllSetBody onDone={onNext} />
-    case 'trial': return <TrialBody />
+    case 'journey': return <JourneyBody />
     default: return null
   }
 }
@@ -348,31 +348,23 @@ export function AllSetBody({ onDone }) {
 
 /* 8 · the trial journey — thick rail, accent-gradient fill over the done stretch,
    renewal-relative steps (trial length can change without touching this) */
-export function TrialBody() {
+export function JourneyBody() {
   return (
     <div className="pp2 pp2-c">
-      <h1 className="pp2-title">Start free, decide later.</h1>
-      <p className="pp2-sub">We’ll remind you before anything is charged.</p>
+      <h1 className="pp2-title">Your 30 days with Kael.</h1>
       <ol className="pp2-journey">
-        {TRIAL.map((m, k) => (
+        {JOURNEY.map((m, k) => (
           <li key={m.t} style={{ '--d': `${0.08 * k + 0.15}s` }}>
             <span className="pp2-jy-node" data-fill={m.fill || undefined}>
-              {m.done ? <CheckCircle size={19} weight="fill" /> : <m.icon size={16} weight="fill" />}
+              <m.icon size={16} weight="fill" />
             </span>
             <div className="pp2-jy-tx">
-              <b>{m.when ? <><span className="pp2-jy-pre">{m.when}: </span>{m.t}</> : <span className="pp2-jy-pre">{m.t}</span>}</b>
+              <b><span className="pp2-jy-pre">{m.when}: </span>{m.t}</b>
               <span className="pp2-jy-d">{m.d}</span>
             </div>
           </li>
         ))}
       </ol>
-      <div className="pp2-cancelcard" style={{ '--d': '0.5s' }}>
-        <span className="pp2-cancel-ic"><DoorOpen size={20} weight="duotone" /></span>
-        <div className="pp2-cancel-tx">
-          <b>How do I cancel?</b>
-          <p>Anytime, from your subscription settings. No hoops, and Kael won’t guilt you.</p>
-        </div>
-      </div>
     </div>
   )
 }
