@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import {
   ArrowLeft, Check, CheckCircle, X, Sparkle, BellSimple, Star, Sun, CloudRain,
-  Leaf, Waves, Mountains, DoorOpen, ArrowsClockwise, Lightning, HandHeart,
-  Phone, Moon, Heart,
+  Leaf, Waves, Mountains, DoorOpen, Phone, Moon, Heart,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -27,13 +26,6 @@ const GOALS = [
 /* difference — short and universal, no quiz echoes */
 const NOW = ['Racing thoughts', 'Heavy mornings', 'Harsh self-talk', 'Bottled up']
 const WITH = ['A settled mind', 'Steadier days', 'A kinder voice', 'Room to feel']
-
-/* what "better" means — three verbs that move in time, acting out the compounding */
-const LEARNS = [
-  { t: 'Starts spotting your patterns', icon: ArrowsClockwise },
-  { t: 'Learns what sets them off', icon: Lightning },
-  { t: 'Gets better at what helps', icon: HandHeart },
-]
 
 /* vows are about the inner work, not about using the product */
 const VOWS = ['Be honest about what I’m feeling', 'Face the hard stuff instead of burying it', 'Be kinder to myself along the way']
@@ -208,8 +200,8 @@ export function DifferenceBody() {
 export function MechanismBody() {
   return (
     <div className="pp2 pp2-c">
-      <h1 className="pp2-title pp2-title-lg">A coach that truly<br />gets to know you.</h1>
-      <p className="pp2-sub pp2-sub-big">One reflection at a time.</p>
+      <h1 className="pp2-title pp2-title-lg">A coach who<br /><em>truly</em> gets you.</h1>
+      <p className="pp2-sub pp2-sub-nar">Every reflection helps Kael understand you better.</p>
       <div className="pp2-stack" aria-hidden="true">
         {[
           { t: 'The call I keep putting off', Icon: Phone },
@@ -217,16 +209,13 @@ export function MechanismBody() {
           { t: 'Why do I push people away?', Icon: Heart },
         ].map((m, k) => (
           <div key={m.t} className="pp2-mini" style={{ '--d': `${0.34 * k + 0.2}s`, '--r': `${(k - 1) * 2.5}deg` }}>
-            <span className="pp2-mini-av"><m.Icon size={12} weight="duotone" /></span>
+            <span className="pp2-mini-av"><m.Icon size={15} weight="duotone" /></span>
             <span className="pp2-mini-lines">
               <b className="pp2-mini-t">{m.t}</b>
               <i style={{ width: `${58 - k * 8}%` }} />
             </span>
           </div>
         ))}
-      </div>
-      <div className="pp2-learns">
-        {LEARNS.map((l, n) => (<span key={l.t} className="pp2-learn" style={{ '--d': `${0.34 * n + 0.38}s` }}><l.icon size={15} weight="duotone" />{l.t}</span>))}
       </div>
     </div>
   )

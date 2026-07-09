@@ -8948,7 +8948,8 @@ svg {
 .pp2-c { align-items: center; text-align: center; }
 .pp2-title { font-family: var(--title); font-weight: 500; font-size: 30px; line-height: 1.14; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; animation: ov4-rise 0.5s var(--ease) 0.08s both; }
 .pp2-title-lg { font-size: 34px; line-height: 1.12; letter-spacing: -0.022em; }
-.pp2-sub.pp2-sub-big { font-size: 18px; font-weight: 600; }
+/* the mechanism subtitle matches screen 2's measure (io-sub is 30ch) */
+.pp2-c .pp2-sub.pp2-sub-nar { max-width: 30ch; }
 .pp2-title em { font-style: italic; }
 .pp2-sub { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: var(--ink-2); margin-top: -7px; animation: ov4-rise 0.5s var(--ease) 0.16s both; }
 .pp2-c .pp2-sub { max-width: 38ch; }
@@ -8988,19 +8989,16 @@ svg {
 
 /* 4 · mechanism — mini reflection cards (skeleton lines, nothing to read)
    cascade in one at a time; each landing card lights one insight line */
-.pp2-stack { display: flex; flex-direction: column; align-items: center; margin-top: 6px; }
-.pp2-mini { display: flex; align-items: center; gap: 10px; width: 244px; padding: 11px 13px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 13px; transform: rotate(var(--r)); animation: pp2-settle 0.55s var(--ease) var(--d) both; }
-.pp2-mini + .pp2-mini { margin-top: -7px; }
+.pp2-stack { display: flex; flex-direction: column; align-items: center; margin-top: 14px; }
+.pp2-mini { display: flex; align-items: center; gap: 12px; width: 300px; padding: 15px 17px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; transform: rotate(var(--r)); animation: pp2-settle 0.55s var(--ease) var(--d) both; }
+.pp2-mini + .pp2-mini { margin-top: -8px; }
 .pp2-mini:nth-child(2) { z-index: 1; }
 .pp2-mini:nth-child(3) { z-index: 2; }
-.pp2-mini-av { flex: 0 0 auto; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--field); color: var(--ink-2); }
-.pp2-mini-lines { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
-.pp2-mini-t { display: block; font: 600 12px var(--sans); letter-spacing: -0.01em; line-height: 1.2; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
-.pp2-mini-lines i { display: block; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.pp2-mini-av { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--field); color: var(--ink-2); }
+.pp2-mini-lines { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pp2-mini-t { display: block; font: 600 13.5px var(--sans); letter-spacing: -0.01em; line-height: 1.2; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.pp2-mini-lines i { display: block; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
 @keyframes pp2-settle { 0% { opacity: 0; transform: translateY(-14px) rotate(var(--r)) scale(0.97); } 60% { opacity: 1; } 100% { opacity: 1; transform: translateY(0) rotate(var(--r)) scale(1); } }
-.pp2-learns { display: flex; flex-direction: column; gap: 13px; margin-top: 10px; }
-.pp2-learn { display: inline-flex; align-items: center; gap: 11px; font-family: var(--serif); font-size: 17px; color: var(--ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
-.pp2-learn svg { color: var(--warm-proof); }
 
 /* halo rings — kept for the all-set seal */
 .pp2-orb-ring { position: absolute; inset: -8px; border-radius: 24px; border: 1.5px solid color-mix(in srgb, var(--warm-proof) 45%, transparent); animation: pp2-halo 2.6s ease-in-out infinite; }
