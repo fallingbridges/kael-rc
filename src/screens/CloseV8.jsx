@@ -227,31 +227,22 @@ function Promise_({ onNext }) {
             ))}
           </div>
           <p className="k8-pact-p">And Kael promises back. <em>To remember everything, to notice what you can’t, to be there at 2am.</em></p>
-          <div className="k8-sigs">
-            <div className="k8-sig">
-              <div className="k8-sigline">
-                <canvas
-                  ref={canvasRef}
-                  className="k8-pad"
-                  onPointerDown={down}
-                  onPointerMove={move}
-                  onPointerUp={up}
-                  onPointerLeave={up}
-                />
-                {!signed && <span className="k8-pad-hint">Sign with your finger</span>}
-                {signed && (
-                  <button className="k8-pad-clear" onClick={clear} aria-label="Clear signature"><X size={12} weight="bold" /></button>
-                )}
-              </div>
-              <span className="k8-sig-cap">{NAME}</span>
+          <div className="k8-signwrap">
+            <div className="k8-sigbox">
+              <canvas
+                ref={canvasRef}
+                className="k8-pad"
+                onPointerDown={down}
+                onPointerMove={move}
+                onPointerUp={up}
+                onPointerLeave={up}
+              />
+              {!signed && <span className="k8-pad-hint">Sign with your finger</span>}
+              {signed && (
+                <button className="k8-pad-clear" onClick={clear} aria-label="Clear signature"><X size={12} weight="bold" /></button>
+              )}
             </div>
-            <div className="k8-sig">
-              <div className="k8-sigline k8-sigline-kael">
-                <span className="k8-kaelsig">Kael</span>
-                <Sparkle size={12} weight="fill" />
-              </div>
-              <span className="k8-sig-cap">Kael</span>
-            </div>
+            <span className="k8-sig-cap">{NAME}</span>
           </div>
         </div>
         <p className="k8-pad-note" style={{ '--d': '0.4s' }}>Your signature stays on this screen. Nothing is saved or sent.</p>

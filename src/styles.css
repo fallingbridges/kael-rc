@@ -8806,6 +8806,12 @@ svg {
 /* calibrated-to-you sell screen — glyph + 5 concise icon points (#sell) */
 .ov4-cal-glyph { display: grid; place-items: center; width: 66px; height: 66px; border-radius: 50%; color: var(--warm-proof); background: radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--warm-proof) 22%, var(--paper)), color-mix(in srgb, var(--warm-proof) 6%, var(--paper))); box-shadow: 0 0 0 1px color-mix(in srgb, var(--warm-proof) 26%, transparent), 0 16px 40px -22px color-mix(in srgb, var(--warm-proof) 60%, transparent); animation: ov4-glyph-in 0.6s var(--ease) both; }
 .ov4-cal-list { list-style: none; display: flex; flex-direction: column; gap: 14px; width: 100%; text-align: left; margin-top: 14px; }
+/* the ready screen's setup summary — four gold checks, everything calibrated */
+.ov7-ready-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin: 10px auto 0; text-align: left; }
+.ov7-ready-list li { display: flex; align-items: center; gap: 11px; font: 500 15.5px var(--sans); letter-spacing: -0.01em; color: var(--ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.ov7-ready-list li svg { flex: 0 0 auto; color: var(--warm-proof); }
+/* fatten the phosphor check by stroking its own fill path */
+.ov7-ready-list li svg path { stroke: currentColor; stroke-width: 18; stroke-linecap: round; stroke-linejoin: round; }
 .ov4-cal-list li { display: flex; align-items: center; gap: 13px; font: 500 14.5px var(--sans); line-height: 1.35; color: var(--ink); animation: ov4-rise 0.5s var(--ease) both; animation-delay: var(--d); }
 .ov4-cal-ic { flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--warm-proof) 14%, var(--paper)); color: var(--warm-proof); }
 
@@ -8935,6 +8941,133 @@ svg {
 .ov4-tl-when { font: 700 10.5px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-react); }
 .ov4-tl-txt b { font-family: var(--title); font-weight: 500; font-size: 18px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); }
 .ov4-tl-d { font-family: var(--serif); font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+
+/* ── pre-paywall (pp2) — the post-read close, redesigned on V7's language ── */
+/* shared shell: every screen is a centered column with real breathing room */
+.pp2 { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: 15px; }
+.pp2-c { align-items: center; text-align: center; }
+.pp2-title { font-family: var(--title); font-weight: 500; font-size: 30px; line-height: 1.14; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; animation: ov4-rise 0.5s var(--ease) 0.08s both; }
+.pp2-title-lg { font-size: 34px; line-height: 1.12; letter-spacing: -0.022em; }
+.pp2-sub.pp2-sub-big { font-size: 18px; font-weight: 600; }
+.pp2-title em { font-style: italic; }
+.pp2-sub { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: var(--ink-2); margin-top: -7px; animation: ov4-rise 0.5s var(--ease) 0.16s both; }
+.pp2-c .pp2-sub { max-width: 38ch; }
+
+/* 1 · therapist rides the stock ov4 card list (stacked, auto-advance) */
+
+/* 2 · daily goal — slim rows: icon | minutes | the outcome they buy */
+.pp2-tier { display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 0 17px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 17px; cursor: pointer; text-align: left; transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease; animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.pp2-tier:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.pp2-tier[data-on] { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 4%, var(--surface)); box-shadow: 0 0 0 1px var(--ink); }
+.pp2-tier[data-on] .ov4-card-check { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.pp2-tier-ic { flex: 0 0 auto; display: grid; place-items: center; color: var(--badge-ink); }
+.pp2-tier-min { font: 600 15px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
+.pp2-tier-out { margin-left: auto; font: 400 13px var(--sans); color: var(--ink-2); }
+
+/* 3 · the difference — Now small and low; With Kael large, raised, stacked on top */
+.pp2-vs { display: grid; grid-template-columns: 140px 1fr; width: 100%; margin-top: 12px; }
+.pp2-now { z-index: 1; margin: 40px -16px 0 0; height: fit-content; padding: 17px 15px 19px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); animation: ov4-rise 0.55s var(--ease) 0.1s both; }
+.pp2-withk { z-index: 2; padding: 23px 20px 25px; border-radius: 22px; background: var(--invert-bg); color: var(--invert-ink); animation: ov4-rise 0.55s var(--ease) 0.2s both; }
+.pp2-vs-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.pp2-vs-head h3 { font-family: var(--title); font-weight: 500; letter-spacing: -0.01em; }
+.pp2-now .pp2-vs-head h3 { font-size: 17px; color: var(--ink-2); }
+.pp2-withk .pp2-vs-head h3 { font-size: 22px; }
+.pp2-now .pp2-vs-head svg { color: var(--ink-3); }
+.pp2-withk .pp2-vs-head svg { color: var(--warm-proof); }
+.pp2-vs-list { list-style: none; display: flex; flex-direction: column; }
+.pp2-now .pp2-vs-list { gap: 12px; }
+.pp2-withk .pp2-vs-list { gap: 14px; }
+.pp2-vs-list li { display: flex; align-items: center; gap: 8px; font-family: var(--serif); white-space: nowrap; animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.pp2-vs-list li svg { flex: 0 0 auto; }
+.pp2-now .pp2-vs-list li { font-size: 13px; color: var(--ink-2); }
+.pp2-now .pp2-vs-list li svg { color: color-mix(in srgb, var(--warm-react) 65%, var(--paper)); }
+.pp2-withk .pp2-vs-list li { font-size: 15px; }
+.pp2-withk .pp2-vs-list li svg { color: var(--warm-proof); }
+.pp2-vs-goal { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 15px; border-top: 1px solid color-mix(in srgb, var(--invert-ink) 14%, transparent); font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--warm-proof); animation: ov4-rise 0.5s var(--ease) 0.55s both; }
+.pp2-vs-note { margin-top: 22px; text-align: center; font: italic 400 13.5px var(--serif); color: var(--ink-3); animation: ov4-rise 0.5s var(--ease) 0.62s both; }
+
+/* 4 · mechanism — mini reflection cards (skeleton lines, nothing to read)
+   cascade in one at a time; each landing card lights one insight line */
+.pp2-stack { display: flex; flex-direction: column; align-items: center; margin-top: 6px; }
+.pp2-mini { display: flex; align-items: center; gap: 10px; width: 244px; padding: 11px 13px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 13px; transform: rotate(var(--r)); animation: pp2-settle 0.55s var(--ease) var(--d) both; }
+.pp2-mini + .pp2-mini { margin-top: -7px; }
+.pp2-mini:nth-child(2) { z-index: 1; }
+.pp2-mini:nth-child(3) { z-index: 2; }
+.pp2-mini-av { flex: 0 0 auto; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--field); color: var(--ink-2); }
+.pp2-mini-lines { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.pp2-mini-t { display: block; font: 600 12px var(--sans); letter-spacing: -0.01em; line-height: 1.2; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.pp2-mini-lines i { display: block; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
+@keyframes pp2-settle { 0% { opacity: 0; transform: translateY(-14px) rotate(var(--r)) scale(0.97); } 60% { opacity: 1; } 100% { opacity: 1; transform: translateY(0) rotate(var(--r)) scale(1); } }
+.pp2-learns { display: flex; flex-direction: column; gap: 13px; margin-top: 10px; }
+.pp2-learn { display: inline-flex; align-items: center; gap: 11px; font-family: var(--serif); font-size: 17px; color: var(--ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.pp2-learn svg { color: var(--warm-proof); }
+
+/* halo rings — kept for the all-set seal */
+.pp2-orb-ring { position: absolute; inset: -8px; border-radius: 24px; border: 1.5px solid color-mix(in srgb, var(--warm-proof) 45%, transparent); animation: pp2-halo 2.6s ease-in-out infinite; }
+.pp2-orb-ring2 { inset: -19px; border-radius: 30px; border-color: color-mix(in srgb, var(--warm-proof) 25%, transparent); animation-delay: 0.5s; }
+@keyframes pp2-halo { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+
+/* 6 · the promise — a quiet contract with one big signing box */
+.pp2-doc { width: 100%; margin-top: 4px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 20px; padding: 22px 20px; text-align: left; animation: ov4-rise 0.5s var(--ease) 0.18s both; }
+.pp2-doc-lead { font: italic 400 17.5px var(--serif); letter-spacing: -0.005em; color: var(--ink-2); }
+.pp2-vows { display: flex; flex-direction: column; gap: 12px; margin-top: 13px; }
+.pp2-vow { display: flex; align-items: flex-start; gap: 10px; font: 400 14.5px var(--serif); line-height: 1.4; color: var(--ink); }
+.pp2-vow svg { flex: 0 0 auto; margin-top: 3.5px; color: var(--warm-proof); }
+.pp2-pact { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-2); font: 400 13.5px var(--serif); line-height: 1.55; color: var(--ink-2); }
+.pp2-pact b { font-weight: 700; color: var(--ink); }
+.pp2-pact em { font-style: italic; }
+.pp2-signwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 16px; }
+.pp2-sigbox { position: relative; width: 100%; height: 148px; border: 1.5px dashed var(--line-strong); border-radius: 16px; background: color-mix(in srgb, var(--warm-proof) 4%, var(--paper)); overflow: hidden; }
+.pp2-pad { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--ink); touch-action: none; cursor: crosshair; }
+.pp2-pad-hint { position: absolute; inset: 0; display: grid; place-items: center; font: italic 400 14px var(--serif); color: var(--ink-3); pointer-events: none; }
+.pp2-pad-clear { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--field); border: 1px solid var(--line-2); color: var(--ink-2); display: grid; place-items: center; cursor: pointer; }
+.pp2-sig-cap { font: 600 9.5px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+.pp2-note { text-align: center; font: 400 11px var(--sans); color: var(--ink-3); animation: ov4-rise 0.5s var(--ease) 0.3s both; }
+
+/* 7 · you're all set — gold seal + palette confetti */
+.pp2-allset { position: relative; }
+/* the seal stamps in like a wax press — overshoot, then settle */
+.pp2-seal { position: relative; display: grid; place-items: center; width: 72px; height: 72px; margin-bottom: 6px; animation: pp2-stamp 0.7s cubic-bezier(0.34, 1.3, 0.5, 1) 0.15s both; }
+@keyframes pp2-stamp { 0% { opacity: 0; transform: scale(1.7); } 62% { opacity: 1; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+.pp2-seal-core { position: relative; z-index: 2; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 18%, var(--paper)); color: var(--badge-ink); }
+.pp2-seal .pp2-orb-ring, .pp2-seal .pp2-orb-ring2 { border-radius: 50%; animation-delay: 1.6s; }
+.pp2-seal .pp2-orb-ring2 { animation-delay: 2s; }
+/* a gold bloom flashes at the moment of the stamp */
+.pp2-bloom { position: absolute; left: 50%; top: 50%; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--warm-proof) 50%, transparent) 0%, transparent 64%); pointer-events: none; animation: pp2-bloom 1.5s var(--ease) 0.35s both; }
+@keyframes pp2-bloom { 0% { opacity: 0; transform: scale(0.5); } 35% { opacity: 0.85; } 100% { opacity: 0; transform: scale(1.9); } }
+/* the burst — sparks fly out radially from under the seal, once */
+.pp2-spark { position: absolute; left: 50%; top: 50%; margin: -4px 0 0 -3px; opacity: 0; pointer-events: none; animation-name: pp2-burst; animation-timing-function: cubic-bezier(0.16, 0.66, 0.35, 1); animation-fill-mode: both; }
+@keyframes pp2-burst { 0% { opacity: 0; transform: translate(0, 0) rotate(0); } 8% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); } }
+/* rings ripple outward once behind the burst */
+.pp2-ripple { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--warm-proof) 55%, transparent); opacity: 0; pointer-events: none; animation: pp2-ripple 0.9s ease-out both; }
+.pp2-ripple-1 { animation-delay: 0.85s; }
+.pp2-ripple-2 { animation-delay: 1.08s; }
+@keyframes pp2-ripple { 0% { opacity: 0.9; transform: scale(0.7); } 100% { opacity: 0; transform: scale(2.15); } }
+/* a sparse drift settles down the screen, once */
+.pp2-rain { position: absolute; left: -20px; right: -20px; top: -12px; height: 460px; overflow: hidden; pointer-events: none; }
+.pp2-drop { position: absolute; top: -14px; opacity: 0; animation-name: pp2-rainfall; animation-timing-function: cubic-bezier(0.4, 0.2, 0.6, 1); animation-fill-mode: both; }
+@keyframes pp2-rainfall { 0% { opacity: 0; transform: translateY(0) rotate(0); } 10% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; transform: translateY(420px) rotate(var(--rot)); } }
+/* the title streams in character by character — the reveal is the entrance */
+.pp2-allset-title { animation: none; min-height: 1.25em; margin-top: 20px; }
+.pp2-caret { display: inline-block; width: 2.5px; height: 0.85em; margin-left: 3px; vertical-align: -0.08em; background: var(--warm-proof); animation: pp2-caret 0.8s steps(1) infinite; }
+@keyframes pp2-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* 8 · the trial journey — a thick pill rail; the stretch already travelled is
+   filled with the gold gradient, dark nodes sit on the rail, step one is done */
+.pp2-journey { list-style: none; position: relative; display: flex; flex-direction: column; gap: 24px; width: 100%; margin-top: 16px; padding: 20px 18px; text-align: left; background: var(--surface); border: 1px solid var(--line-2); border-radius: 20px; }
+.pp2-journey::before { content: ''; position: absolute; left: 18px; top: 16px; bottom: 36px; width: 28px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 7%, var(--paper)); }
+.pp2-journey::after { content: ''; position: absolute; left: 18px; top: 16px; height: 118px; width: 28px; border-radius: 999px; background: var(--ink); }
+.pp2-journey li { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 16px; animation: ov4-rise 0.55s var(--ease) var(--d) both; }
+.pp2-jy-node { flex: 0 0 auto; width: 28px; display: flex; justify-content: center; padding-top: 1px; color: var(--ink); }
+.pp2-jy-node[data-fill] { color: var(--paper); }
+.pp2-jy-tx { display: flex; flex-direction: column; gap: 3px; }
+.pp2-jy-pre { font-weight: 700; color: var(--ink); }
+.pp2-jy-tx b { font: 400 15px var(--serif); letter-spacing: -0.005em; color: var(--ink); }
+.pp2-jy-d { font: 400 13px var(--sans); line-height: 1.45; color: var(--ink-2); }
+.pp2-cancelcard { display: flex; align-items: flex-start; gap: 13px; width: 100%; margin-top: 4px; padding: 15px 17px; border-radius: 16px; text-align: left; background: color-mix(in srgb, var(--warm-proof) 9%, var(--paper)); border: 1px solid color-mix(in srgb, var(--warm-proof) 26%, var(--line-2)); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.pp2-cancel-ic { flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: color-mix(in srgb, var(--warm-proof) 18%, var(--paper)); color: var(--badge-ink); }
+.pp2-cancel-tx b { display: block; font: 700 13.5px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
+.pp2-cancel-tx p { margin-top: 3px; font: 400 13px var(--sans); line-height: 1.5; color: var(--ink-2); }
 
 /* ── refinement round 2 ── */
 
@@ -9958,15 +10091,11 @@ svg {
 .k8-vow svg { flex: 0 0 auto; margin-top: 3.5px; color: var(--warm-proof); }
 .k8-pact-p { margin-top: 17px; padding-top: 15px; border-top: 1px solid var(--line-2); font: 400 13.5px var(--serif); line-height: 1.55; color: var(--ink-2); }
 .k8-pact-p em { font-style: italic; }
-.k8-sigs { display: grid; grid-template-columns: 1.35fr 1fr; gap: 18px; margin-top: 20px; }
-.k8-sig { display: flex; flex-direction: column; gap: 7px; }
-.k8-sigline { position: relative; height: 82px; border-bottom: 1px solid var(--line-strong); }
+.k8-signwrap { display: flex; flex-direction: column; align-items: center; gap: 9px; margin-top: 20px; }
+.k8-sigbox { position: relative; width: 100%; height: 138px; border: 1.5px dashed var(--line-strong); border-radius: 16px; background: color-mix(in srgb, var(--warm-proof) 4%, var(--paper)); overflow: hidden; }
 .k8-pad { position: absolute; inset: 0; width: 100%; height: 100%; background: transparent; color: var(--ink); touch-action: none; cursor: crosshair; }
-.k8-pad-hint { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font: italic 400 12.5px var(--serif); color: var(--ink-3); pointer-events: none; }
-.k8-pad-clear { position: absolute; top: 0; right: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--field); border: 1px solid var(--line-2); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.k8-sigline-kael { display: flex; align-items: flex-end; justify-content: center; gap: 7px; padding-bottom: 7px; }
-.k8-kaelsig { font-family: var(--title); font-style: italic; font-weight: 500; font-size: 27px; line-height: 1; color: var(--ink); transform: rotate(-2deg); }
-.k8-sigline-kael svg { color: var(--warm-proof); margin-bottom: 3px; }
+.k8-pad-hint { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font: italic 400 14px var(--serif); color: var(--ink-3); pointer-events: none; }
+.k8-pad-clear { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--field); border: 1px solid var(--line-2); color: var(--ink-2); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .k8-sig-cap { font: 600 9.5px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); text-align: center; }
 .k8-pad-note { margin-top: 13px; font: 400 11px var(--sans); color: var(--ink-3); text-align: center; }
 

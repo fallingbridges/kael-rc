@@ -8,10 +8,11 @@ import {
 } from '@phosphor-icons/react'
 import {
   FLOW, QUESTIONS, BLOCK_IDS, BLOCKS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
-  REL_CONTEXT, AGES, GENDERS, GOALS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
+  REL_CONTEXT, AGES, GENDERS, GOALS, ASPECTS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
   resolveRead, answeredCount,
 } from '../obv7.js'
 import { Safety as IntroSafety, Recognition as IntroRecognition, Hope as IntroHope } from './IntroConcept.jsx'
+import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, TrialBody } from './PrePaywall.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Kael Onboarding V7 — the merge: V6's balanced 16-question quiz + axis-bar
@@ -26,7 +27,7 @@ const cap = (w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w)
 const lowerFirst = (w) => (w ? w.charAt(0).toLowerCase() + w.slice(1) : w)
 const proseList = (arr) => { const a = (arr || []).filter(Boolean); if (!a.length) return ''; if (a.length === 1) return a[0]; if (a.length === 2) return `${a[0]} and ${a[1]}`; return `${a.slice(0, -1).join(', ')}, and ${a[a.length - 1]}` }
 const lines = (str) => (str || '').split('\n')
-const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender']
+const AUTO_KINDS = ['two', 'single', 'relcontext', 'age', 'gender', 'therapist']
 
 function hash(str) {
   let h = 2166136261
@@ -97,7 +98,7 @@ export default function OnboardingV7({ noanim = false }) {
 
   /* chrome */
   const isQuiz = ['two', 'single', 'slider', 'statement', 'multi'].includes(s.kind)
-  const showHead = !['welcome', 'hero', 'intro', 'reveal', 'calibration', 'paywall'].includes(s.kind)
+  const showHead = !['welcome', 'hero', 'reveal', 'calibration', 'paywall'].includes(s.kind)
   const canBack = i > 0 && s.kind !== 'calibration' && s.kind !== 'paywall'
   /* progress bar derives its blocks from FLOW (via BLOCKS/BLOCK_IDS) so it can never desync from the order */
   const segs = BLOCKS.map((b) => {
@@ -116,6 +117,9 @@ export default function OnboardingV7({ noanim = false }) {
     if (s.kind === 'multi') return true // optional — never force a pick
     if (s.kind === 'situation') return Boolean(answers.situation)
     if (s.kind === 'goals') return Array.isArray(answers.goal) && answers.goal.length > 0
+    if (s.kind === 'aspects') return Array.isArray(answers.aspects) && answers.aspects.length > 0
+    if (s.kind === 'dailygoal') return Boolean(answers.dailygoal)
+    if (s.kind === 'promise') return Boolean(answers.promiseSigned)
     return true
   })()
   const showFooter = !AUTO_KINDS.concat(['calibration', 'paywall']).includes(s.kind) && Boolean(footerLabel)
@@ -195,6 +199,14 @@ function Body(props) {
     case 'situation': return <SituationList {...props} />
     case 'situationText': return <SituationText {...props} />
     case 'goals': return <Goals {...props} />
+    case 'aspects': return <Aspects {...props} />
+    case 'therapist': return <CardList {...props} field="therapist" items={['Yes', 'No']} />
+    case 'dailygoal': return <DailyGoal {...props} />
+    case 'difference': return <DifferenceBody />
+    case 'mechanism': return <MechanismBody />
+    case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} />
+    case 'allset': return <AllSetBody onDone={props.onAdvance} />
+    case 'trial': return <TrialBody />
     case 'trust': return <Trust {...props} />
     case 'relcontext': return <CardList {...props} field="rel" items={REL_CONTEXT} />
     case 'prep': return <Prep {...props} />
@@ -349,6 +361,39 @@ function Goals({ s, answers, set, fillSit }) {
           </button>
         ))}
       </div>
+    </>
+  )
+}
+
+/* the symptom inventory — multi-select of what they'd like to address; naming
+   the problems is what makes the plan feel pointed at them */
+function Aspects({ s, answers, set, fillSit }) {
+  const picks = Array.isArray(answers.aspects) ? answers.aspects : []
+  const has = (name) => picks.includes(name)
+  const toggle = (name) => set('aspects', has(name) ? picks.filter((p) => p !== name) : [...picks, name])
+  return (
+    <>
+      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
+      <div className="ov4-list">
+        {ASPECTS.map((o, n) => (
+          <button key={o.name} className="ov4-card ov4-card-sm" data-on={has(o.name) || undefined}
+            style={{ '--d': `${0.04 * n + 0.06}s` }} onClick={() => toggle(o.name)}>
+            <span className="ov4-card-ic"><o.icon size={20} weight="duotone" /></span>
+            <span className="ov4-card-name">{o.name}</span>
+            <span className="ov4-card-check"><Check size={12} weight="bold" /></span>
+          </button>
+        ))}
+      </div>
+    </>
+  )
+}
+
+/* the daily-time commitment — minutes paired with outcomes, shared with the pre-paywall lab */
+function DailyGoal({ s, answers, set, fillSit }) {
+  return (
+    <>
+      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
+      <GoalTiers value={answers.dailygoal} onPick={(v) => set('dailygoal', v)} />
     </>
   )
 }
@@ -847,16 +892,26 @@ function DailyLoop() {
 }
 
 /* a short breather: Kael is calibrated to this archetype, addressed by name */
-function Ready({ arch, nm, answers }) {
+/* everything the onboarding built, read back as a completed setup */
+const READY_CHECKS = [
+  'Tuned to your pattern',
+  'Pointed at your goals',
+  'Fit to your daily rhythm',
+  'Here any hour you need it',
+]
+function Ready({ arch }) {
   if (!arch) return null
   const Glyph = arch.glyph
-  const goals = answers && Array.isArray(answers.goal) ? proseList(answers.goal.map(lowerFirst)) : ''
   return (
     <div className="ov4-pause ov4-ready">
       <span className="ov4-cal-glyph"><Glyph size={30} weight="duotone" /></span>
       <span className="ov4-kicker">Calibrated to you</span>
-      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">{nm ? `Kael is ready, ${cap(nm)}.` : 'Kael is ready.'}</h1>
-      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{goals ? `Tuned to your pattern, and pointed at ${goals}.` : 'Tuned to your pattern, not a generic script.'}</p>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">Your coach is ready.</h1>
+      <ul className="ov7-ready-list">
+        {READY_CHECKS.map((t, k) => (
+          <li key={t} style={{ '--d': `${0.07 * k + 0.2}s` }}><Check size={14} weight="bold" />{t}</li>
+        ))}
+      </ul>
     </div>
   )
 }

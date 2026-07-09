@@ -21,7 +21,7 @@ import {
   Spiral, Flame, Scales, Waves, Brain, Feather, Hourglass, Sun, Lightning,
   HandHeart, Anchor, Wind, Moon, ArrowsClockwise, Sparkle, Waveform, Wine,
   StackSimple, Heart, MagnifyingGlass, Ear, Heartbeat, BatteryLow, ChatCircleDots,
-  GenderFemale, GenderMale, GenderNonbinary, Minus,
+  GenderFemale, GenderMale, GenderNonbinary, Minus, CloudRain,
 } from '@phosphor-icons/react'
 
 export const AXES = ['MIND', 'ENERGY', 'VOICE', 'COPE']
@@ -376,6 +376,19 @@ export const GOALS = [
   { name: 'Just some relief', icon: Heart },
 ]
 
+/* the symptom inventory — naming what they want gone crystallizes the need the
+   plan will answer. Generic and self-selectable; "Mostly just curious" is the out. */
+export const ASPECTS = [
+  { name: 'Racing thoughts', icon: Brain },
+  { name: 'Overthinking', icon: Spiral },
+  { name: 'Stress', icon: Lightning },
+  { name: 'Low energy', icon: BatteryLow },
+  { name: 'Feeling low', icon: CloudRain },
+  { name: 'Trouble sleeping', icon: Moon },
+  { name: 'Irritability', icon: Flame },
+  { name: 'Mostly just curious', icon: Sparkle },
+]
+
 /* breathers — one per segment + a credibility beat. Two carry live widgets:
    breather 2 shows the tap-to-reply chat demo, breather 5 shows the method row. */
 export const BREATHERS = {
@@ -432,6 +445,8 @@ export const FLOW = [
   /* ACT 1 · open + get to know you (identity up front, like V4) */
   { id: 'intro-meet', kind: 'intro', scene: 'safety', act: 1, cta: 'Continue' },
   { id: 'intro-moods', kind: 'intro', scene: 'recognition', act: 1, cta: 'Continue' },
+  /* the mechanism, told up front — what it is → what you do → what compounds → what changes */
+  { id: 'mechanism', kind: 'mechanism', act: 1, cta: 'Continue' },
   { id: 'intro-break', kind: 'intro', scene: 'hope', act: 1, cta: "Let's begin" },
   { id: 'situation', kind: 'situation', act: 1, field: 'situation', title: 'What brings you here?', sub: "Pick what's closest. We start there.", cta: 'Continue' },
   { id: 'situationText', kind: 'situationText', act: 1, field: 'situationText', title: 'Say it in your words.', sub: 'Whatever is on your mind right now. Keep it short.', placeholder: 'In a few words…', cta: 'Continue' },
@@ -456,7 +471,12 @@ export const FLOW = [
   breather(4),
 
   /* a hopeful, forward-looking beat — names what they're working toward */
-  { id: 'goals', kind: 'goals', act: 2, field: 'goal', title: 'Last thing. What are you hoping for?', sub: 'Pick as many as feel true. Kael points everything toward them.', cta: 'Continue' },
+  { id: 'goals', kind: 'goals', act: 2, field: 'goal', title: 'What do you want to get out of this journey?', sub: 'Pick as many as feel true. Kael points everything toward them.', cta: 'Continue' },
+  /* the pre-calibration ladder: problems → trust → commitment → permission,
+     so the loader reads as building a plan from everything they just gave */
+  { id: 'aspects', kind: 'aspects', act: 2, field: 'aspects', title: 'What’s been showing up lately?', sub: 'Choose all that apply.', cta: 'Continue' },
+  { id: 'therapist', kind: 'therapist', act: 2, field: 'therapist', title: 'Did you hear about Kael from a therapist?', sub: 'Either way, you’re in the right place.' },
+  { id: 'dailygoal', kind: 'dailygoal', act: 2, field: 'dailygoal', title: 'Set your daily goal.', sub: 'A few honest minutes is enough.', cta: 'Continue' },
   { id: 'notif', kind: 'notif', act: 2, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
   { id: 'calibration', kind: 'calibration', act: 2, title: 'Finding your pattern.' },
 
@@ -464,10 +484,13 @@ export const FLOW = [
   { id: 'reveal', kind: 'reveal', act: 3 },
   { id: 'miniread', kind: 'miniread', act: 3, cta: 'This sounds like me' },
 
-  /* ACT 4 · the sell */
-  { id: 'ready', kind: 'ready', act: 4, cta: 'See my 30 days' },
-  { id: 'thirtydays', kind: 'thirtydays', act: 4, cta: 'See my plan' },
-  { id: 'paywall', kind: 'paywall', act: 4 },
+  /* ACT 4 · the close — ready, the difference, why it compounds, the signed
+     promise, the celebration, then the transparent 7 days into the paywall */
+  { id: 'ready', kind: 'ready', act: 4, cta: 'Continue' },
+  { id: 'difference', kind: 'difference', act: 4, cta: 'I want that' },
+  { id: 'promise', kind: 'promise', act: 4, cta: 'I commit to myself' },
+  { id: 'allset', kind: 'allset', act: 4 },
+  { id: 'trial', kind: 'trial', act: 4, cta: 'Start my free trial' },
 ]
 
 /* derived from FLOW — single source of truth for the segmented progress bar. */

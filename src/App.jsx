@@ -11,6 +11,7 @@ import OnboardingV4 from './screens/OnboardingV4.jsx'
 import OnboardingV5 from './screens/OnboardingV5.jsx'
 import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
+import PrePaywall from './screens/PrePaywall.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
 import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, autoTone } from './screens/ReflectConcept.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
@@ -178,6 +179,13 @@ export default function App() {
               </button>
               <button
                 className="studio-tab"
+                data-on={studioTab === 'prepaywall'}
+                onClick={() => setStudioTab('prepaywall')}
+              >
+                Pre-paywall
+              </button>
+              <button
+                className="studio-tab"
                 data-on={studioTab === 'v8close'}
                 onClick={() => setStudioTab('v8close')}
               >
@@ -245,6 +253,8 @@ export default function App() {
                 <OnboardingV6 />
               ) : studioTab === 'onboarding-v7' ? (
                 <OnboardingV7 />
+              ) : studioTab === 'prepaywall' ? (
+                <PrePaywall />
               ) : studioTab === 'v8close' ? (
                 <CloseV8 />
               ) : studioTab === 'reflect' ? (
