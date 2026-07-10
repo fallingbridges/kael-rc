@@ -410,8 +410,9 @@ export const CALIB_STEPS = [
   'Weighing what drains you',
   'Finding the thread underneath',
 ]
+/* the paywall's review owns "Felt like it actually knew me." — don't reuse it here */
 export const CALIB_REVIEWS = [
-  'Felt like it actually knew me.',
+  'Like it had been listening for years.',
   'I finally have words for it.',
   'Scarily accurate, in the best way.',
   'The first one that didn’t feel generic.',
@@ -490,7 +491,12 @@ export const FLOW = [
   { id: 'difference', kind: 'difference', act: 4, cta: 'I want that' },
   { id: 'promise', kind: 'promise', act: 4, cta: 'I commit to myself' },
   { id: 'allset', kind: 'allset', act: 4 },
-  { id: 'thirtydays', kind: 'journey', act: 4, cta: 'Continue' },
+  { id: 'thirtydays', kind: 'journey', act: 4, cta: 'I’m ready' },
+  /* the close — offer, then the decline ladder: a kinder price (once), then the
+     open door. These three own their whole CTA blocks — no cta here. */
+  { id: 'offer', kind: 'offer', act: 4 },
+  { id: 'decline', kind: 'decline', act: 4 },
+  { id: 'saved', kind: 'saved', act: 4 },
 ]
 
 /* derived from FLOW — single source of truth for the segmented progress bar. */

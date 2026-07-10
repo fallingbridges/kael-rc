@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import {
-  ArrowLeft, Check, X, Sparkle, Star, Sun, CloudRain,
-  Leaf, Waves, Mountains, Phone, Moon, Heart, ArrowsClockwise,
+  ArrowLeft, Check, X, Sparkle, Sun, CloudRain,
+  Leaf, Waves, Mountains, Phone, Moon, Heart,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -13,7 +13,7 @@ import {
    ────────────────────────────────────────────────────────────────────────── */
 
 const NAME = 'Maya'
-const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'journey']
+const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'journey', 'offer', 'decline', 'saved']
 
 /* each tier pairs the minutes with what they buy — the commitment sells its outcome */
 const GOALS = [
@@ -30,14 +30,14 @@ const WITH = ['A settled mind', 'Steadier days', 'A kinder voice', 'Room to feel
 /* vows are about the inner work, not about using the product */
 const VOWS = ['Be honest about what I’m feeling', 'Face the hard stuff instead of burying it', 'Be kinder to myself along the way']
 
-/* the 30 days — the program the price will belong to. Offer-agnostic
-   (no billing events; Superwall owns those), transformation milestones on
-   the travelled rail — today is already lit, because the journey has begun. */
-const JOURNEY = [
-  { when: 'Today', t: 'Bring what’s on your mind', d: 'Start anywhere. Kael starts learning.', icon: Sparkle, fill: true },
-  { when: 'Day 3', t: 'Your loops get caught early', d: 'Kael spots them before you finish naming them.', icon: ArrowsClockwise },
-  { when: 'Day 7', t: 'Your first shift, named', d: 'One spiral caught, one kinder word to yourself.', icon: Star },
-  { when: 'Day 30', t: 'The pattern loosens its grip', d: 'The old reflex shows up. You catch it, and choose.', icon: Leaf },
+/* the 30 days — the handoff: a projection chart (the gap is the product) over
+   milestone rows. Honestly framed as a path, never as fake measurement — the
+   "On your own" line still rises, there are no invented percentages. */
+const MILES = [
+  { d: 'Today', t: 'Bring Kael what’s on your mind' },
+  { d: 'Day 3', t: 'Kael starts catching your loops' },
+  { d: 'Day 7', t: 'Your first shift, and you feel it' },
+  { d: 'Day 30', t: 'The old reflex stops running the show' },
 ]
 
 export default function PrePaywall({ noanim = false }) {
@@ -60,8 +60,8 @@ export default function PrePaywall({ noanim = false }) {
   useEffect(() => { clearTimeout(advanceRef.current) }, [i])
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
-  const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : 'Continue'
-  const showFooter = !['therapist', 'goal', 'allset'].includes(kind) // these screens advance themselves
+  const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : kind === 'journey' ? 'I’m ready' : 'Continue'
+  const showFooter = !['therapist', 'goal', 'allset', 'offer', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
   const ready = kind === 'goal' ? Boolean(ans.goal)
     : kind === 'promise' ? Boolean(ans.signed) : true
 
@@ -83,6 +83,7 @@ export default function PrePaywall({ noanim = false }) {
           <header className="ov-head">
             <div className="ov-head-row">
               <button className="ov-back" data-hide={i === 0 || undefined} onClick={back} aria-label="Back"><ArrowLeft size={20} /></button>
+              {kind === 'offer' && <button className="ov-back ov-x" onClick={next} aria-label="Close"><X size={20} /></button>}
             </div>
           </header>
 
@@ -111,7 +112,10 @@ function Screen({ kind, ans, set, pickAuto, onNext }) {
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} />
     case 'allset': return <AllSetBody onDone={onNext} />
-    case 'journey': return <JourneyBody />
+    case 'journey': return <JourneyBody name={NAME} />
+    case 'offer': return <OfferBody onNext={onNext} />
+    case 'decline': return <DeclineBody onNext={onNext} />
+    case 'saved': return <SavedBody onNext={onNext} />
     default: return null
   }
 }
@@ -346,25 +350,105 @@ export function AllSetBody({ onDone }) {
   )
 }
 
-/* 8 · the trial journey — thick rail, accent-gradient fill over the done stretch,
-   renewal-relative steps (trial length can change without touching this) */
-export function JourneyBody() {
+/* 8 · the road ahead — the projection chart. The gold line draws itself, the
+   shaded gap between "With Kael" and "On your own" is the thing being bought.
+   Milestone rows carry the story; the axis only anchors the ends. */
+const DOTS = [[20, 150], [120, 128], [220, 78], [320, 36]]
+export function JourneyBody({ name = '' }) {
   return (
-    <div className="pp2 pp2-c">
-      <h1 className="pp2-title">Your 30 days with Kael.</h1>
-      <ol className="pp2-journey">
-        {JOURNEY.map((m, k) => (
-          <li key={m.t} style={{ '--d': `${0.08 * k + 0.15}s` }}>
-            <span className="pp2-jy-node" data-fill={m.fill || undefined}>
-              <m.icon size={16} weight="fill" />
-            </span>
-            <div className="pp2-jy-tx">
-              <b><span className="pp2-jy-pre">{m.when}: </span>{m.t}</b>
-              <span className="pp2-jy-d">{m.d}</span>
-            </div>
-          </li>
-        ))}
-      </ol>
+    <div className="pp2 pp2-c pp2-road">
+      <span className="ov4-kicker">The road ahead</span>
+      <h1 className="pp2-title">This is where<br />you’re headed{name ? `, ${name}` : ''}.</h1>
+      <div className="pp2-chartcard">
+        <h3 className="pp2-chart-t">Your path to a calmer, steadier baseline.</h3>
+        <svg className="pp2-chart" viewBox="0 0 340 192" aria-hidden="true">
+          <path className="pp2-area" d="M20,150 C55,146 90,140 120,128 C155,114 190,96 220,78 C250,62 290,46 320,36 L320,128 C220,138 120,146 20,150 Z" />
+          <line className="pp2-ch-base" x1="16" y1="168" x2="324" y2="168" />
+          <path className="pp2-ln-own" d="M20,150 C120,146 220,138 320,128" />
+          <path className="pp2-ln-kael" pathLength="1" d="M20,150 C55,146 90,140 120,128 C155,114 190,96 220,78 C250,62 290,46 320,36" />
+          {DOTS.map(([x, y], k) => (
+            <circle key={k} className="pp2-dot" cx={x} cy={y} r={k === 0 ? 5.5 : 4.5} style={{ animationDelay: `${0.35 * k + 0.6}s` }} />
+          ))}
+          <circle className="pp2-dot pp2-dot-ring" cx="20" cy="150" r="10" style={{ animationDelay: '0.6s' }} />
+          <text className="pp2-ch-lab" x="318" y="22" textAnchor="end">With Kael</text>
+          <text className="pp2-ch-lab pp2-ch-lab-own" x="318" y="116" textAnchor="end">On your own</text>
+          <text className="pp2-ch-axis" x="20" y="186" textAnchor="start">Today</text>
+          <text className="pp2-ch-axis" x="320" y="186" textAnchor="end">Day 30</text>
+        </svg>
+        <ul className="pp2-miles">
+          {MILES.map((m, k) => (
+            <li key={m.d} style={{ '--d': `${0.12 * k + 0.5}s` }}>
+              <span className="pp2-mile-d">{m.d}</span>
+              <span className="pp2-mile-t">{m.t}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <p className="pp2-roadnote"><Sparkle size={12} weight="fill" />Built on CBT and ACT. No guesswork.</p>
+    </div>
+  )
+}
+
+/* 9 · the offer — the minimal close. Copy pulls the weight: a Barnum title
+   that names the funnel's real enemy (your own head) and flips it, one
+   review as proof, the unfakeable trust line, one price, one button. */
+/* the offer — title and review sell, one plain line states the terms, the CTA
+   carries the only trial mention. The quietest honest close possible. */
+export function OfferBody({ onNext }) {
+  return (
+    <div className="pp2 pp2-c pp2-offer pp2-paywall">
+      <h1 className="pp2-title pp2-title-lg">Your coach,<br />always on your side.</h1>
+      {/* the middle zone echoes the signed promise — identical for every user,
+          personal because they signed it. Swaps to a real attributed review at ship. */}
+      <div className="pp2-review">
+        <p>You promised to be honest.<br />Kael promised 2am.</p>
+      </div>
+      <div className="pp2-offer-foot">
+        <p className="pp2-freehead">7 days free</p>
+        <p className="pp2-priceline">Then $69.99/year ($5.83/month)</p>
+        <button className="ov-cta" onClick={onNext}>Start my 7-day free trial</button>
+        <p className="pp2-cancelnote">No charge today · Cancel anytime</p>
+        <div className="pp2-legal"><button>Restore</button><button>Terms</button><button>Privacy</button></div>
+      </div>
+    </div>
+  )
+}
+
+/* 10 · the decline catch — the emotionally intelligent step down. Names the
+   hesitation without shame, lowers the barrier with a real price against the
+   real anchor, states finality gently. Fires once; no countdowns, no guilt. */
+export function DeclineBody({ onNext }) {
+  return (
+    <div className="pp2 pp2-c pp2-offer pp2-decline">
+      <span className="ov4-kicker">Before you go</span>
+      <h1 className="pp2-title pp2-title-lg">A kinder price.</h1>
+      <p className="pp2-sub">Same coach, same 30 days.<br />Just less of a leap.</p>
+      <div className="pp2-price">
+        <s>$69.99</s>
+        <b>$59.99<span>/year</span></b>
+        <i>That’s $5 a month.</i>
+      </div>
+      <p className="pp2-once">One time only. If you pass, this price won’t come back.</p>
+      <div className="pp2-offer-foot">
+        <p className="pp2-trust"><Check size={14} weight="bold" />Still 7 days free. Cancel anytime.</p>
+        <button className="ov-cta" onClick={onNext}>Keep this price</button>
+        <button className="ov4-quiet" onClick={onNext}>Let it go</button>
+      </div>
+    </div>
+  )
+}
+
+/* 11 · the open door — what a declined user lands on. No shame, no re-pitch:
+   their read is kept, the way back is one tap. Grace is the retention play. */
+export function SavedBody({ onNext }) {
+  return (
+    <div className="pp2 pp2-c pp2-offer pp2-saved">
+      <h1 className="pp2-title pp2-title-lg">Your read is saved.</h1>
+      <p className="pp2-sub">Everything you shared stays with Kael, ready whenever you are.</p>
+      <span className="pp2-freepill"><Sparkle size={12} weight="fill" />The door stays open</span>
+      <div className="pp2-offer-foot">
+        <button className="ov-cta" onClick={onNext}>Resume my 30 days</button>
+      </div>
     </div>
   )
 }

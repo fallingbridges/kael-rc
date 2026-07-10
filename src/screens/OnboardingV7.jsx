@@ -12,7 +12,7 @@ import {
   resolveRead, answeredCount,
 } from '../obv7.js'
 import { Safety as IntroSafety, Recognition as IntroRecognition, Hope as IntroHope } from './IntroConcept.jsx'
-import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody } from './PrePaywall.jsx'
+import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody, OfferBody, DeclineBody, SavedBody } from './PrePaywall.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Kael Onboarding V7 — the merge: V6's balanced 16-question quiz + axis-bar
@@ -148,6 +148,7 @@ export default function OnboardingV7({ noanim = false }) {
                 <header className="ov-head">
                   <div className="ov-head-row">
                     <button className="ov-back" data-hide={!canBack || undefined} onClick={back} aria-label="Back"><ArrowLeft size={20} /></button>
+                    {s.kind === 'offer' && <button className="ov-back ov-x" onClick={next} aria-label="Close"><X size={20} /></button>}
                     {isQuiz && (() => {
                       const EyeIc = BLOCK_ICONS[s.block]
                       return (
@@ -206,7 +207,10 @@ function Body(props) {
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} />
     case 'allset': return <AllSetBody onDone={props.onAdvance} />
-    case 'journey': return <JourneyBody />
+    case 'journey': return <JourneyBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} />
+    case 'offer': return <OfferBody onNext={props.onAdvance} />
+    case 'decline': return <DeclineBody onNext={props.onAdvance} />
+    case 'saved': return <SavedBody onNext={props.onAdvance} />
     case 'trust': return <Trust {...props} />
     case 'relcontext': return <CardList {...props} field="rel" items={REL_CONTEXT} />
     case 'prep': return <Prep {...props} />
