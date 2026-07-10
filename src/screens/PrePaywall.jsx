@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import {
-  ArrowLeft, Check, X, Sparkle, Sun, CloudRain,
+  ArrowLeft, Check, X, Sparkle, Star, Sun, CloudRain,
   Leaf, Waves, Mountains, Phone, Moon, Heart,
 } from '@phosphor-icons/react'
 
@@ -398,10 +398,9 @@ export function OfferBody({ onNext }) {
   return (
     <div className="pp2 pp2-c pp2-offer pp2-paywall">
       <h1 className="pp2-title pp2-title-lg">Your coach,<br />always on your side.</h1>
-      {/* the middle zone echoes the signed promise — identical for every user,
-          personal because they signed it. Swaps to a real attributed review at ship. */}
       <div className="pp2-review">
-        <p>You promised to be honest.<br />Kael promised 2am.</p>
+        <span className="pp2-review-stars">{[0, 1, 2, 3, 4].map((k) => <Star key={k} size={15} weight="fill" />)}</span>
+        <p>“For the first time, I don’t feel<br />alone in my own head.”</p>
       </div>
       <div className="pp2-offer-foot">
         <p className="pp2-freehead">7 days free</p>
