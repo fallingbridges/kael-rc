@@ -9102,6 +9102,50 @@ svg {
 .pp2-paywall .pp2-offer-foot { margin-top: 0; }
 .pp2-review-stars { display: flex; gap: 2px; color: var(--warm-proof); }
 .pp2-review p { font: italic 400 15.5px var(--serif); color: var(--ink); }
+/* ── the program close (pp3) — scrollable syllabus paywall variant ── */
+.pp3 { align-items: center; text-align: center; gap: 13px; }
+.pp3-mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; background: var(--ink); color: var(--paper); animation: ov4-rise 0.5s var(--ease) 0.05s both; }
+.pp3-badge { padding: 7px 14px; border-radius: 999px; background: color-mix(in srgb, var(--warm-proof) 16%, var(--paper)); font: 600 12px var(--sans); letter-spacing: 0.02em; color: var(--badge-ink); animation: ov4-rise 0.5s var(--ease) 0.12s both; }
+.pp3-title { font-family: var(--title); font-weight: 500; font-size: 29px; line-height: 1.14; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; animation: ov4-rise 0.5s var(--ease) 0.18s both; }
+.pp3-title em { font-style: italic; }
+.pp3-creds { display: flex; align-items: center; gap: 14px; animation: ov4-rise 0.5s var(--ease) 0.24s both; }
+.pp3-cred-pill { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-2); font: 500 11.5px var(--sans); color: var(--ink-2); }
+.pp3-laur { display: flex; align-items: center; gap: 3px; }
+.pp3-laurel { height: 34px; width: auto; color: var(--warm-proof); }
+.pp3-laur b { font: 600 11px/1.3 var(--sans); letter-spacing: 0.02em; color: var(--ink-2); text-align: center; }
+.pp3-days { list-style: none; width: 100%; margin-top: 6px; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.pp3-day { display: flex; align-items: flex-start; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.pp3-day-ic { flex: 0 0 auto; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 13%, var(--paper)); color: var(--badge-ink); }
+.pp3-day-tx { display: flex; flex-direction: column; gap: 2px; }
+.pp3-day-d { font: 700 10.5px var(--sans); letter-spacing: 0.07em; text-transform: uppercase; color: var(--badge-ink); }
+.pp3-day-tx b { font: 700 14.5px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
+.pp3-day-tx s { text-decoration: none; font: 400 12.5px var(--sans); line-height: 1.45; color: var(--ink-2); }
+.pp3-week { width: 100%; padding: 11px 14px; border-radius: 14px; background: color-mix(in srgb, var(--warm-proof) 11%, var(--paper)); border: 1px solid color-mix(in srgb, var(--warm-proof) 28%, var(--line-2)); text-align: center; font: 400 12.5px var(--sans); color: var(--badge-ink); animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.pp3-week b { font-weight: 700; }
+.pp3-foot { gap: 8px; padding-top: 12px; border-top: 1px solid var(--line-2); }
+.pp3-price { font: 400 14px var(--sans); color: var(--ink-2); }
+.pp3-price b { color: var(--ink); }
+.pp3-cancel { font: 400 12px var(--sans); color: var(--ink-3); }
+.pp3-trust { display: flex; align-items: center; gap: 7px; font: 600 12.5px var(--sans); color: var(--ink); }
+.pp3-trust svg { color: var(--warm-proof); }
+/* the catcher — a pace for everyone, as a bottom sheet behind the X */
+.pp3-scrim { position: absolute; inset: 0; z-index: 6; display: flex; align-items: flex-end; border-radius: 24px; background: color-mix(in srgb, var(--ink) 38%, transparent); animation: pp2-fadein 0.25s ease both; }
+.pp3-sheet { width: 100%; padding: 24px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 11px; background: var(--paper); border-radius: 22px 22px 24px 24px; animation: pp3-up 0.35s var(--ease) both; }
+@keyframes pp3-up { from { transform: translateY(48px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.pp3-sheet-t { font: 400 16.5px/1.4 var(--sans); letter-spacing: -0.01em; color: var(--ink-2); text-align: center; }
+.pp3-sheet-t b { font-weight: 700; color: var(--ink); }
+.pp3-plans { width: 100%; display: flex; flex-direction: column; gap: 9px; margin-top: 3px; }
+.pp3-plan { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: var(--surface); border: 1.5px solid var(--line-2); border-radius: 14px; cursor: pointer; text-align: left; }
+.pp3-plan[data-on] { border-color: var(--ink); }
+.pp3-plan-l b { display: flex; align-items: center; gap: 8px; font: 700 14.5px var(--sans); letter-spacing: -0.01em; color: var(--ink); }
+.pp3-plan-badge { padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--warm-proof) 18%, var(--paper)); font: 700 10px var(--sans); font-style: normal; letter-spacing: 0.04em; text-transform: uppercase; color: var(--badge-ink); }
+.pp3-plan-l > span { display: block; margin-top: 2px; font: 400 12px var(--sans); color: var(--ink-3); }
+.pp3-plan-r { text-align: right; }
+.pp3-plan-r b { display: block; font: 700 15px var(--sans); color: var(--ink); }
+.pp3-plan-r span { display: block; font: 400 11px var(--sans); color: var(--ink-3); }
+.pp3-sheet .ov-cta { width: 100%; }
+.pp3-notnow { background: none; border: none; padding: 4px 10px; font: 600 13px var(--sans); color: var(--ink-3); cursor: pointer; }
+
 /* the offer block — the free week as display type, terms under it, exit below the CTA */
 .pp2-freehead { font: 700 24px var(--sans); letter-spacing: -0.02em; color: var(--ink); }
 .pp2-priceline { margin-top: -4px; font: 500 14px var(--sans); color: var(--ink-2); }

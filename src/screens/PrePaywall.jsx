@@ -397,7 +397,7 @@ export function JourneyBody({ name = '' }) {
 export function OfferBody({ onNext }) {
   return (
     <div className="pp2 pp2-c pp2-offer pp2-paywall">
-      <h1 className="pp2-title pp2-title-lg">Your coach,<br />always on your side.</h1>
+      <h1 className="pp2-title pp2-title-lg">Your coach,<br />always by your side.</h1>
       <div className="pp2-review">
         <span className="pp2-review-stars">{[0, 1, 2, 3, 4].map((k) => <Star key={k} size={15} weight="fill" />)}</span>
         <p>“For the first time, I don’t feel<br />alone in my own head.”</p>

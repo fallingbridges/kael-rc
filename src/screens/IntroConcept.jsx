@@ -75,7 +75,7 @@ export default function IntroConcept({ noanim = false }) {
   )
 }
 
-const INTRO = 'Hey. I’m Kael. Someone in your corner, any hour. No judgment, no waiting room.'
+const INTRO = 'Hey. I’m Kael. I’m here to help you make sense of what’s going on in your head. No judgment, no waiting room.'
 export function Safety() {
   const typed = useTypewriter(INTRO)
   return (
