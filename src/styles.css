@@ -9022,6 +9022,25 @@ svg {
 .pp2-pad-hint { position: absolute; inset: 0; display: grid; place-items: center; font: italic 400 14px var(--serif); color: var(--ink-3); pointer-events: none; }
 .pp2-pad-clear { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--field); border: 1px solid var(--line-2); color: var(--ink-2); display: grid; place-items: center; cursor: pointer; }
 .pp2-sig-cap { font: 600 9.5px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+.pp2-promise { justify-content: flex-start; }
+.pp2-commit { position: relative; width: calc(100% + 44px); margin: auto -22px -22px; padding: 20px 30px 146px; background: color-mix(in srgb, var(--warm-proof) 9%, var(--paper)); border-top: 1px solid color-mix(in srgb, var(--warm-proof) 20%, var(--paper)); border-radius: 26px 26px 0 0; animation: ov4-rise 0.5s var(--ease) 0.35s both; }
+.pp2-commit-stars svg { position: absolute; color: var(--warm-proof); }
+.pp2-commit-hint { font: 400 13.5px/1.55 var(--sans); color: var(--ink-2); text-align: center; }
+.pp2-commit-hint b { display: block; font: 700 15px var(--sans); color: var(--ink); margin-bottom: 2px; }
+.pp2-hold { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 60; width: 100px; height: 100px; display: grid; place-items: center; background: var(--ink); border: none; border-radius: 50%; color: var(--paper); cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; box-shadow: 0 8px 22px rgba(27, 26, 23, 0.16); transition: transform 0.25s var(--ease); }
+.pp2-hold.is-holding { transform: translateX(-50%) scale(1.05); }
+.pp2-hold-ringbox { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pp2-hold-track { fill: none; stroke: color-mix(in srgb, var(--paper) 16%, var(--ink)); stroke-width: 4; opacity: 0; transition: opacity 0.2s; }
+.pp2-hold.is-holding .pp2-hold-track { opacity: 1; }
+.pp2-hold-ring { fill: none; stroke: var(--warm-proof); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.pp2-hold.is-holding .pp2-hold-ring { animation: pp2-hold-fill 1.5s linear forwards; }
+.pp2-hold.is-signed .pp2-hold-ring { stroke-dashoffset: 0; }
+@keyframes pp2-hold-fill { to { stroke-dashoffset: 0; } }
+.pp2-blanket { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--ink); clip-path: circle(0px at 50% calc(100% - 76px)); transition: clip-path 0.55s var(--ease); pointer-events: none; }
+.pp2-blanket.on, .pp2-blanket.done { clip-path: circle(150% at 50% calc(100% - 76px)); }
+.pp2-blanket-t { font: italic 500 21px var(--serif); color: var(--paper); opacity: 0; transform: translateY(6px); transition: opacity 0.35s 0.18s, transform 0.35s 0.18s; }
+.pp2-blanket.on .pp2-blanket-t, .pp2-blanket.done .pp2-blanket-t { opacity: 1; transform: none; }
+.pp2-blanket-check { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 85%, var(--paper)); color: var(--ink); animation: ov4-rise 0.4s var(--ease) both; }
 .pp2-note { text-align: center; font: 400 11px var(--sans); color: var(--ink-3); animation: ov4-rise 0.5s var(--ease) 0.3s both; }
 
 /* 7 · you're all set — gold seal + palette confetti */
@@ -9141,6 +9160,18 @@ svg {
 .pp2-tdots { display: flex; gap: 6px; }
 .pp2-tdots i { width: 5px; height: 5px; border-radius: 50%; background: var(--line-2); transition: background 0.3s; }
 .pp2-tdots i.on { background: var(--warm-proof); }
+
+/* ── 3-Step Paywall lab (tp-*) ─────────────────────────────────────────── */
+.tp-ready, .tp-gift { justify-content: flex-start; padding-top: 34px; }
+.tp-sub { margin-top: 12px; max-width: 330px; font: 400 15px/1.6 var(--sans); color: var(--ink-2); animation: ov4-rise 0.5s var(--ease) 0.16s both; }
+.tp-rows { margin-top: 28px; width: 100%; display: flex; flex-direction: column; gap: 13px; text-align: left; }
+.tp-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; animation: ov4-rise 0.5s var(--ease) var(--d) both; }
+.tp-row-ic { flex: 0 0 38px; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--warm-proof) 14%, var(--surface)); color: var(--badge-ink); }
+.tp-row p { font: 400 15.5px var(--serif); color: var(--ink); }
+.tp-gift .pp2-title { margin-top: 6px; }
+.tp-gift-sub { margin-top: 16px; font-family: var(--serif); font-size: 15.5px; }
+.tp-gift-coda { margin-top: auto; margin-bottom: 26px; font: italic 500 16px var(--serif); color: var(--badge-ink); animation: ov4-rise 0.5s var(--ease) 0.45s both; }
+.tp-trusts { display: flex; flex-direction: column; align-items: center; gap: 7px; }
 .pp2-freehead { font: 700 24px var(--sans); letter-spacing: -0.02em; color: var(--ink); }
 .pp2-priceline { margin-top: -4px; margin-bottom: 6px; font: 500 14px var(--sans); color: var(--ink-2); }
 /* the paywall — brand label, itinerary rail, display-type terms, action pinned */

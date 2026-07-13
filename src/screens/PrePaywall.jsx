@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
   ArrowLeft, Check, X, Sparkle, Star, Sun, CloudRain,
   Leaf, Waves, Mountains, Phone, Moon, Heart, ShieldCheck,
   Compass, Fingerprint, Spiral, Smiley, SmileySad, Medal, PenNib, Tag, BellSimple,
-  LockSimpleOpen, Crown, Plant, MagnifyingGlass, Eye,
+  LockSimpleOpen, Crown, Plant, MagnifyingGlass, Eye, Feather,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -54,7 +55,7 @@ export default function PrePaywall({ noanim = false }) {
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
   const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : kind === 'journey' ? 'I’m ready' : 'Continue'
-  const showFooter = !['therapist', 'goal', 'offer', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
+  const showFooter = !['therapist', 'goal', 'promise', 'offer', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
   const ready = kind === 'goal' ? Boolean(ans.goal)
     : kind === 'promise' ? Boolean(ans.signed) : true
 
@@ -103,7 +104,7 @@ function Screen({ kind, ans, set, pickAuto, onNext }) {
     case 'goal': return <Goal ans={ans} pickAuto={pickAuto} />
     case 'difference': return <DifferenceBody />
     case 'mechanism': return <MechanismBody />
-    case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} />
+    case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} onNext={onNext} />
     case 'allset': return <AllSetBody name={NAME} />
     case 'journey': return <JourneyBody name={NAME} />
     case 'offer': return <OfferBody onNext={onNext} />
@@ -196,7 +197,7 @@ export function DifferenceBody() {
 export function MechanismBody({ coda = 'Every reflection helps Kael understand you better.', mark = false }) {
   return (
     <div className="pp2 pp2-c">
-      {mark && <span className="pp3-mark"><Sparkle size={18} weight="fill" /></span>}
+      {mark && <span className="ov4-badge"><Feather size={26} weight="duotone" /></span>}
       <h1 className="pp2-title pp2-title-lg">A private space to<br /><em>reflect</em> on your life.</h1>
       <p className="pp2-sub pp2-sub-nar">Big feelings, small thoughts, hard days, quiet wins. It all belongs here.</p>
       <div className="pp2-lib" aria-hidden="true">
@@ -220,44 +221,57 @@ export function MechanismBody({ coda = 'Every reflection helps Kael understand y
   )
 }
 
-/* 5 · the promise — a quiet contract, signed big; onSigned reports up so the
-   host flow can gate its CTA on a real signature */
-export function PromiseBody({ name = NAME, onSigned }) {
+/* 5 · the promise — a quiet contract, sealed Headway-style: the thumb lives
+   in a bottom panel, and while it is held an ink blanket sweeps up over the
+   whole screen. Complete the hold and the flow moves on by itself. */
+export function PromiseBody({ name = NAME, onSigned, onNext }) {
   const [signed, setSigned] = useState(false)
-  const canvasRef = useRef(null)
-  const drawing = useRef(false)
-  const last = useRef(null)
+  const [holding, setHolding] = useState(false)
+  const [att, setAtt] = useState(0)
+  const rootRef = useRef(null)
+  const [screenEl, setScreenEl] = useState(null)
+  const advRef = useRef(null)
 
   useEffect(() => {
-    const c = canvasRef.current
-    const dpr = window.devicePixelRatio || 1
-    const rect = c.getBoundingClientRect()
-    c.width = rect.width * dpr
-    c.height = rect.height * dpr
-    const ctx = c.getContext('2d')
-    ctx.scale(dpr, dpr)
-    ctx.lineWidth = 2
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    ctx.strokeStyle = getComputedStyle(c).color
-    onSigned?.(false) // the box starts blank on every visit — an empty box always needs a fresh signature
+    onSigned?.(false) // a fresh promise on every visit — never pre-signed
+    setScreenEl(rootRef.current?.closest('.ov-screen') || null)
+    return () => clearTimeout(advRef.current)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pos = (e) => { const r = canvasRef.current.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top } }
-  const down = (e) => { e.preventDefault(); canvasRef.current.setPointerCapture(e.pointerId); drawing.current = true; last.current = pos(e) }
-  const move = (e) => {
-    if (!drawing.current) return
-    const p = pos(e)
-    const ctx = canvasRef.current.getContext('2d')
-    ctx.beginPath(); ctx.moveTo(last.current.x, last.current.y); ctx.lineTo(p.x, p.y); ctx.stroke()
-    last.current = p
-    if (!signed) { setSigned(true); onSigned?.(true) }
+  const start = (e) => { e.preventDefault(); if (signed) return; try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* hold works uncaptured */ } setHolding(true) }
+  const stop = () => { if (holding && !signed) { setHolding(false); setAtt((a) => a + 1) } }
+  const done = () => {
+    setHolding(false); setSigned(true); onSigned?.(true)
+    advRef.current = setTimeout(() => onNext?.(), 1200)
   }
-  const up = () => { drawing.current = false }
-  const clear = () => { const c = canvasRef.current; c.getContext('2d').clearRect(0, 0, c.width, c.height); setSigned(false); onSigned?.(false) }
+
+  /* blanket + thumb live in a portal on .ov-screen so they can cover the
+     head and foot too; the thumb never remounts, so the held pointer stays
+     captured while the blanket rises beneath it */
+  const overlay = (
+    <>
+      <div className={`pp2-blanket${holding ? ' on' : ''}${signed ? ' done' : ''}`} aria-hidden="true">
+        {signed && <span className="pp2-blanket-check"><Check size={28} weight="bold" /></span>}
+        <p className="pp2-blanket-t">{signed ? 'Promise sealed.' : 'Sealing your promise…'}</p>
+      </div>
+      <button
+        type="button"
+        className={`pp2-hold${holding ? ' is-holding' : ''}${signed ? ' is-signed' : ''}`}
+        onPointerDown={start} onPointerUp={stop} onPointerLeave={stop} onPointerCancel={stop}
+        onContextMenu={(e) => e.preventDefault()}
+        aria-label="Press and hold to commit"
+      >
+        <svg className="pp2-hold-ringbox" viewBox="0 0 100 100" aria-hidden="true">
+          <circle className="pp2-hold-track" cx="50" cy="50" r="46" />
+          <circle key={att} className="pp2-hold-ring" cx="50" cy="50" r="46" pathLength="1" onAnimationEnd={done} />
+        </svg>
+        <Fingerprint size={46} weight="light" />
+      </button>
+    </>
+  )
 
   return (
-    <div className="pp2 pp2-c">
+    <div className="pp2 pp2-c pp2-promise" ref={rootRef}>
       <span className="ov4-badge"><PenNib size={26} weight="duotone" /></span>
       <span className="ov4-kicker">A quiet contract</span>
       <h1 className="pp2-title">{name ? `${name}, let’s make ` : 'Let’s make '}<em>a promise.</em></h1>
@@ -267,16 +281,17 @@ export function PromiseBody({ name = NAME, onSigned }) {
           {VOWS.map((v) => (<span className="pp2-vow" key={v}><Check size={13} weight="bold" />{v}</span>))}
         </div>
         <p className="pp2-pact"><b>And Kael promises back.</b> <em>To remember, to notice, to be there at 2am.</em></p>
-        <div className="pp2-signwrap">
-          <div className="pp2-sigbox">
-            <canvas ref={canvasRef} className="pp2-pad" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up} />
-            {!signed && <span className="pp2-pad-hint">Sign with your finger</span>}
-            {signed && <button className="pp2-pad-clear" onClick={clear} aria-label="Clear signature"><X size={12} weight="bold" /></button>}
-          </div>
-          <span className="pp2-sig-cap">{name || 'You'}</span>
-        </div>
       </div>
-      <p className="pp2-note">Your signature stays on this screen. Nothing is saved.</p>
+      <div className="pp2-commit">
+        <span className="pp2-commit-stars" aria-hidden="true">
+          <Sparkle size={13} weight="fill" style={{ left: '8%', top: 26 }} />
+          <Sparkle size={7} weight="fill" style={{ left: '15%', top: 54 }} />
+          <Sparkle size={14} weight="fill" style={{ right: '7%', top: 46 }} />
+          <Sparkle size={8} weight="fill" style={{ right: '14%', top: 20 }} />
+        </span>
+        <p className="pp2-commit-hint"><b>Press and hold to commit.</b>A promise made slowly is kept longer.</p>
+      </div>
+      {screenEl && createPortal(overlay, screenEl)}
     </div>
   )
 }

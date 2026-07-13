@@ -210,7 +210,7 @@ function Body(props) {
     case 'dailygoal': return <DailyGoal {...props} />
     case 'difference': return <DifferenceBody />
     case 'mechanism': return <MechanismBody coda={null} mark />
-    case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} />
+    case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} onNext={props.onAdvance} />
     case 'allset': return <AllSetBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} />
     case 'journey': return (
       <JourneyBody

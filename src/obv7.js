@@ -491,7 +491,7 @@ export const FLOW = [
      promise seals all of it */
   { id: 'dailygoal', kind: 'dailygoal', act: 4, field: 'dailygoal', title: 'How much time will you give yourself?', sub: 'Pick a pace you can keep, even on the bad days.' },
   { id: 'notif', kind: 'notif', act: 4, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
-  { id: 'promise', kind: 'promise', act: 4, cta: 'I commit to myself' },
+  { id: 'promise', kind: 'promise', act: 4 }, // no cta — the held thumb commits and advances by itself
   { id: 'allset', kind: 'allset', act: 4, cta: 'Continue' },
   { id: 'thirtydays', kind: 'journey', act: 4, cta: 'I’m ready to begin' },
   /* the close — offer, then the decline ladder: a kinder price (once), then the
