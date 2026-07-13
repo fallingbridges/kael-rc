@@ -5,14 +5,16 @@ import {
   Heart, HeartStraight, Quotes, Compass,
   Fingerprint, ChatsCircle, Anchor, Brain, ChartLineUp, Flame, Waves,
   UsersThree, Waveform, Wind, House, HandHeart, ArrowUpRight, PaperPlaneTilt,
+  Butterfly, Microphone,
 } from '@phosphor-icons/react'
 import {
   FLOW, QUESTIONS, BLOCK_IDS, BLOCKS, SITUATIONS, SITUATION_REFLECT, SIT_PHRASE,
-  REL_CONTEXT, AGES, GENDERS, GOALS, ASPECTS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
+  REL_CONTEXT, AGES, GENDERS, GOALS, BREATHERS, CALIB_STEPS, CALIB_REVIEWS, QUIZ_EYEBROWS,
   resolveRead, answeredCount,
 } from '../obv7.js'
-import { Safety as IntroSafety, Recognition as IntroRecognition, Hope as IntroHope } from './IntroConcept.jsx'
+import { Safety as IntroSafety, MOODS, THREAD } from './IntroConcept.jsx'
 import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody, OfferBody, DeclineBody, SavedBody } from './PrePaywall.jsx'
+import { PlanSheet } from './ProgramPaywall.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Kael Onboarding V7 — the merge: V6's balanced 16-question quiz + axis-bar
@@ -52,6 +54,7 @@ export default function OnboardingV7({ noanim = false }) {
   const [i, setI] = useState(0)
   const [dir, setDir] = useState(1)
   const [answers, setA] = useState({})
+  const [paysheet, setPaysheet] = useState(false)
   const seedRef = useRef(String(hash('kael-v4-' + Math.floor(Date.now() / 1e7))))
   const bodyRef = useRef(null)
   const advanceRef = useRef(null)
@@ -64,7 +67,7 @@ export default function OnboardingV7({ noanim = false }) {
   const next = () => (last ? go(0) : go(i + 1))
   const back = () => go(i - 1)
 
-  useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = 0; clearTimeout(advanceRef.current) }, [i])
+  useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = 0; clearTimeout(advanceRef.current); setPaysheet(false) }, [i])
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
   /* skip the free-text screen unless "Something else" was chosen */
@@ -117,7 +120,6 @@ export default function OnboardingV7({ noanim = false }) {
     if (s.kind === 'multi') return true // optional — never force a pick
     if (s.kind === 'situation') return Boolean(answers.situation)
     if (s.kind === 'goals') return Array.isArray(answers.goal) && answers.goal.length > 0
-    if (s.kind === 'aspects') return Array.isArray(answers.aspects) && answers.aspects.length > 0
     if (s.kind === 'dailygoal') return Boolean(answers.dailygoal)
     if (s.kind === 'promise') return Boolean(answers.promiseSigned)
     return true
@@ -148,7 +150,7 @@ export default function OnboardingV7({ noanim = false }) {
                 <header className="ov-head">
                   <div className="ov-head-row">
                     <button className="ov-back" data-hide={!canBack || undefined} onClick={back} aria-label="Back"><ArrowLeft size={20} /></button>
-                    {s.kind === 'offer' && <button className="ov-back ov-x" onClick={next} aria-label="Close"><X size={20} /></button>}
+                    {s.kind === 'offer' && <button className="ov-back ov-x" onClick={() => setPaysheet(true)} aria-label="Close"><X size={20} /></button>}
                     {isQuiz && (() => {
                       const EyeIc = BLOCK_ICONS[s.block]
                       return (
@@ -173,6 +175,7 @@ export default function OnboardingV7({ noanim = false }) {
                     s={s} answers={answers} arch={arch} axes={resolved ? resolved.axes : null}
                     nm={nm} set={set} pickAuto={pickAuto}
                     order={order} fillSit={fillSit} onAdvance={next} onBack={back}
+                    onPlans={() => setPaysheet(true)}
                   />
                 </div>
               </div>
@@ -183,6 +186,7 @@ export default function OnboardingV7({ noanim = false }) {
                   {s.kind === 'notif' && s.alt && <button className="ov4-quiet" onClick={next}>{s.alt}</button>}
                 </footer>
               )}
+              {paysheet && s.kind === 'offer' && <PlanSheet onClose={() => setPaysheet(false)} />}
             </>
           )}
         </div>
@@ -194,21 +198,30 @@ export default function OnboardingV7({ noanim = false }) {
 /* ── dispatch ── */
 function Body(props) {
   switch (props.s.kind) {
-    case 'intro': return props.s.scene === 'recognition' ? <IntroRecognition /> : props.s.scene === 'hope' ? <IntroHope /> : <IntroSafety />
+    case 'intro': return <IntroSafety />
+    case 'remembers': return <RemembersIntro />
+    case 'patterns': return <PatternsPause s={props.s} arch={props.arch} />
     case 'welcome': return <Welcome {...props} />
     case 'hero': return <Hero {...props} />
     case 'situation': return <SituationList {...props} />
     case 'situationText': return <SituationText {...props} />
     case 'goals': return <Goals {...props} />
-    case 'aspects': return <Aspects {...props} />
     case 'therapist': return <CardList {...props} field="therapist" items={['Yes', 'No']} />
     case 'dailygoal': return <DailyGoal {...props} />
     case 'difference': return <DifferenceBody />
-    case 'mechanism': return <MechanismBody />
+    case 'mechanism': return <MechanismBody coda={null} mark />
     case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} />
-    case 'allset': return <AllSetBody onDone={props.onAdvance} />
-    case 'journey': return <JourneyBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} />
-    case 'offer': return <OfferBody onNext={props.onAdvance} />
+    case 'allset': return <AllSetBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} />
+    case 'journey': return (
+      <JourneyBody
+        name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''}
+        why={props.answers.situationText || props.answers.situation || undefined}
+        pattern={props.arch ? props.arch.name : undefined}
+        glyph={props.arch ? props.arch.glyph : undefined}
+        goals={Array.isArray(props.answers.goal) && props.answers.goal.length ? proseList(props.answers.goal) : undefined}
+      />
+    )
+    case 'offer': return <OfferBody onNext={props.onAdvance} onPlans={props.onPlans} />
     case 'decline': return <DeclineBody onNext={props.onAdvance} />
     case 'saved': return <SavedBody onNext={props.onAdvance} />
     case 'trust': return <Trust {...props} />
@@ -227,7 +240,6 @@ function Body(props) {
     case 'age': return <CardList {...props} field="age" items={AGES} />
     case 'gender': return <CardList {...props} field="gender" items={GENDERS} />
     case 'notif': return <Notif {...props} />
-    case 'ready': return <Ready {...props} />
     case 'thirtydays': return <ThirtyDays {...props} />
     default: return null
   }
@@ -357,29 +369,6 @@ function Goals({ s, answers, set, fillSit }) {
       <Header title={s.title} sub={s.sub} fillSit={fillSit} />
       <div className="ov4-list">
         {GOALS.map((o, n) => (
-          <button key={o.name} className="ov4-card ov4-card-sm" data-on={has(o.name) || undefined}
-            style={{ '--d': `${0.04 * n + 0.06}s` }} onClick={() => toggle(o.name)}>
-            <span className="ov4-card-ic"><o.icon size={20} weight="duotone" /></span>
-            <span className="ov4-card-name">{o.name}</span>
-            <span className="ov4-card-check"><Check size={12} weight="bold" /></span>
-          </button>
-        ))}
-      </div>
-    </>
-  )
-}
-
-/* the symptom inventory — multi-select of what they'd like to address; naming
-   the problems is what makes the plan feel pointed at them */
-function Aspects({ s, answers, set, fillSit }) {
-  const picks = Array.isArray(answers.aspects) ? answers.aspects : []
-  const has = (name) => picks.includes(name)
-  const toggle = (name) => set('aspects', has(name) ? picks.filter((p) => p !== name) : [...picks, name])
-  return (
-    <>
-      <Header title={s.title} sub={s.sub} fillSit={fillSit} />
-      <div className="ov4-list">
-        {ASPECTS.map((o, n) => (
           <button key={o.name} className="ov4-card ov4-card-sm" data-on={has(o.name) || undefined}
             style={{ '--d': `${0.04 * n + 0.06}s` }} onClick={() => toggle(o.name)}>
             <span className="ov4-card-ic"><o.icon size={20} weight="duotone" /></span>
@@ -615,10 +604,81 @@ function Breather({ s, fillSit }) {
       <Badge Icon={b.icon || Sparkle} />
       {b.kicker && <span className="ov4-kicker">{b.kicker}</span>}
       <h1 className={`ov4-q ov4-pause-title${lg ? ' ov4-pause-title-lg' : ''}`}>{b.title}</h1>
-      <p className={`ov4-sub ov4-pause-sub${lg ? ' ov4-pause-sub-lg' : ''}`}><Emph body={fillSit(b.body)} em={b.em} /></p>
+      {b.body && <p className={`ov4-sub ov4-pause-sub${lg ? ' ov4-pause-sub-lg' : ''}`}><Emph body={fillSit(b.body)} em={b.em} /></p>}
+      {b.pills && <MoodPillsDemo />}
       {b.demo && <ChatDemo />}
+      {b.thread && <SundayThread />}
       {b.method && <MethodRow />}
     </div>
+  )
+}
+
+/* the anti-fatalism reframe after the read — the diagnosis is not a verdict */
+function PatternsPause({ s, arch }) {
+  return (
+    <div className="ov4-pause">
+      <Badge Icon={Butterfly} />
+      <span className="ov4-kicker">{s.kicker}</span>
+      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">
+        {arch ? <>{arch.name} is a pattern,<br />not a personality.</> : s.title}
+      </h1>
+      <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">{s.sub}</p>
+    </div>
+  )
+}
+
+/* the invitation demo — tap a mood, the input fills itself (migrated from the
+   retired Recognition intro screen; io-* styles are shared) */
+function MoodPillsDemo() {
+  const [picked, setPicked] = useState(null)
+  return (
+    <div className="io-entry ov7-pillsdemo">
+      <div className="io-pills">
+        {MOODS.map((m, k) => (
+          <button key={m.label} className="io-pill" style={{ '--d': `${0.05 * k + 0.3}s` }} onClick={() => setPicked(m)}>
+            <span className="io-pill-ic"><m.Ic size={13} weight="duotone" /></span>
+            <span className="io-pill-name">{m.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="io-ask" data-filled={picked ? true : undefined}>
+        <span className="io-ask-av"><Sparkle size={13} weight="fill" /></span>
+        <span className="io-ask-text">{picked ? picked.seed : 'Tell Kael anything…'}</span>
+        <span className="io-ask-action">
+          {picked ? <PaperPlaneTilt size={16} weight="fill" /> : <Microphone size={17} weight="fill" />}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/* intro screen 3 — the differentiator as demonstration: the title claims the
+   triad, the Sunday thread proves all three in one exchange */
+function RemembersIntro() {
+  return (
+    <div className="io-screen io-hope">
+      <h1 className="io-title">Kael listens, remembers<br />& connects the dots.</h1>
+      <SundayThread />
+    </div>
+  )
+}
+
+/* memory demonstrated — the Sunday-night thread, weeks in: Kael quotes the
+   past, the user handles it differently now (migrated from the Hope screen) */
+function SundayThread() {
+  return (
+    <>
+      <div className="io-chat" aria-hidden="true">
+        <span className="io-chat-when">Sunday · 9:14 PM</span>
+        {THREAD.map((m, k) => (
+          <div key={k} className={`io-cmsg io-cmsg-${m.who}`} style={{ '--d': `${0.6 * k + 0.4}s` }}>
+            {m.who === 'kael' && <span className="io-cmsg-av"><Sparkle size={12} weight="fill" /></span>}
+            <p>{m.text}</p>
+          </div>
+        ))}
+      </div>
+      <p className="io-ask-note io-hope-note">Same Sunday. Different ending.</p>
+    </>
   )
 }
 
@@ -892,31 +952,6 @@ function DailyLoop() {
       <span className="ov4-kicker">How this works</span>
       <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">This is a daily practice.</h1>
       <p className="ov4-sub ov4-pause-sub ov4-pause-sub-lg">Your pattern is the starting point. From here, Kael checks in each day, learns how you tick, and <em className="ov4-em">leaves you a short note</em> on what it notices. Small, steady, and built around you.</p>
-    </div>
-  )
-}
-
-/* a short breather: Kael is calibrated to this archetype, addressed by name */
-/* everything the onboarding built, read back as a completed setup */
-const READY_CHECKS = [
-  'Tuned to your pattern',
-  'Pointed at your goals',
-  'Fit to your daily rhythm',
-  'Here any hour you need it',
-]
-function Ready({ arch }) {
-  if (!arch) return null
-  const Glyph = arch.glyph
-  return (
-    <div className="ov4-pause ov4-ready">
-      <span className="ov4-cal-glyph"><Glyph size={30} weight="duotone" /></span>
-      <span className="ov4-kicker">Calibrated to you</span>
-      <h1 className="ov4-q ov4-pause-title ov4-pause-title-lg">Your coach is ready.</h1>
-      <ul className="ov7-ready-list">
-        {READY_CHECKS.map((t, k) => (
-          <li key={t} style={{ '--d': `${0.07 * k + 0.2}s` }}><Check size={14} weight="bold" />{t}</li>
-        ))}
-      </ul>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   X, Sparkle, ChatCircleDots, ArrowsClockwise, Star, Leaf, Sun, ChartLineUp, ShieldCheck,
+  LockSimpleOpen, BellSimple,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -53,23 +54,75 @@ function Laurel({ flip = false }) {
   )
 }
 
+/* variant C — the Strava-structure timeline close: outcome triple, one plan
+   card with the monthly-equivalent hero, the trial as a three-step itinerary
+   with the charge named as an event. Durations, never dates. */
+const TIMELINE = [
+  { Icon: LockSimpleOpen, t: 'Today', s: 'Everything Kael has, unlocked.' },
+  { Icon: BellSimple, t: 'In 5 days', s: 'We’ll remind you that your trial is ending.' },
+  { Icon: Sparkle, t: 'In 7 days', s: 'Your annual plan begins. You’ll be charged $69.99.' },
+]
+
+/* variant B — the compounding coach: no borrowed calendar, every promise
+   provable inside the free week. Stage kickers replace day numbers. */
+const STAGES = [
+  { d: 'Today', t: 'Bring what’s on your mind', s: 'Start anywhere. Kael is already tuned to how you think.', Icon: ChatCircleDots },
+  { d: 'With every reflection', t: 'The connections get clearer', s: 'Kael remembers what matters and catches what keeps repeating.', Icon: ChartLineUp },
+  { d: 'By the end of your free week', t: 'Your first shift, named', s: 'One spiral caught early, one kinder word to yourself.', Icon: Star },
+]
+
 /* every price is real; per-week equivalents derived round-half-up */
 const PLANS = [
   { id: 'yearly', name: 'Yearly', sub: 'billed $69.99 per year', wk: '$1.35', badge: '7 days free' },
-  { id: 'monthly', name: 'Monthly', sub: 'billed $12.99 per month', wk: '$3.00' },
+  { id: 'monthly', name: 'Monthly', sub: 'billed $12.99 per month', wk: '$3.00', badge: '7 days free' },
   { id: 'weekly', name: 'Weekly', sub: 'billed every week', wk: '$4.99' },
 ]
 const PLAN_TERMS = {
   yearly: '7 days free, then $69.99/year',
-  monthly: '$12.99/month, billed today',
+  monthly: '7 days free, then $12.99/month',
   weekly: '$4.99/week, billed today',
+}
+
+/* the catcher — a pace for everyone. Shared: the 30-Day tab and the V7
+   paywall both open it from their close button. */
+export function PlanSheet({ onClose }) {
+  const [plan, setPlan] = useState('yearly')
+  return (
+    <div className="pp3-scrim" onClick={onClose}>
+      <div className="pp3-sheet" onClick={(e) => e.stopPropagation()}>
+        <h2 className="pp3-sheet-t">Not ready for a year?<br /><b>There’s a pace for everyone.</b></h2>
+        <div className="pp3-plans">
+          {PLANS.map((p) => (
+            <button key={p.id} className="pp3-plan" data-on={plan === p.id || undefined} onClick={() => setPlan(p.id)}>
+              <span className="pp3-plan-l">
+                <b>{p.name}{p.badge && <i className="pp3-plan-badge">{p.badge}</i>}</b>
+                <span>{p.sub}</span>
+              </span>
+              <span className="pp3-plan-r"><b>{p.wk}</b><span>per week</span></span>
+            </button>
+          ))}
+        </div>
+        <p className="pp3-trust"><ShieldCheck size={15} weight="fill" />No commitment. Cancel anytime</p>
+        <button className="ov-cta">Continue</button>
+        <p className="pp3-cancel">{PLAN_TERMS[plan]}</p>
+        <button className="pp3-notnow" onClick={onClose}>Not now</button>
+      </div>
+    </div>
+  )
 }
 
 export default function ProgramPaywall({ noanim = false }) {
   const [sheet, setSheet] = useState(false)
-  const [plan, setPlan] = useState('yearly')
+  const [v, setV] = useState('timeline') // 'program' = Clear30 syllabus · 'coach' = compounding stages · 'timeline' = Strava structure
+  const coach = v === 'coach'
+  const timeline = v === 'timeline'
   return (
     <div className={`lib-page ov-page ov4-page ov7-page pp3-page${noanim ? ' ov-noanim' : ''}`}>
+      <div className="pp3-sw" aria-hidden="true">
+        <button data-on={v === 'program' || undefined} onClick={() => setV('program')}>Program</button>
+        <button data-on={coach || undefined} onClick={() => setV('coach')}>Coach</button>
+        <button data-on={timeline || undefined} onClick={() => setV('timeline')}>Timeline</button>
+      </div>
       <div className="ov-stage">
         <div className="ov-screen ov4-screen" data-theme="light">
           <header className="ov-head">
@@ -78,16 +131,42 @@ export default function ProgramPaywall({ noanim = false }) {
             </div>
           </header>
           <div className="ov-body">
-            <div className="ov-flow ov4-flow pp3">
+            <div key={v} className="ov-flow ov4-flow pp3">
+              {timeline ? (
+                <>
+                  <h1 className="pp3-title pp3-title-tl">A settled mind.<br />A kinder voice.<br />Steadier days.</h1>
+                  <p className="pp3-tsub">Reflection compounds. Kael keeps you at it.</p>
+                  <div className="pp3-plancard2">
+                    <span className="pp3-plan2-badge">7 days free</span>
+                    <span className="pp3-plan2-name">Annual</span>
+                    <b className="pp3-plan2-hero">$5.83/month</b>
+                    <span className="pp3-plan2-bill">Billed at $69.99/year</span>
+                  </div>
+                  <button className="pp3-morelink" onClick={() => setSheet(true)}>View other plans</button>
+                  <h3 className="pp3-tl-h">Try it for 7 days free</h3>
+                  <ol className="pp3-tl">
+                    {TIMELINE.map((r, k) => (
+                      <li key={r.t} style={{ '--d': `${0.12 * k + 0.3}s` }}>
+                        <span className="pp3-tl-ic"><r.Icon size={17} weight="duotone" /></span>
+                        <span className="pp3-tl-tx"><b>{r.t}</b><i>{r.s}</i></span>
+                      </li>
+                    ))}
+                  </ol>
+                </>
+              ) : (<>
               <span className="pp3-mark"><Sparkle size={18} weight="fill" /></span>
               <span className="pp3-badge">Your coach is ready</span>
-              <h1 className="pp3-title">Start feeling like <em>yourself</em> again, in less than 4 weeks.</h1>
+              {coach ? (
+                <h1 className="pp3-title">Feel more like <em>yourself</em>,<br />starting today.</h1>
+              ) : (
+                <h1 className="pp3-title">Start feeling like <em>yourself</em> again, in less than 4 weeks.</h1>
+              )}
               <div className="pp3-creds" aria-hidden="true">
-                <span className="pp3-laur"><Laurel /><b>Built on<br />CBT + ACT</b><Laurel flip /></span>
+                <span className="pp3-laur"><Laurel /><b>{coach ? 'Guided by' : 'Built on'}<br />CBT + ACT</b><Laurel flip /></span>
                 <span className="pp3-cred-pill">Tuned to your pattern</span>
               </div>
               <ol className="pp3-days">
-                {DAYS.map((c, k) => c.marker ? (
+                {(coach ? STAGES : DAYS).map((c, k) => c.marker ? (
                   <li key={c.t} className="pp3-week" style={{ '--d': `${0.06 * k + 0.2}s` }}>
                     <b>{c.t}</b> · {c.s}
                   </li>
@@ -102,37 +181,27 @@ export default function ProgramPaywall({ noanim = false }) {
                   </li>
                 ))}
               </ol>
+              </>)}
             </div>
           </div>
           <footer className="ov-foot pp3-foot">
-            <p className="pp3-trust"><ShieldCheck size={15} weight="fill" />No commitment. Cancel anytime</p>
-            <button className="ov-cta">Start my 7-day free trial</button>
-            <p className="pp3-price"><b>7 days free</b>, then $69.99/year ($5.83/month)</p>
+            {timeline ? (
+              <>
+                <p className="pp3-trust"><ShieldCheck size={15} weight="fill" />No commitment. Cancel anytime.</p>
+                <button className="ov-cta">Start free trial</button>
+                <p className="pp3-price"><b>7 days free</b>, then $69.99/year ($5.83/month)</p>
+              </>
+            ) : (
+              <>
+                <p className="pp3-trust"><ShieldCheck size={15} weight="fill" />{coach ? '$0 today · Cancel anytime' : 'No commitment. Cancel anytime'}</p>
+                <button className="ov-cta">Start my 7-day free trial</button>
+                <p className="pp3-price"><b>7 days free</b>, then $69.99/year ($5.83/month)</p>
+              </>
+            )}
             <div className="pp2-legal"><button>Restore</button><button>Terms</button><button>Privacy</button></div>
           </footer>
 
-          {sheet && (
-            <div className="pp3-scrim" onClick={() => setSheet(false)}>
-              <div className="pp3-sheet" onClick={(e) => e.stopPropagation()}>
-                <h2 className="pp3-sheet-t">Not ready for a year?<br /><b>There’s a pace for everyone.</b></h2>
-                <div className="pp3-plans">
-                  {PLANS.map((p) => (
-                    <button key={p.id} className="pp3-plan" data-on={plan === p.id || undefined} onClick={() => setPlan(p.id)}>
-                      <span className="pp3-plan-l">
-                        <b>{p.name}{p.badge && <i className="pp3-plan-badge">{p.badge}</i>}</b>
-                        <span>{p.sub}</span>
-                      </span>
-                      <span className="pp3-plan-r"><b>{p.wk}</b><span>per week</span></span>
-                    </button>
-                  ))}
-                </div>
-                <p className="pp3-trust"><ShieldCheck size={15} weight="fill" />No commitment. Cancel anytime</p>
-                <button className="ov-cta">Continue</button>
-                <p className="pp3-cancel">{PLAN_TERMS[plan]}</p>
-                <button className="pp3-notnow" onClick={() => setSheet(false)}>Not now</button>
-              </div>
-            </div>
-          )}
+          {sheet && <PlanSheet onClose={() => setSheet(false)} />}
         </div>
       </div>
     </div>

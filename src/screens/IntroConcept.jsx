@@ -5,13 +5,13 @@ import {
 } from '@phosphor-icons/react'
 
 /* a Sunday-night exchange, weeks in: Kael remembers, you handle it differently now */
-const THREAD = [
+export const THREAD = [
   { who: 'kael', text: 'It’s Sunday. You said these nights used to feel impossible.' },
   { who: 'user', text: 'Felt it coming. Went for a walk instead of spiraling.' },
   { who: 'kael', text: 'A month ago this was 3am, wide awake. Look at you.' },
 ]
 
-const MOODS = [
+export const MOODS = [
   { Ic: Spiral, label: 'Spiraling', seed: 'I can’t stop spiraling.' },
   { Ic: Heartbeat, label: 'Anxious', seed: 'I’m anxious for no reason.' },
   { Ic: BatteryLow, label: 'Burnt out', seed: 'I’ve got nothing left.' },
@@ -85,12 +85,11 @@ export function Safety() {
         <span className="io-orb-ring io-orb-ring-2" />
         <span className="io-orb-core"><Sparkle size={28} weight="fill" /></span>
       </div>
-      <h1 className="io-title">Your pocket mental wellness coach.</h1>
+      <h1 className="io-title">Meet Kael,<br />your reflection guide.</h1>
       <div className="io-bubble">
         <span className="io-bubble-av"><Sparkle size={12} weight="fill" /></span>
         <p className="io-bubble-text">{typed}{typed.length < INTRO.length && <span className="io-caret" />}</p>
       </div>
-      <p className="io-contrast">Not a chatbot. Not a journal that sits there. <b>A coach who pays attention.</b></p>
     </div>
   )
 }

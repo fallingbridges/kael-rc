@@ -389,16 +389,17 @@ export const ASPECTS = [
   { name: 'Mostly just curious', icon: Sparkle },
 ]
 
-/* breathers — one per segment + a credibility beat. Two carry live widgets:
-   breather 2 shows the tap-to-reply chat demo, breather 5 shows the method row. */
+/* breathers — product education placed where it's most relevant. Each gap gets
+   its own visual treatment: pills demo → chips chat → text empathy → memory
+   ledger. Breather 5 stays the credibility beat at the quiz doorstep. */
 export const BREATHERS = {
-  /* after block 1 · your mind */
-  1: { kicker: 'Already, a shape', title: 'There’s a pattern in how your mind runs.', body: 'Not better, not worse. Just yours. Kael learns it so it can catch the spiral the moment it starts.', em: 'the moment it starts', icon: Ear },
-  /* after block 2 · why Kael, not a chatbot (live demo) */
-  2: { kicker: 'Why Kael, and not a chatbot', title: 'Kael hands you a way forward.', body: 'A blank chatbot waits for you to find the words. Kael offers a few to tap instead.', em: 'a few to tap', icon: ChatCircleDots, demo: true },
-  /* after block 3 · your inner voice */
+  /* after block 1 · your mind — the invitation meets the racing-mind confession */
+  1: { kicker: 'Whatever’s racing', title: 'Any mood, any moment. Bring it to Kael.', body: 'Tap a feeling or say it in your own words. Kael meets you there.', em: 'Kael meets you there', icon: Ear, pills: true },
+  /* after block 2 · why Kael, not a journal (live chips demo) */
+  2: { kicker: 'Why Kael, and not a journal', title: 'Kael hands you a way forward.', body: 'A journal just sits there, waiting. Kael offers a few words to tap when you can’t find your own.', em: 'a few words to tap', icon: ChatCircleDots, demo: true },
+  /* after block 3 · your inner voice — the empathy peak, untouched */
   3: { kicker: 'The honest part', title: 'That voice isn’t telling the truth.', body: 'It’s just loud, and it’s had years of practice. Kael helps you hear it as a voice, not a verdict.', em: 'a voice, not a verdict', icon: MagnifyingGlass },
-  /* after block 4 · how you cope */
+  /* after block 4 · how you cope — absolution before the reveal */
   4: { kicker: 'What it adds up to', title: 'However you cope, it made sense once.', body: 'Nothing here is a flaw. It’s how you learned to get through. From here, Kael helps you keep the relief and drop the cost.', em: 'keep the relief', icon: Heart },
   /* before the quiz · credibility (method row) */
   5: { kicker: 'The method', title: 'Built on what actually works.', body: 'Your answers run through CBT, ACT, and the methods clinicians actually use, never guesswork.', em: 'what actually works', icon: Scales, big: true, method: true },
@@ -443,12 +444,12 @@ export const BEATS = [
 ]
 
 export const FLOW = [
-  /* ACT 1 · open + get to know you (identity up front, like V4) */
-  { id: 'intro-meet', kind: 'intro', scene: 'safety', act: 1, cta: 'Continue' },
-  { id: 'intro-moods', kind: 'intro', scene: 'recognition', act: 1, cta: 'Continue' },
-  /* the mechanism, told up front — what it is → what you do → what compounds → what changes */
-  { id: 'mechanism', kind: 'mechanism', act: 1, cta: 'Continue' },
-  { id: 'intro-break', kind: 'intro', scene: 'hope', act: 1, cta: "Let's begin" },
+  /* ACT 1 · two doors in — the place, then the guide — then straight to the ask.
+     The rest of the product story moves into the quiz breathers as education. */
+  { id: 'intro-space', kind: 'mechanism', act: 1, cta: 'Continue' },
+  { id: 'intro-guide', kind: 'intro', scene: 'safety', act: 1, cta: 'Continue' },
+  /* the differentiator, shown not claimed — the Sunday thread demos memory */
+  { id: 'intro-remembers', kind: 'remembers', act: 1, cta: "Let's begin" },
   { id: 'situation', kind: 'situation', act: 1, field: 'situation', title: 'What brings you here?', sub: "Pick what's closest. We start there.", cta: 'Continue' },
   { id: 'situationText', kind: 'situationText', act: 1, field: 'situationText', title: 'Say it in your words.', sub: 'Whatever is on your mind right now. Keep it short.', placeholder: 'In a few words…', cta: 'Continue' },
   { id: 'hero', kind: 'hero', act: 1, title: "There's a logic to how you feel.", em: 'how you feel', sub: "A few honest minutes, and I'll show you how you handle stress, what sets you off, and the pattern underneath it.", cta: 'Show me' },
@@ -473,12 +474,7 @@ export const FLOW = [
 
   /* a hopeful, forward-looking beat — names what they're working toward */
   { id: 'goals', kind: 'goals', act: 2, field: 'goal', title: 'What do you want to get out of this journey?', sub: 'Pick as many as feel true. Kael points everything toward them.', cta: 'Continue' },
-  /* the pre-calibration ladder: problems → trust → commitment → permission,
-     so the loader reads as building a plan from everything they just gave */
-  { id: 'aspects', kind: 'aspects', act: 2, field: 'aspects', title: 'What’s been showing up lately?', sub: 'Choose all that apply.', cta: 'Continue' },
   { id: 'therapist', kind: 'therapist', act: 2, field: 'therapist', title: 'Did you hear about Kael from a therapist?', sub: 'Either way, you’re in the right place.' },
-  { id: 'dailygoal', kind: 'dailygoal', act: 2, field: 'dailygoal', title: 'Set your daily goal.', sub: 'A few honest minutes is enough.' },
-  { id: 'notif', kind: 'notif', act: 2, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
   { id: 'calibration', kind: 'calibration', act: 2, title: 'Finding your pattern.' },
 
   /* ACT 3 · the mirror — reveal, then the personalized read */
@@ -487,11 +483,17 @@ export const FLOW = [
 
   /* ACT 4 · the close — ready, the difference, why it compounds, the signed
      promise, the celebration, then the transparent 7 days into the paywall */
-  { id: 'ready', kind: 'ready', act: 4, cta: 'Continue' },
+  /* the anti-fatalism reframe — catches "so I'm just like this" right after the
+     read names them; the title is personalized with the pattern name */
+  { id: 'patterns', kind: 'patterns', act: 4, kicker: 'The good news', title: 'It’s a pattern, not a personality.', sub: 'Patterns were learned, which means they can be unlearned. That’s the whole point of Kael.', cta: 'Continue' },
   { id: 'difference', kind: 'difference', act: 4, cta: 'I want that' },
+  /* the commitment ladder: pick the pace, let Kael help keep it, then the
+     promise seals all of it */
+  { id: 'dailygoal', kind: 'dailygoal', act: 4, field: 'dailygoal', title: 'How much time will you give yourself?', sub: 'Pick a pace you can keep, even on the bad days.' },
+  { id: 'notif', kind: 'notif', act: 4, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
   { id: 'promise', kind: 'promise', act: 4, cta: 'I commit to myself' },
-  { id: 'allset', kind: 'allset', act: 4 },
-  { id: 'thirtydays', kind: 'journey', act: 4, cta: 'I’m ready' },
+  { id: 'allset', kind: 'allset', act: 4, cta: 'Continue' },
+  { id: 'thirtydays', kind: 'journey', act: 4, cta: 'I’m ready to begin' },
   /* the close — offer, then the decline ladder: a kinder price (once), then the
      open door. These three own their whole CTA blocks — no cta here. */
   { id: 'offer', kind: 'offer', act: 4 },
