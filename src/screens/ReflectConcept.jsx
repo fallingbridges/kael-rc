@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, MagnifyingGlass, Plus, Sparkle, PaperPlaneTilt, X, Check,
   Spiral, CloudRain, Anchor, Hourglass, Fire, Moon, Sun, SmileyNervous, SunHorizon,
@@ -156,7 +156,8 @@ const LIBRARY = [
     id: 'restless', when: '2h ago',
     title: 'Why am I so restless lately?',
     line: 'Life is moving, but maybe not in the right direction.',
-    tags: ['Direction', 'Restless'], patterns: ['Comparison loop', 'Clock-watching'],
+    moods: ['Restless'], people: [], topics: ['Direction', 'Work', 'Future', 'Comparison'],
+    patterns: ['Comparison loop', 'Clock-watching', 'Silence spiral'],
     mood: 'var(--mood-restless)', Icon: Compass,
     history: [
       { who: 'user', time: '9:40 AM', text: 'I keep feeling like I should be somewhere else. Not physically. Just… further.' },
@@ -169,7 +170,8 @@ const LIBRARY = [
     id: 'dad', when: '6d ago',
     title: 'The fight with Dad',
     line: 'Anger on the surface, but something older underneath it.',
-    tags: ['Family', 'Dad', 'Heavy'], patterns: ['Inheritance loop', 'Silence spiral'],
+    moods: ['Heavy', 'Anger', 'Guilt'], people: ['Dad', 'Mom'], topics: ['Family', 'Childhood', 'Home'],
+    patterns: ['Inheritance loop', 'Silence spiral', 'Comparison loop', 'Clock-watching'],
     mood: 'var(--mood-hurt)', Icon: User,
     history: [
       { who: 'user', time: '8:14 PM', text: 'He said I’ve become too busy for family. In front of everyone.' },
@@ -183,7 +185,8 @@ const LIBRARY = [
     id: 'manager', when: '1w ago',
     title: 'What my manager’s silence does to me',
     line: 'Four hours on read, and a verdict I wrote myself.',
-    tags: ['Work', 'Priya', 'Anxious'], patterns: ['Silence spiral', 'Comparison loop'],
+    moods: ['Anxious'], people: ['Priya'], topics: ['Work', 'Silence', 'Waiting'],
+    patterns: ['Silence spiral'],
     mood: 'var(--mood-anxious)', Icon: EnvelopeSimple,
     history: [
       { who: 'user', time: '3:02 PM', text: 'She saw my message four hours ago. Nothing.' },
@@ -195,7 +198,8 @@ const LIBRARY = [
     id: 'marriage', when: '2w ago',
     title: 'Do I actually want marriage?',
     line: 'Separating what I want from what I’m expected to want.',
-    tags: ['Self', 'Mom', 'Overthinking'], patterns: ['Inheritance loop'],
+    moods: ['Overthinking', 'Doubt', 'Pressure'], people: ['Mom'], topics: ['Self', 'Future', 'Marriage'],
+    patterns: [],
     mood: 'var(--mood-overthinking)', Icon: Heart,
     history: [
       { who: 'user', time: '7:20 PM', text: 'Mom brought it up again. And the strange thing is I wasn’t even annoyed.' },
@@ -207,7 +211,8 @@ const LIBRARY = [
     id: 'burnout', when: '4w ago',
     title: 'Why am I losing motivation at work?',
     line: 'Burned out, or simply done with this chapter.',
-    tags: ['Work', 'Tired'], patterns: ['Clock-watching', 'Silence spiral'],
+    moods: ['Tired'], people: [], topics: ['Work', 'Meaning', 'Monday'],
+    patterns: ['Clock-watching', 'Silence spiral'],
     mood: 'var(--mood-tired)', Icon: Briefcase,
     history: [
       { who: 'user', time: '6:45 PM', text: 'I used to care about shipping things. Now I just watch the clock.' },
@@ -219,7 +224,8 @@ const LIBRARY = [
     id: 'missme', when: '6w ago',
     title: 'I miss who I used to be',
     line: 'Grieving an older self while meeting the next one.',
-    tags: ['Self', 'Grief'], patterns: ['Comparison loop'],
+    moods: ['Grief'], people: ['Friends'], topics: ['Self', 'Change', 'Younger', 'Music'],
+    patterns: [],
     mood: 'var(--mood-sad)', Icon: ClockCounterClockwise,
     history: [
       { who: 'user', time: '10:05 PM', text: 'I saw a photo from three years ago and it hurt. She laughed so easily.' },
@@ -262,6 +268,11 @@ const QUERIES = [
   'Conversations about Dad',
 ]
 /* canned AI-search results per query (the demo of "my life is being remembered") */
+/* The four things we actually store. The card shows them as one row, the filter
+   keeps them apart — so `tags` is derived, never authored, and can't drift. */
+const KINDS = ['moods', 'people', 'topics']
+LIBRARY.forEach((r) => { r.tags = KINDS.flatMap((k) => r[k] || []) })
+
 const RESULTS = {
   'Times I felt burned out': ['burnout', 'restless'],
   'When did I first doubt this relationship?': ['marriage'],
@@ -353,6 +364,125 @@ function PatternLesson({ name, seen, onBack, onOpen }) {
 }
 
 /* ── home — the collection ── */
+/* ── Row fitting ────────────────────────────────────────────────────────────
+   Tags get two lines, loops get one. Whatever spills past that collapses into
+   a +N circle that opens the sheet. Chip widths are intrinsic, so we measure
+   once with the full set rendered and then simulate the wrap; guessing by
+   re-rendering would cost a render per candidate count. */
+function useRowFit(items, rows, chipW) {
+  const ref = useRef(null)
+  const widths = useRef(null)
+  const [shown, setShown] = useState(items.length)
+  const key = items.join('\u0000')
+
+  // a different set of chips invalidates the cached widths
+  useEffect(() => { widths.current = null; setShown(items.length) }, [key])
+
+  // webfonts change every width, but only re-measure if they are actually still loading
+  useEffect(() => {
+    if (!document.fonts || document.fonts.status === 'loaded') return
+    let live = true
+    document.fonts.ready.then(() => { if (live) { widths.current = null; setShown(items.length) } })
+    return () => { live = false }
+  }, [])
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const fit = () => {
+      const box = el.clientWidth
+      if (!box) return
+      if (!widths.current) {
+        const nodes = el.querySelectorAll('[data-fit]')
+        if (nodes.length !== items.length) return // only measure a complete row
+        widths.current = [...nodes].map((n) => n.getBoundingClientRect().width)
+      }
+      const w = widths.current
+      const gap = parseFloat(getComputedStyle(el).columnGap) || 0
+      const lines = (list) => {
+        let n = 1
+        let x = -gap
+        for (const iw of list) {
+          if (x + gap + iw <= box + 0.5) x += gap + iw
+          else { n++; x = iw }
+        }
+        return n
+      }
+      if (lines(w) <= rows) { setShown(w.length); return }
+      let k = w.length - 1
+      while (k > 1 && lines([...w.slice(0, k), chipW]) > rows) k--
+      setShown(k)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(el)
+    return () => ro.disconnect()
+  })
+
+  return [ref, shown]
+}
+
+/* Facts about the entry. Tapping one filters the collection. Two lines, then +N. */
+function TagRow({ tags, active, onPick, onMore }) {
+  const [ref, shown] = useRowFit(tags, 2, 29)
+  const hidden = tags.length - shown
+  const stop = (fn) => ({
+    onClick: (ev) => { ev.stopPropagation(); fn() },
+    onKeyDown: (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); fn() } },
+  })
+  return (
+    <span className="rf-card-tags" ref={ref}>
+      {tags.slice(0, shown).map((t) => (
+        <span
+          data-fit
+          className="rf-card-tag"
+          key={t}
+          role="button"
+          tabIndex={0}
+          data-on={active === t || undefined}
+          aria-label={`Filter by ${t}`}
+          {...stop(() => onPick(t))}
+        >
+          {t}
+        </span>
+      ))}
+      {hidden > 0 && (
+        <span className="rf-card-more" role="button" tabIndex={0} aria-label={`Show all ${tags.length} tags`} {...stop(onMore)}>
+          +{hidden}
+        </span>
+      )}
+    </span>
+  )
+}
+
+/* Kael's reading across entries. Tapping one opens its lesson. One line, then +N. */
+function LoopRow({ loops, onPick, onMore }) {
+  const [ref, shown] = useRowFit(loops, 1, 24)
+  const hidden = loops.length - shown
+  const stop = (fn) => ({
+    onClick: (ev) => { ev.stopPropagation(); fn() },
+    onKeyDown: (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); fn() } },
+  })
+  return (
+    <span className="rf-card-pat">
+      <ArrowsClockwise size={14} weight="bold" />
+      {/* the gap alone separates them, no comma */}
+      <span className="rf-card-pats" ref={ref}>
+        {loops.slice(0, shown).map((p) => (
+          <u data-fit key={p} role="button" tabIndex={0} aria-label={`About the ${p}`} {...stop(() => onPick(p))}>
+            {p}
+          </u>
+        ))}
+        {hidden > 0 && (
+          <span className="rf-card-more rf-card-more-loop" role="button" tabIndex={0} aria-label={`Show all ${loops.length} loops`} {...stop(onMore)}>
+            +{hidden}
+          </span>
+        )}
+      </span>
+    </span>
+  )
+}
+
 export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME }) {
   const [q, setQ] = useState('')
   const [picked, setPicked] = useState(null)
@@ -364,10 +494,21 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
   const [tag, setTag] = useState(null)
   const [filterOpen, setFilterOpen] = useState(false)
   const [pattern, setPattern] = useState(null)
-  const allTags = useMemo(() => {
-    const seen = []
-    lib.forEach((r) => (r.tags || []).forEach((t) => { if (!seen.includes(t)) seen.push(t) }))
-    return seen
+  const [sheet, setSheet] = useState(null) // reflection id whose full tag/loop set is open
+  const sheetOf = sheet ? lib.find((r) => r.id === sheet) : null
+  // only ever offer what the library actually carries
+  const groups = useMemo(() => {
+    const pick = (key) => {
+      const seen = []
+      lib.forEach((r) => (r[key] || []).forEach((t) => { if (!seen.includes(t)) seen.push(t) }))
+      return seen
+    }
+    return [
+      { key: 'moods', label: 'Moods', of: pick('moods') },
+      { key: 'people', label: 'People', of: pick('people') },
+      { key: 'topics', label: 'Topics', of: pick('topics') },
+      { key: 'patterns', label: 'Patterns', of: pick('patterns'), loop: true },
+    ].filter((g) => g.of.length > 0)
   }, [lib])
   const searching = q.length > 0 || picked
   const results = picked ? RESULTS[picked] : null
@@ -383,7 +524,10 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
   const mostRecent = lib[0]
   const MostRecentIcon = mostRecent ? mostRecent.Icon : null
   const restAll = mostRecent ? shown.filter((r) => r.id !== mostRecent.id) : []
-  const rest = tag ? restAll.filter((r) => (r.tags || []).includes(tag)) : restAll
+  // tag and loop names never collide, so a single selection can match either
+  const rest = tag
+    ? restAll.filter((r) => (r.tags || []).includes(tag) || (r.patterns || []).includes(tag))
+    : restAll
 
   /* one card for every reflection. The ongoing one is the same object, only
      warmer, set larger, and closing on an arrow. */
@@ -404,46 +548,16 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
         </span>
         <span className="rf-card-line">{r.line}</span>
         <span className="rf-card-tagrow">
-          <span className="rf-card-tags">
-            {/* tapping a tag filters the collection instead of opening the reflection */}
-            {(r.tags || []).map((t) => (
-              <span
-                className="rf-card-tag"
-                key={t}
-                role="button"
-                tabIndex={0}
-                data-on={tag === t || undefined}
-                aria-label={`Filter by ${t}`}
-                onClick={(ev) => { ev.stopPropagation(); setTag(tag === t ? null : t) }}
-                onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); setTag(tag === t ? null : t) } }}
-              >
-                {t}
-              </span>
-            ))}
-          </span>
+          <TagRow
+            tags={r.tags || []}
+            active={tag}
+            onPick={(t) => setTag(tag === t ? null : t)}
+            onMore={() => setSheet(r.id)}
+          />
           <span className="rf-card-go"><ArrowRight size={lead ? 16 : 14} weight="bold" /></span>
         </span>
         {(r.patterns || []).length > 0 && (
-          <span className="rf-card-pat">
-            <ArrowsClockwise size={14} weight="bold" />
-            {/* each loop opens its own lesson; commas keep them one readable line */}
-            <span className="rf-card-pats">
-              {r.patterns.map((p, i) => (
-                <span key={p}>
-                  {i > 0 && <span className="rf-card-pat-sep">, </span>}
-                  <u
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`About the ${p}`}
-                    onClick={(ev) => { ev.stopPropagation(); setPattern(p) }}
-                    onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); setPattern(p) } }}
-                  >
-                    {p}
-                  </u>
-                </span>
-              ))}
-            </span>
-          </span>
+          <LoopRow loops={r.patterns} onPick={setPattern} onMore={() => setSheet(r.id)} />
         )}
       </span>
     </button>
@@ -532,7 +646,7 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
               </>
             )}
             <span className="rf-label">All reflections</span>
-            {allTags.length > 0 && (
+            {groups.length > 0 && (
               <div className="rf-filterbar">
                 {/* pinned first, so the tags beside it can run as long as they like */}
                 <button
@@ -545,16 +659,17 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
                 </button>
                 <div className="rf-filters">
                   <button className="rf-filter" data-on={tag === null || undefined} onClick={() => setTag(null)}>All</button>
-                  {allTags.map((t) => (
+                  {groups.flatMap((g) => g.of.map((t) => (
                     <button
-                      key={t}
-                      className="rf-filter"
+                      key={g.key + t}
+                      className={`rf-filter${g.loop ? ' rf-filter-loop' : ''}`}
                       data-on={tag === t || undefined}
                       onClick={() => setTag(tag === t ? null : t)}
                     >
+                      {g.loop && <ArrowsClockwise size={12} weight="bold" />}
                       {t}
                     </button>
-                  ))}
+                  )))}
                 </div>
               </div>
             )}
@@ -579,7 +694,7 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
       {pattern && (
         <PatternLesson
           name={pattern}
-          seen={lib.filter((r) => r.pattern === pattern)}
+          seen={lib.filter((r) => (r.patterns || []).includes(pattern))}
           onBack={() => setPattern(null)}
           onOpen={(id) => { setPattern(null); onOpen(id) }}
         />
@@ -601,17 +716,74 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
               >
                 All
               </button>
-              {allTags.map((t) => (
-                <button
-                  key={t}
-                  className="rf-filter"
-                  data-on={tag === t || undefined}
-                  onClick={() => { setTag(tag === t ? null : t); setFilterOpen(false) }}
-                >
-                  {t}
-                </button>
-              ))}
             </div>
+            {groups.map((g) => (
+              <Fragment key={g.key}>
+                <span className="rf-fsheet-label">{g.label}</span>
+                <div className="rf-fsheet-tags">
+                  {g.of.map((t) => (
+                    <button
+                      key={t}
+                      className={`rf-filter${g.loop ? ' rf-filter-loop' : ''}`}
+                      data-on={tag === t || undefined}
+                      onClick={() => { setTag(tag === t ? null : t); setFilterOpen(false) }}
+                    >
+                      {g.loop && <ArrowsClockwise size={12} weight="bold" />}
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {sheetOf && (
+        <div className="rf-fsheet-wrap">
+          <div className="rf-fsheet-scrim" onClick={() => setSheet(null)} />
+          <div className="rf-fsheet" role="dialog" aria-label={sheetOf.title}>
+            <div className="rf-fsheet-top">
+              <span className="rf-fsheet-title">{sheetOf.title}</span>
+              <button className="rf-fsheet-x" onClick={() => setSheet(null)} aria-label="Close"><X size={16} weight="bold" /></button>
+            </div>
+
+            {(sheetOf.tags || []).length > 0 && (
+              <>
+                <span className="rf-fsheet-label">Tags</span>
+                <div className="rf-fsheet-tags">
+                  {sheetOf.tags.map((t) => (
+                    <button
+                      key={t}
+                      className="rf-filter"
+                      data-on={tag === t || undefined}
+                      onClick={() => { setTag(tag === t ? null : t); setSheet(null) }}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {(sheetOf.patterns || []).length > 0 && (
+              <>
+                <span className="rf-fsheet-label">Loops Kael has noticed</span>
+                <div className="rf-fsheet-loops">
+                  {sheetOf.patterns.map((p) => (
+                    <button
+                      key={p}
+                      className="rf-fsheet-loop"
+                      onClick={() => { setSheet(null); setPattern(p) }}
+                    >
+                      <ArrowsClockwise size={15} weight="bold" />
+                      <span>{p}</span>
+                      <CaretRight size={14} weight="bold" />
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

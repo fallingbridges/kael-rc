@@ -11649,14 +11649,13 @@ svg {
 .rf-card-when { flex: 0 0 auto; font: 500 12px var(--sans); color: color-mix(in srgb, var(--ink) 34%, transparent); }
 .rf-card-line { display: -webkit-box; margin-top: 9px; font: 400 14.5px/1.55 var(--serif); color: color-mix(in srgb, var(--ink) 56%, transparent); -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* pill-shaped tags */
-.rf-card-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+.rf-card-tags { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
 .rf-card-tag { display: inline-flex; align-items: center; height: 29px; padding: 0 13px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 3%, var(--paper)); font: 500 12px var(--sans); line-height: 1; letter-spacing: -0.005em; color: color-mix(in srgb, var(--ink) 54%, transparent); cursor: pointer; transition: background 0.16s var(--ease), color 0.16s var(--ease); }
 .rf-card-tag:hover { background: color-mix(in srgb, var(--ink) 8%, var(--paper)); color: color-mix(in srgb, var(--ink) 72%, transparent); }
 .rf-card-tag[data-on] { background: var(--invert-bg); color: var(--invert-ink); }
 .rf-card-pat { display: flex; align-items: center; gap: 9px; margin-top: 15px; padding-top: 13px; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); font: 500 13px var(--sans); color: color-mix(in srgb, var(--ink) 56%, transparent); }
-.rf-card-pats { min-width: 0; }
-/* the comma needs real air, or the two dashed rules read as one phrase */
-.rf-card-pat-sep { color: color-mix(in srgb, var(--ink) 30%, transparent); letter-spacing: 0.06em; padding-right: 5px; }
+/* no separator glyph: the gap alone keeps the dashed rules from reading as one phrase */
+.rf-card-pats { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 3px 15px; }
 .rf-card-pat u { cursor: pointer; transition: color 0.16s var(--ease), border-color 0.16s var(--ease); }
 .rf-card-pat u:hover { color: color-mix(in srgb, var(--ink) 82%, transparent); }
 .rf-card-pat svg { flex: 0 0 auto; color: color-mix(in srgb, var(--ink) 38%, transparent); }
@@ -11755,6 +11754,28 @@ svg {
 .rf-fsheet-title { font: 500 20px var(--title); letter-spacing: -0.015em; color: var(--ink); }
 .rf-fsheet-x { display: grid; place-items: center; width: 32px; height: 32px; margin-right: -6px; border: none; border-radius: 50%; background: color-mix(in srgb, var(--ink) 6%, transparent); color: color-mix(in srgb, var(--ink) 50%, transparent); cursor: pointer; }
 .rf-fsheet-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+/* the +N circle: whatever spilled past the allowed lines lives behind this */
+.rf-card-more { flex: 0 0 auto; display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 7%, var(--paper)); color: color-mix(in srgb, var(--ink) 62%, transparent); font: 600 12px var(--sans); letter-spacing: -0.02em; cursor: pointer; transition: background 0.16s var(--ease), color 0.16s var(--ease); }
+.rf-card-more:hover { background: color-mix(in srgb, var(--ink) 12%, var(--paper)); color: color-mix(in srgb, var(--ink) 82%, transparent); }
+.rf-card-lead .rf-card-more { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.rf-card-more-loop { width: 24px; height: 24px; font-size: 11px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.rf-card-lead .rf-card-more-loop { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+
+/* the sheet borrows the filter sheet's grammar; only the sections are new */
+/* a loop in the filter carries its mark, so interpretation never reads as a fact */
+.rf-filter-loop { display: inline-flex; align-items: center; gap: 6px; }
+.rf-filter-loop svg { color: color-mix(in srgb, var(--ink) 38%, transparent); }
+.rf-filter-loop[data-on] svg { color: color-mix(in srgb, var(--invert-ink) 70%, transparent); }
+.rf-fsheet-label { display: block; margin: 4px 0 11px; font: 600 10.5px var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: color-mix(in srgb, var(--ink) 42%, transparent); }
+.rf-fsheet-tags + .rf-fsheet-label { margin-top: 22px; }
+.rf-fsheet-loops { display: flex; flex-direction: column; }
+.rf-fsheet-loop { display: flex; align-items: center; gap: 11px; width: 100%; padding: 14px 2px; border: 0; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); background: none; font: 500 15px var(--sans); color: var(--ink); text-align: left; cursor: pointer; }
+.rf-fsheet-loop:first-child { border-top: 0; }
+.rf-fsheet-loop span { flex: 1; }
+.rf-fsheet-loop svg:first-child { color: color-mix(in srgb, var(--ink) 40%, transparent); }
+.rf-fsheet-loop svg:last-child { color: color-mix(in srgb, var(--ink) 30%, transparent); }
+.rf-fsheet-loop:hover { color: color-mix(in srgb, var(--ink) 70%, transparent); }
+
 
 /* where the thread stands: the last thing said, in a quiet chat register.
    Fixed label column so every card's message starts on the same axis. */
