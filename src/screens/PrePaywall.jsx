@@ -5,6 +5,7 @@ import {
   Leaf, Waves, Mountains, Phone, Moon, Heart, ShieldCheck,
   Compass, Fingerprint, Spiral, Smiley, SmileySad, Medal, PenNib, Tag, BellSimple,
   LockSimpleOpen, Crown, Plant, MagnifyingGlass, Eye, Feather,
+  AppleLogo, GoogleLogo, EnvelopeSimple, LockSimple, UserCirclePlus,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -16,7 +17,7 @@ import {
    ────────────────────────────────────────────────────────────────────────── */
 
 const NAME = 'Maya'
-const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'journey', 'offer', 'decline', 'saved']
+const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'journey', 'offer', 'signup', 'decline', 'saved']
 
 /* each tier pairs the minutes with what they buy — the commitment sells its outcome */
 const GOALS = [
@@ -55,7 +56,7 @@ export default function PrePaywall({ noanim = false }) {
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
   const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : kind === 'journey' ? 'I’m ready' : 'Continue'
-  const showFooter = !['therapist', 'goal', 'promise', 'offer', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
+  const showFooter = !['therapist', 'goal', 'promise', 'offer', 'signup', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
   const ready = kind === 'goal' ? Boolean(ans.goal)
     : kind === 'promise' ? Boolean(ans.signed) : true
 
@@ -108,6 +109,7 @@ function Screen({ kind, ans, set, pickAuto, onNext }) {
     case 'allset': return <AllSetBody name={NAME} />
     case 'journey': return <JourneyBody name={NAME} />
     case 'offer': return <OfferBody onNext={onNext} />
+    case 'signup': return <SignupBody onNext={onNext} />
     case 'decline': return <DeclineBody onNext={onNext} />
     case 'saved': return <SavedBody onNext={onNext} />
     default: return null
@@ -431,6 +433,33 @@ export function OfferBody({ onNext, onPlans }) {
         <button className="ov-cta" onClick={onNext}>Start my free week</button>
         <div className="pp2-legal"><button>Restore</button><button>Terms</button><button>Privacy</button></div>
       </div>
+    </div>
+  )
+}
+
+/* 9b · signup — right after the paywall. The account is not bureaucracy, it is
+   how tonight becomes permanent: the pattern, the promise, every word they
+   trusted Kael with. Loss framed warmly; the buttons do the rest. */
+export function SignupBody({ onNext }) {
+  const AUTHS = [
+    { Icon: AppleLogo, w: 'fill', label: 'Continue with Apple', dark: true },
+    { Icon: GoogleLogo, w: 'bold', label: 'Continue with Google' },
+    { Icon: EnvelopeSimple, w: 'regular', label: 'Continue with email' },
+  ]
+  return (
+    <div className="pp2 pp2-c pp2-signup">
+      <span className="ov4-badge"><UserCirclePlus size={26} weight="duotone" /></span>
+      <span className="ov4-kicker">Yours to keep</span>
+      <h1 className="pp2-title">Save what<br />you’ve started.</h1>
+      <p className="tp-sub">Your pattern, your promise, every word you’ve trusted Kael with. An account keeps it all safe, and keeps it yours.</p>
+      <div className="pp2-auth">
+        {AUTHS.map((a, k) => (
+          <button key={a.label} className={`pp2-auth-btn${a.dark ? ' pp2-auth-dark' : ''}`} style={{ '--d': `${0.1 * k + 0.3}s` }} onClick={onNext}>
+            <a.Icon size={18} weight={a.w} />{a.label}
+          </button>
+        ))}
+      </div>
+      <p className="pp2-auth-note"><LockSimple size={13} weight="fill" />Locked to you. Never shared, never sold.</p>
     </div>
   )
 }

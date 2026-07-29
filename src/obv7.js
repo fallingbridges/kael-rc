@@ -497,6 +497,7 @@ export const FLOW = [
   /* the close — offer, then the decline ladder: a kinder price (once), then the
      open door. These three own their whole CTA blocks — no cta here. */
   { id: 'offer', kind: 'offer', act: 4 },
+  { id: 'signup', kind: 'signup', act: 4 }, // no cta — the auth buttons advance
   { id: 'decline', kind: 'decline', act: 4 },
   { id: 'saved', kind: 'saved', act: 4 },
 ]

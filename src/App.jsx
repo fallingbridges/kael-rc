@@ -13,6 +13,10 @@ import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
 import PrePaywall from './screens/PrePaywall.jsx'
 import TrialSteps from './screens/TrialSteps.jsx'
+import PremiumFlow from './screens/PremiumFlow.jsx'
+import CardVariants from './screens/CardVariants.jsx'
+import PostOnboardingFlow from './screens/PostOnboardingFlow.jsx'
+import LandingPage from './screens/LandingPage.jsx'
 import ProgramPaywall from './screens/ProgramPaywall.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
 import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, autoTone } from './screens/ReflectConcept.jsx'
@@ -21,12 +25,90 @@ import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
 import IntroConcept from './screens/IntroConcept.jsx'
 import JourneyConcept from './screens/JourneyConcept.jsx'
-import { Sparkle, Sun, Moon, Download, Grid } from './components/Icons.jsx'
+import { Sparkle, Sun, Moon, Download, Grid, Close } from './components/Icons.jsx'
+import { MagnifyingGlass } from '@phosphor-icons/react'
+
+const STUDIO_GROUPS = [
+  {
+    id: 'product',
+    name: 'Product',
+    tabs: [
+      ['reflect', 'Reflect'],
+      ['cardvariants', 'Card variants'],
+      ['cards', 'Cards'],
+      ['journey', 'Journey'],
+      ['intro', 'Intro'],
+      ['duo', '2-Screen'],
+    ],
+  },
+  {
+    id: 'onboarding',
+    name: 'Onboarding',
+    tabs: [
+      ['onboarding-v7', 'V7'],
+      ['onboarding-v6', 'V6'],
+      ['onboarding-v5', 'V5'],
+      ['onboarding-v4', 'V4'],
+      ['onboarding-v3', 'V3'],
+      ['onboarding-v2', 'V2'],
+      ['onboarding', 'V1'],
+    ],
+  },
+  {
+    id: 'premium',
+    name: 'Paywalls',
+    tabs: [
+      ['premiumflow', 'Premium flow'],
+      ['post-onboarding', 'Post-onboarding'],
+      ['prepaywall', 'Pre-paywall'],
+      ['trialsteps', '3-step'],
+      ['program', '30-day close'],
+      ['v8close', 'V8 close'],
+      ['paywall', 'Paywall lab'],
+    ],
+  },
+  {
+    id: 'marketing',
+    name: 'Marketing',
+    tabs: [
+      ['landing', 'Landing page'],
+      ['store', 'App Store'],
+    ],
+  },
+  {
+    id: 'system',
+    name: 'System',
+    tabs: [
+      ['components', 'Components'],
+      ['brand', 'Brand'],
+    ],
+  },
+]
+
+const groupOfTab = (tab) =>
+  (STUDIO_GROUPS.find((g) => g.tabs.some(([id]) => id === tab)) || STUDIO_GROUPS[0]).id
+
+/* every screen, flattened, so search can reach across groups */
+const ALL_TABS = STUDIO_GROUPS.flatMap((g) =>
+  g.tabs.map(([id, label]) => ({ id, label, group: g.id, groupName: g.name })),
+)
 
 export default function App() {
   const [theme, setTheme] = useState('light')
   const [view, setView] = useState('app')
   const [studioTab, setStudioTab] = useState('components')
+  const [studioGroup, setStudioGroup] = useState(() => groupOfTab('components'))
+  const [studioQuery, setStudioQuery] = useState('')
+  const q = studioQuery.trim().toLowerCase()
+  /* search reaches every group; without a query the group filter decides */
+  const visibleTabs = ALL_TABS.filter(
+    (t) =>
+      /* the label matches anywhere; a group name only matches from its start,
+         so a stray letter cannot drag in a whole group */
+      (q ? t.label.toLowerCase().includes(q) || t.groupName.toLowerCase().startsWith(q) : true) &&
+      (q || studioGroup === 'all' ? true : t.group === studioGroup),
+  )
+  const showGroupOnTab = Boolean(q) || studioGroup === 'all'
   const [reflectView, setReflectView] = useState({ kind: 'home' })
   const [reflectTone, setReflectTone] = useState('auto') // preview the invitation card across the day
   const [doneTones, setDoneTones] = useState({}) // which time-windows already have a reflection → card collapses
@@ -108,147 +190,63 @@ export default function App() {
       <main className="stage-main">
         {view === 'studio' ? (
           <div className="studio">
-            <div className="studio-tabs">
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'components'}
-                onClick={() => setStudioTab('components')}
-              >
-                Components
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'brand'}
-                onClick={() => setStudioTab('brand')}
-              >
-                Brand
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'store'}
-                onClick={() => setStudioTab('store')}
-              >
-                App Store
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding'}
-                onClick={() => setStudioTab('onboarding')}
-              >
-                Onboarding
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding-v2'}
-                onClick={() => setStudioTab('onboarding-v2')}
-              >
-                Onboarding V2
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding-v3'}
-                onClick={() => setStudioTab('onboarding-v3')}
-              >
-                Onboarding V3
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding-v4'}
-                onClick={() => setStudioTab('onboarding-v4')}
-              >
-                Onboarding V4
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding-v5'}
-                onClick={() => setStudioTab('onboarding-v5')}
-              >
-                Onboarding V5
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding-v6'}
-                onClick={() => setStudioTab('onboarding-v6')}
-              >
-                Onboarding V6
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'onboarding-v7'}
-                onClick={() => setStudioTab('onboarding-v7')}
-              >
-                Onboarding V7
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'prepaywall'}
-                onClick={() => setStudioTab('prepaywall')}
-              >
-                Pre-paywall
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'trialsteps'}
-                onClick={() => setStudioTab('trialsteps')}
-              >
-                3-Step Paywall
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'program'}
-                onClick={() => setStudioTab('program')}
-              >
-                30-Day Close
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'v8close'}
-                onClick={() => setStudioTab('v8close')}
-              >
-                V8 Close
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'reflect'}
-                onClick={() => setStudioTab('reflect')}
-              >
-                Reflect
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'paywall'}
-                onClick={() => setStudioTab('paywall')}
-              >
-                Paywalls
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'cards'}
-                onClick={() => setStudioTab('cards')}
-              >
-                Cards
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'duo'}
-                onClick={() => setStudioTab('duo')}
-              >
-                2-Screen
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'intro'}
-                onClick={() => setStudioTab('intro')}
-              >
-                Intro
-              </button>
-              <button
-                className="studio-tab"
-                data-on={studioTab === 'journey'}
-                onClick={() => setStudioTab('journey')}
-              >
-                Journey
-              </button>
+            <div className="studio-nav">
+              <div className="studio-groups">
+                <button
+                  className="studio-group"
+                  data-on={studioGroup === 'all' && !q}
+                  onClick={() => {
+                    setStudioGroup('all')
+                    setStudioQuery('')
+                  }}
+                >
+                  All
+                  <i>{ALL_TABS.length}</i>
+                </button>
+                {STUDIO_GROUPS.map((g) => (
+                  <button
+                    key={g.id}
+                    className="studio-group"
+                    data-on={studioGroup === g.id && !q}
+                    onClick={() => {
+                      setStudioGroup(g.id)
+                      setStudioQuery('')
+                      setStudioTab(g.tabs[0][0])
+                    }}
+                  >
+                    {g.name}
+                    <i>{g.tabs.length}</i>
+                  </button>
+                ))}
+                <label className="studio-search">
+                  <MagnifyingGlass size={14} weight="bold" />
+                  <input
+                    value={studioQuery}
+                    onChange={(e) => setStudioQuery(e.target.value)}
+                    placeholder="Search screens"
+                    aria-label="Search screens"
+                  />
+                  {q && (
+                    <button onClick={() => setStudioQuery('')} aria-label="Clear search">
+                      <Close size={12} sw={2} />
+                    </button>
+                  )}
+                </label>
+              </div>
+              <div className="studio-tabs">
+                {visibleTabs.map((t) => (
+                  <button
+                    key={t.id}
+                    className="studio-tab"
+                    data-on={studioTab === t.id}
+                    onClick={() => setStudioTab(t.id)}
+                  >
+                    {showGroupOnTab && <i className="studio-tab-group">{t.groupName}</i>}
+                    {t.label}
+                  </button>
+                ))}
+                {visibleTabs.length === 0 && <span className="studio-none">No screen by that name</span>}
+              </div>
             </div>
             <div className="studio-body">
               {studioTab === 'components' ? (
@@ -271,8 +269,16 @@ export default function App() {
                 <OnboardingV7 />
               ) : studioTab === 'prepaywall' ? (
                 <PrePaywall />
+              ) : studioTab === 'landing' ? (
+                <LandingPage />
               ) : studioTab === 'trialsteps' ? (
                 <TrialSteps />
+              ) : studioTab === 'premiumflow' ? (
+                <PremiumFlow />
+              ) : studioTab === 'cardvariants' ? (
+                <CardVariants />
+              ) : studioTab === 'post-onboarding' ? (
+                <PostOnboardingFlow />
               ) : studioTab === 'program' ? (
                 <ProgramPaywall />
               ) : studioTab === 'v8close' ? (

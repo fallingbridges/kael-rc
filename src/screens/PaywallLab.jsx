@@ -110,22 +110,22 @@ function Cta({ children }) {
   )
 }
 
-/* 01 · The Secure Plan — icon-chip list, capability benefits */
+/* 01 · All of Kael — icon-chip list, capability benefits */
 function VClassic() {
   const [plan, setPlan] = useState('annual')
   const feats = [
-    { icon: InfinityIcon, t: 'Unlimited conversations', s: 'Every spiral and fight, no caps' },
-    { icon: Brain, t: 'Kael remembers everything', s: 'Your people and patterns, never re-explain' },
-    { icon: ArrowsClockwise, t: 'Spot the patterns you repeat', s: 'The triggers and beliefs running underneath' },
-    { icon: Anchor, t: 'Build a secure foundation', s: 'Steadier reactions, one moment at a time' },
+    { icon: InfinityIcon, t: 'Unlimited reflections', s: 'Every heavy night and small win, no caps' },
+    { icon: Brain, t: 'Kael remembers everything', s: 'Your people and patterns, never explain twice' },
+    { icon: ArrowsClockwise, t: 'See the patterns you repeat', s: 'The loops running underneath your weeks' },
+    { icon: Anchor, t: 'A steadier baseline', s: 'Calmer reactions, one reflection at a time' },
   ]
   return (
     <div className="ob-screen pl-screen" data-theme="light">
       <CloseX />
       <div className="pl-body">
         <Ed as="p" className="pl-kicker">Kael Premium</Ed>
-        <Ed as="h1" className="pl-title">The Secure Plan</Ed>
-        <Ed as="p" className="pl-lede">Unlimited access to the coach who remembers your whole story.</Ed>
+        <Ed as="h1" className="pl-title">All of Kael, unlimited.</Ed>
+        <Ed as="p" className="pl-lede">Unlimited access to the guide who remembers your whole story.</Ed>
         <div className="pl-feats">
           {feats.map((f) => (
             <div className="pl-feat" key={f.t}>
@@ -156,7 +156,7 @@ function VMidnight() {
     { t: 'See the loop before it runs you', s: 'Catch the spiral while you still have a choice' },
     { t: 'Hear the belief underneath', s: 'The old story driving the reaction' },
     { t: 'Know your triggers', s: 'What sets you off, and why' },
-    { t: 'Hold your ground, kindly', s: 'Stay secure without going cold' },
+    { t: 'End the day lighter', s: 'Set it down here instead of carrying it to bed' },
   ]
   return (
     <div className="ob-screen pl-screen" data-theme="dark">
@@ -189,10 +189,10 @@ function VMidnight() {
 function VHairline() {
   const [plan, setPlan] = useState('annual')
   const feats = [
-    { icon: ChatCircleDots, t: 'A coach in the hard moment', s: 'Bring the text, the fight, the silence' },
+    { icon: ChatCircleDots, t: 'A guide in the hard moment', s: 'Bring the 2am thought, the hard call, the heavy Sunday' },
     { icon: InfinityIcon, t: 'Unlimited, whenever it hits', s: '2am spirals included' },
     { icon: Brain, t: 'It remembers your story', s: 'Every person, every chapter' },
-    { icon: MagnifyingGlass, t: 'Decode what just happened', s: 'Separate the event from the fear' },
+    { icon: MagnifyingGlass, t: 'Untangle what just happened', s: 'Separate the event from the story about it' },
   ]
   return (
     <div className="ob-screen pl-screen" data-theme="light">
@@ -200,7 +200,7 @@ function VHairline() {
       <div className="pl-body">
         <Ed as="p" className="pl-kicker">Kael Premium</Ed>
         <Ed as="h1" className="pl-title">Kael, whenever you need it.</Ed>
-        <Ed as="p" className="pl-lede">Unlimited support for the moments that actually trip you up.</Ed>
+        <Ed as="p" className="pl-lede">Unlimited reflection for the moments that actually trip you up.</Ed>
         <div className="pl-hlist">
           {feats.map((f) => (
             <div className="pl-hrow" key={f.t}>
@@ -224,14 +224,14 @@ function VHairline() {
   )
 }
 
-/* 04 · Build something secure — enclosed soft-panel list, growth benefits */
+/* 04 · Build a steadier you — enclosed soft-panel list, growth benefits */
 function VPanel() {
   const [plan, setPlan] = useState('annual')
   const feats = [
-    { icon: Heart, t: 'Understand how you love', s: 'Your attachment, mapped over time' },
+    { icon: Heart, t: 'Understand what you feel', s: 'Your inner weather, mapped over time' },
     { icon: Quotes, t: 'Name what keeps repeating', s: 'The patterns, beliefs, and triggers' },
-    { icon: Wind, t: 'Calm the spiral faster', s: 'Tools that settle your system' },
-    { icon: Anchor, t: 'A foundation that holds', s: 'Become the secure one, for real' },
+    { icon: Wind, t: 'Calm the spiral faster', s: 'Ways to settle your system' },
+    { icon: Anchor, t: 'A foundation that holds', s: 'Become the steady one, for real' },
   ]
   return (
     <div className="ob-screen pl-screen" data-theme="light">
@@ -240,8 +240,8 @@ function VPanel() {
         <span className="pl-badge pl-badge-warm">
           <HandHeart size={22} weight="duotone" />
         </span>
-        <Ed as="h1" className="pl-title">Build something secure.</Ed>
-        <Ed as="p" className="pl-lede">The work that turns the spiral into steady, lasting love.</Ed>
+        <Ed as="h1" className="pl-title">Build a steadier you.</Ed>
+        <Ed as="p" className="pl-lede">The quiet work that turns spirals into steadier days.</Ed>
         <div className="pl-panel">
           {feats.map((f) => (
             <div className="pl-prow" key={f.t}>
@@ -265,14 +265,14 @@ function VPanel() {
   )
 }
 
-/* 05 · The Secure Plan, grouped — top icon, centered hero, price hugs the CTA */
+/* 05 · All of Kael, grouped — top icon, centered hero, price hugs the CTA */
 function VGrouped() {
   const [plan, setPlan] = useState('annual')
   const feats = [
-    { icon: InfinityIcon, t: 'Unlimited conversations', s: 'Every spiral and fight, no caps' },
-    { icon: Brain, t: 'Kael remembers everything', s: 'Your people and patterns, never re-explain' },
-    { icon: ArrowsClockwise, t: 'Spot the patterns you repeat', s: 'The triggers and beliefs underneath' },
-    { icon: Anchor, t: 'Build a secure foundation', s: 'Steadier reactions, one moment at a time' },
+    { icon: InfinityIcon, t: 'Unlimited reflections', s: 'Every heavy night and small win, no caps' },
+    { icon: Brain, t: 'Kael remembers everything', s: 'Your people and patterns, never explain twice' },
+    { icon: ArrowsClockwise, t: 'See the patterns you repeat', s: 'The loops running underneath your weeks' },
+    { icon: Anchor, t: 'A steadier baseline', s: 'Calmer reactions, one reflection at a time' },
   ]
   return (
     <div className="ob-screen pl-screen pl-grouped" data-theme="light">
@@ -283,8 +283,8 @@ function VGrouped() {
             <ShieldCheck size={22} weight="duotone" />
           </span>
           <Ed as="p" className="pl-kicker">Kael Premium</Ed>
-          <Ed as="h1" className="pl-title">The Secure Plan</Ed>
-          <Ed as="p" className="pl-lede">Unlimited access to the coach who remembers your whole story.</Ed>
+          <Ed as="h1" className="pl-title">All of Kael, unlimited.</Ed>
+          <Ed as="p" className="pl-lede">Unlimited access to the guide who remembers your whole story.</Ed>
         </div>
         <div className="pl-feats pl-feats-tight">
           {feats.map((f) => (
@@ -312,18 +312,18 @@ function VGrouped() {
 }
 
 const VARIANTS = [
-  { id: 'grouped', cap: '05 · The Secure Plan, grouped', note: 'Top icon, centered hero, price hugs CTA', C: VGrouped },
-  { id: 'classic', cap: '01 · The Secure Plan', note: 'Icon-chip list · capabilities', C: VClassic },
+  { id: 'grouped', cap: '05 · All of Kael, grouped', note: 'Top icon, centered hero, price hugs CTA', C: VGrouped },
+  { id: 'classic', cap: '01 · All of Kael', note: 'Icon-chip list · capabilities', C: VClassic },
   { id: 'midnight', cap: '02 · Become the calm one', note: 'Dark, numbered list · outcomes', C: VMidnight },
   { id: 'hairline', cap: '03 · Whenever you need it', note: 'Hairline list · in-the-moment', C: VHairline },
-  { id: 'panel', cap: '04 · Build something secure', note: 'Panel list · growth', C: VPanel },
+  { id: 'panel', cap: '04 · Build a steadier you', note: 'Panel list · growth', C: VPanel },
 ]
 
 export default function PaywallLab() {
   return (
     <div className="lib-page">
       <h1 className="lib-title">Paywalls</h1>
-      <p className="lib-sub">Four benefit-list designs · unlimited chat with memory. Click any title, benefit, or button to edit the copy. Annual shows the real $99.99/year. 7-day trial on both.</p>
+      <p className="lib-sub">Five benefit-list designs · unlimited reflection with memory. Click any title, benefit, or button to edit the copy. Annual shows the real $99.99/year. 7-day trial on both.</p>
       <div className="pl-lab">
         {VARIANTS.map((v) => (
           <div className="pl-tile" key={v.id}>

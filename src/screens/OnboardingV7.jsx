@@ -13,7 +13,7 @@ import {
   resolveRead, answeredCount,
 } from '../obv7.js'
 import { Safety as IntroSafety, MOODS, THREAD } from './IntroConcept.jsx'
-import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody, OfferBody, DeclineBody, SavedBody } from './PrePaywall.jsx'
+import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody, OfferBody, SignupBody, DeclineBody, SavedBody } from './PrePaywall.jsx'
 import { PlanSheet } from './ProgramPaywall.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -222,6 +222,7 @@ function Body(props) {
       />
     )
     case 'offer': return <OfferBody onNext={props.onAdvance} onPlans={props.onPlans} />
+    case 'signup': return <SignupBody onNext={props.onAdvance} />
     case 'decline': return <DeclineBody onNext={props.onAdvance} />
     case 'saved': return <SavedBody onNext={props.onAdvance} />
     case 'trust': return <Trust {...props} />
@@ -682,18 +683,23 @@ function SundayThread() {
   )
 }
 
-/* the differentiator made visible: Kael replies AND hands you options to tap */
+/* the differentiator made visible: Kael reads beneath the message, asks the
+   question that matters, and the options are answers to THAT question, not
+   generic moods. One exchange has to prove listening, insight, and tap-to-answer. */
 function ChatDemo() {
   return (
     <div className="ov5-demo" aria-hidden="true">
+      <div className="ov5-demo-row ov5-demo-row-user">
+        <div className="ov5-demo-bubble ov5-demo-bubble-user">Said yes to covering another weekend shift. Furious at myself.</div>
+      </div>
       <div className="ov5-demo-row">
         <span className="ov5-demo-av"><Sparkle size={14} weight="fill" /></span>
-        <div className="ov5-demo-bubble">That sounds like a lot to hold on your own. Want to start with the part that’s loudest right now?</div>
+        <div className="ov5-demo-bubble">The anger came after the yes, not before it. What made no feel impossible in that moment?</div>
       </div>
       <div className="ov5-demo-chips">
-        <span className="ov5-demo-chip">The racing thoughts</span>
-        <span className="ov5-demo-chip">Why I can’t rest</span>
-        <span className="ov5-demo-chip">I just need to vent</span>
+        <span className="ov5-demo-chip">They’d be disappointed</span>
+        <span className="ov5-demo-chip">No feels selfish</span>
+        <span className="ov5-demo-chip">Honestly, habit</span>
       </div>
       <div className="ov5-demo-input">
         <span className="ov5-demo-input-hint">or type your own…</span>

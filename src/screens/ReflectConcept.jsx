@@ -4,8 +4,10 @@ import {
   Spiral, CloudRain, Anchor, Hourglass, Fire, Moon, Sun, SmileyNervous, SunHorizon,
   ChatCircleDots, Scales, Question,
   Compass, User, EnvelopeSimple, Briefcase, Heart, ClockCounterClockwise,
-  Checks, Infinity as InfinityIcon, Brain, Wind,
+  Checks, Infinity as InfinityIcon, Brain, Wind, BookmarkSimple, ArrowsClockwise, Faders, CaretRight,
 } from '@phosphor-icons/react'
+
+import { PATTERN_LESSONS } from '../patternLessons.js'
 
 const nowStr = () => new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 
@@ -125,6 +127,27 @@ const REPLY_SETS = [
   ['Exactly', 'A little', 'I hadn’t thought of that'],
 ]
 
+/* what each named loop actually is. The names are Kael's invention, so they
+   have to be able to explain themselves the moment someone taps one. */
+const PATTERN_NOTES = {
+  'Inheritance loop': {
+    what: 'A comment lands harder than its size because it isn’t the first time. You end up answering the whole history, not the sentence in front of you.',
+    tell: 'The reaction is bigger than the moment that caused it.',
+  },
+  'Silence spiral': {
+    what: 'When someone goes quiet, you write the verdict yourself. It is rarely a kind one, and it always arrives before any actual information does.',
+    tell: 'You know what they think before they’ve said anything.',
+  },
+  'Comparison loop': {
+    what: 'You measure your pace against a finish line someone else drew, then read the gap as failure. The restlessness has no specific want underneath it.',
+    tell: 'Feeling behind, without being able to name behind what.',
+  },
+  'Clock-watching': {
+    what: 'Interest drains out and time becomes the thing you manage instead of the work. Not dread exactly, more absence.',
+    tell: 'Counting hours rather than dreading tasks.',
+  },
+}
+
 /* the collection — living titles + one-liners, newest first. Nothing is ever
    "closed"; the most recent one just surfaces first (LIBRARY[0]), the same
    as every other reflection, only more recently touched. */
@@ -133,6 +156,7 @@ const LIBRARY = [
     id: 'restless', when: '2h ago',
     title: 'Why am I so restless lately?',
     line: 'Life is moving, but maybe not in the right direction.',
+    tags: ['Direction', 'Restless'], patterns: ['Comparison loop', 'Clock-watching'],
     mood: 'var(--mood-restless)', Icon: Compass,
     history: [
       { who: 'user', time: '9:40 AM', text: 'I keep feeling like I should be somewhere else. Not physically. Just… further.' },
@@ -145,6 +169,7 @@ const LIBRARY = [
     id: 'dad', when: '6d ago',
     title: 'The fight with Dad',
     line: 'Anger on the surface, but something older underneath it.',
+    tags: ['Family', 'Dad', 'Heavy'], patterns: ['Inheritance loop', 'Silence spiral'],
     mood: 'var(--mood-hurt)', Icon: User,
     history: [
       { who: 'user', time: '8:14 PM', text: 'He said I’ve become too busy for family. In front of everyone.' },
@@ -158,6 +183,7 @@ const LIBRARY = [
     id: 'manager', when: '1w ago',
     title: 'What my manager’s silence does to me',
     line: 'Four hours on read, and a verdict I wrote myself.',
+    tags: ['Work', 'Priya', 'Anxious'], patterns: ['Silence spiral', 'Comparison loop'],
     mood: 'var(--mood-anxious)', Icon: EnvelopeSimple,
     history: [
       { who: 'user', time: '3:02 PM', text: 'She saw my message four hours ago. Nothing.' },
@@ -169,6 +195,7 @@ const LIBRARY = [
     id: 'marriage', when: '2w ago',
     title: 'Do I actually want marriage?',
     line: 'Separating what I want from what I’m expected to want.',
+    tags: ['Self', 'Mom', 'Overthinking'], patterns: ['Inheritance loop'],
     mood: 'var(--mood-overthinking)', Icon: Heart,
     history: [
       { who: 'user', time: '7:20 PM', text: 'Mom brought it up again. And the strange thing is I wasn’t even annoyed.' },
@@ -180,6 +207,7 @@ const LIBRARY = [
     id: 'burnout', when: '4w ago',
     title: 'Why am I losing motivation at work?',
     line: 'Burned out, or simply done with this chapter.',
+    tags: ['Work', 'Tired'], patterns: ['Clock-watching', 'Silence spiral'],
     mood: 'var(--mood-tired)', Icon: Briefcase,
     history: [
       { who: 'user', time: '6:45 PM', text: 'I used to care about shipping things. Now I just watch the clock.' },
@@ -191,6 +219,7 @@ const LIBRARY = [
     id: 'missme', when: '6w ago',
     title: 'I miss who I used to be',
     line: 'Grieving an older self while meeting the next one.',
+    tags: ['Self', 'Grief'], patterns: ['Comparison loop'],
     mood: 'var(--mood-sad)', Icon: ClockCounterClockwise,
     history: [
       { who: 'user', time: '10:05 PM', text: 'I saw a photo from three years ago and it hurt. She laughed so easily.' },
@@ -264,12 +293,82 @@ export const autoTone = () => {
   return 'dusk'
 }
 
+
+/* ── the loop, opened full screen as something worth reading ── */
+function PatternLesson({ name, seen, onBack, onOpen }) {
+  const l = PATTERN_LESSONS[name]
+  if (!l) return null
+  return (
+    <div className="rf-lesson">
+      <header className="rf-lesson-bar">
+        <button className="rf-lesson-back" onClick={onBack} aria-label="Back"><ArrowLeft size={19} /></button>
+        <span className="rf-lesson-bar-name">{name}</span>
+      </header>
+
+      <div className="rf-lesson-scroll">
+        <div className="rf-lesson-head">
+          <span className="rf-lesson-kicker"><ArrowsClockwise size={12} weight="bold" />{l.kicker}</span>
+          <h1 className="rf-lesson-title">{l.title}</h1>
+          <p className="rf-lesson-lede">{l.lede}</p>
+          <span className="rf-lesson-meta">
+            {l.minutes} min read
+            <i />
+            Seen in {seen.length} reflection{seen.length === 1 ? '' : 's'}
+          </span>
+        </div>
+
+        <article className="rf-lesson-body">
+          {l.blocks.map((b, i) => {
+            if (b.t === 'h') return <h2 key={i}>{b.v}</h2>
+            if (b.t === 'quote') return <blockquote key={i}>{b.v}</blockquote>
+            if (b.t === 'note') return <aside key={i}>{b.v}</aside>
+            if (b.t === 'list') {
+              return (
+                <ul key={i}>
+                  {b.v.map((li) => (<li key={li}>{li}</li>))}
+                </ul>
+              )
+            }
+            return <p key={i}>{b.v}</p>
+          })}
+        </article>
+
+        <section className="rf-lesson-seen">
+          <span className="rf-lesson-seen-label">Where it showed up</span>
+          {seen.map((r) => (
+            <button key={r.id} className="rf-lesson-row" onClick={() => onOpen(r.id)}>
+              <span className="rf-lesson-row-ic"><r.Icon size={18} weight="duotone" /></span>
+              <span className="rf-lesson-row-tx">
+                <b>{r.title}</b>
+                <i>{r.when}</i>
+              </span>
+              <CaretRight size={14} weight="bold" />
+            </button>
+          ))}
+        </section>
+        <div className="rf-foot-sp" />
+      </div>
+    </div>
+  )
+}
+
 /* ── home — the collection ── */
 export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME }) {
   const [q, setQ] = useState('')
   const [picked, setPicked] = useState(null)
   const [focused, setFocused] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [saved, setSaved] = useState({ dad: true })
+  const toggleSave = (id) => setSaved((s) => ({ ...s, [id]: !s[id] }))
+  /* every tag in the collection, in the order it first appears */
+  const [tag, setTag] = useState(null)
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [pattern, setPattern] = useState(null)
+  const allTags = useMemo(() => {
+    const seen = []
+    lib.forEach((r) => (r.tags || []).forEach((t) => { if (!seen.includes(t)) seen.push(t) }))
+    return seen
+  }, [lib])
   const searching = q.length > 0 || picked
   const results = picked ? RESULTS[picked] : null
   const shown = results
@@ -283,7 +382,72 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
   const single = lib.length === 1
   const mostRecent = lib[0]
   const MostRecentIcon = mostRecent ? mostRecent.Icon : null
-  const rest = mostRecent ? shown.filter((r) => r.id !== mostRecent.id) : []
+  const restAll = mostRecent ? shown.filter((r) => r.id !== mostRecent.id) : []
+  const rest = tag ? restAll.filter((r) => (r.tags || []).includes(tag)) : restAll
+
+  /* one card for every reflection. The ongoing one is the same object, only
+     warmer, set larger, and closing on an arrow. */
+  const renderCard = (r, lead) => (
+    <button
+      key={r.id}
+      className={`rf-card${lead ? ' rf-card-lead' : ''}`}
+      style={{ '--mood': r.mood }}
+      onClick={() => onOpen(r.id)}
+    >
+      <span className="rf-card-ic" aria-hidden="true"><r.Icon size={lead ? 24 : 22} weight="duotone" /></span>
+      <span className="rf-card-body">
+        <span className="rf-card-top">
+          <span className="rf-card-meta">
+            <span className="rf-card-when">{r.when}</span>
+          </span>
+          <span className="rf-card-title">{r.title}</span>
+        </span>
+        <span className="rf-card-line">{r.line}</span>
+        <span className="rf-card-tagrow">
+          <span className="rf-card-tags">
+            {/* tapping a tag filters the collection instead of opening the reflection */}
+            {(r.tags || []).map((t) => (
+              <span
+                className="rf-card-tag"
+                key={t}
+                role="button"
+                tabIndex={0}
+                data-on={tag === t || undefined}
+                aria-label={`Filter by ${t}`}
+                onClick={(ev) => { ev.stopPropagation(); setTag(tag === t ? null : t) }}
+                onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); setTag(tag === t ? null : t) } }}
+              >
+                {t}
+              </span>
+            ))}
+          </span>
+          <span className="rf-card-go"><ArrowRight size={lead ? 16 : 14} weight="bold" /></span>
+        </span>
+        {(r.patterns || []).length > 0 && (
+          <span className="rf-card-pat">
+            <ArrowsClockwise size={14} weight="bold" />
+            {/* each loop opens its own lesson; commas keep them one readable line */}
+            <span className="rf-card-pats">
+              {r.patterns.map((p, i) => (
+                <span key={p}>
+                  {i > 0 && <span className="rf-card-pat-sep">, </span>}
+                  <u
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`About the ${p}`}
+                    onClick={(ev) => { ev.stopPropagation(); setPattern(p) }}
+                    onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); setPattern(p) } }}
+                  >
+                    {p}
+                  </u>
+                </span>
+              ))}
+            </span>
+          </span>
+        )}
+      </span>
+    </button>
+  )
   return (
     <div className="rf-screen">
       <header className="rf-top">
@@ -364,15 +528,36 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
             {mostRecent && (
               <>
                 <span className="rf-label">Ongoing</span>
-                <button className="rf-hero" style={{ '--mood': mostRecent.mood }} onClick={() => onOpen(mostRecent.id)}>
-                  <span className="rf-hero-meta"><MostRecentIcon size={14} weight="fill" />{mostRecent.when}</span>
-                  <span className="rf-hero-title">{mostRecent.title}</span>
-                  <span className="rf-hero-line">{mostRecent.line}</span>
-                  <span className="rf-hero-go"><ArrowRight size={16} weight="bold" /></span>
-                </button>
+                {renderCard(mostRecent, true)}
               </>
             )}
             <span className="rf-label">All reflections</span>
+            {allTags.length > 0 && (
+              <div className="rf-filterbar">
+                {/* pinned first, so the tags beside it can run as long as they like */}
+                <button
+                  className="rf-filter rf-filter-btn"
+                  data-on={filterOpen || undefined}
+                  onClick={() => setFilterOpen(true)}
+                  aria-label="Filter by tag"
+                >
+                  <Faders size={16} weight="bold" />
+                </button>
+                <div className="rf-filters">
+                  <button className="rf-filter" data-on={tag === null || undefined} onClick={() => setTag(null)}>All</button>
+                  {allTags.map((t) => (
+                    <button
+                      key={t}
+                      className="rf-filter"
+                      data-on={tag === t || undefined}
+                      onClick={() => setTag(tag === t ? null : t)}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {rest.length === 0 && (
               <div className="rf-first rf-first-inline">
                 <BuddingLeaf size={104} />
@@ -383,24 +568,53 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
           </>
         )}
         <div className="rf-cards">
-          {(searching ? shown : rest).map((r) => (
-            <button key={r.id} className="rf-card" style={{ '--mood': r.mood }} onClick={() => onOpen(r.id)}>
-              <span className="rf-card-ic"><r.Icon size={22} weight="duotone" /></span>
-              <span className="rf-card-body">
-                <span className="rf-card-top">
-                  <span className="rf-card-title">{r.title}</span>
-                  <span className="rf-card-when">{r.when}</span>
-                </span>
-                <span className="rf-card-line">{r.line}</span>
-              </span>
-            </button>
-          ))}
+          {(searching ? shown : rest).map((r) => renderCard(r, false))}
           {searching && shown.length === 0 && <p className="rf-none">Nothing yet. Some questions take a few more weeks of living.</p>}
         </div>
         <div className="rf-foot-sp" />
       </div>
 
       <button className="rf-fab" onClick={onNew} aria-label="New reflection"><Plus size={24} weight="bold" /></button>
+
+      {pattern && (
+        <PatternLesson
+          name={pattern}
+          seen={lib.filter((r) => r.pattern === pattern)}
+          onBack={() => setPattern(null)}
+          onOpen={(id) => { setPattern(null); onOpen(id) }}
+        />
+      )}
+
+      {filterOpen && (
+        <div className="rf-fsheet-wrap">
+          <div className="rf-fsheet-scrim" onClick={() => setFilterOpen(false)} />
+          <div className="rf-fsheet" role="dialog" aria-label="Filter by tag">
+            <div className="rf-fsheet-top">
+              <span className="rf-fsheet-title">Filter</span>
+              <button className="rf-fsheet-x" onClick={() => setFilterOpen(false)} aria-label="Close"><X size={16} weight="bold" /></button>
+            </div>
+            <div className="rf-fsheet-tags">
+              <button
+                className="rf-filter"
+                data-on={tag === null || undefined}
+                onClick={() => { setTag(null); setFilterOpen(false) }}
+              >
+                All
+              </button>
+              {allTags.map((t) => (
+                <button
+                  key={t}
+                  className="rf-filter"
+                  data-on={tag === t || undefined}
+                  onClick={() => { setTag(tag === t ? null : t); setFilterOpen(false) }}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
