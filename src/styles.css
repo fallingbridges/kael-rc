@@ -13980,3 +13980,39 @@ svg {
   background: none; border: none; cursor: pointer; padding: 8px;
   font-size: 13px; color: color-mix(in srgb, var(--ink) 46%, transparent);
 }
+
+/* the filing, at the foot of the letter: the loops it belongs to, then the
+   people and feelings it was tagged with. Chips here match the home filter
+   strip, because that is where tapping one takes you. */
+.rf-let-filed {
+  margin-top: 34px; padding-top: 20px;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.rf-let-filed-lbl {
+  display: block; margin-bottom: 12px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 38%, transparent);
+}
+.rf-let-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.rf-let-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 13px; border-radius: 999px; cursor: pointer;
+  font-size: 12.5px; font-weight: 550; line-height: 1;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  background: color-mix(in srgb, var(--ink) 4.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.14s var(--ease);
+}
+.rf-let-chip:active { transform: scale(0.96); background: var(--invert-bg); color: var(--invert-ink); border-color: transparent; }
+.rf-let-chip-loop {
+  color: var(--ink); font-weight: 600;
+  background: none; border-style: dashed;
+  border-color: color-mix(in srgb, var(--ink) 26%, transparent);
+}
+.rf-let-chip-loop svg { color: color-mix(in srgb, var(--ink) 45%, transparent); }
+.rf-let-chip-loop:active svg { color: var(--invert-ink); }
+.rf-let-filed-lbl2 { margin-top: 22px; }
+/* the tag page borrows the loop article's chrome without the article, so it
+   carries none of the rules that separate an article's parts */
+.rf-tagpage .rf-lesson-head { border-bottom: none; padding-bottom: 4px; }
+.rf-tag-seen { border-top: none; padding-top: 0; margin-top: 10px; }

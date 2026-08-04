@@ -442,7 +442,7 @@ export const autoTone = () => {
 
 
 /* ── the loop, opened full screen as something worth reading ── */
-function PatternLesson({ name, seen, onBack, onOpen }) {
+export function PatternLesson({ name, seen, onBack, onOpen }) {
   const l = PATTERN_LESSONS[name]
   if (!l) return null
   return (
@@ -960,6 +960,39 @@ export function Home({ onNew, onOpen, onRead, analysing, lib = LIBRARY, promptTo
   )
 }
 
+/* ── a tag, opened: no article to read, just every night it belongs to ── */
+export function TagPage({ tag, seen, onBack, onOpen }) {
+  return (
+    <div className="rf-lesson rf-tagpage">
+      <header className="rf-lesson-bar">
+        <button className="rf-lesson-back" onClick={onBack} aria-label="Back"><ArrowLeft size={19} /></button>
+        <span className="rf-lesson-bar-name">{tag}</span>
+      </header>
+      <div className="rf-lesson-scroll">
+        <div className="rf-lesson-head">
+          <span className="rf-lesson-kicker">Tagged</span>
+          <h1 className="rf-lesson-title">{tag}</h1>
+          <p className="rf-lesson-lede">Every reflection this has come up in, oldest thinking to newest.</p>
+          <span className="rf-lesson-meta">{seen.length} reflection{seen.length === 1 ? '' : 's'}</span>
+        </div>
+        <section className="rf-lesson-seen rf-tag-seen">
+          {seen.map((r) => (
+            <button key={r.id} className="rf-lesson-row" onClick={() => onOpen(r.id)}>
+              <span className="rf-lesson-row-ic"><r.Icon size={18} weight="duotone" /></span>
+              <span className="rf-lesson-row-tx">
+                <b>{r.title}</b>
+                <i>{r.when}</i>
+              </span>
+              <CaretRight size={14} weight="bold" />
+            </button>
+          ))}
+        </section>
+        <div className="rf-foot-sp" />
+      </div>
+    </div>
+  )
+}
+
 /* ── Kael's note. A letter: one column of prose, nothing but headings
    between the paragraphs, emphasis by italic and bold only. No paragraph
    runs past two sentences, because this is read on a phone at night. ── */
@@ -972,7 +1005,7 @@ const rich = (t) => t.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean).map((s
   return <Fragment key={i}>{seg}</Fragment>
 })
 
-export function Letter({ r, name = NAME, onBack, onChat }) {
+export function Letter({ r, name = NAME, onBack, onChat, onOpenLoop, onOpenTag }) {
   const a = r.analysis
   if (!a) return null
   return (
@@ -1008,6 +1041,33 @@ export function Letter({ r, name = NAME, onBack, onChat }) {
         <p className="rf-let-take">{rich(a.takeaway)}</p>
         <p className="rf-let-sign">— Kael</p>
         <p className="rf-let-p rf-let-ps"><b>P.S.</b> {rich(a.ps)}</p>
+
+        {((r.tags || []).length > 0 || (r.patterns || []).length > 0) && (
+          <footer className="rf-let-filed">
+            {(r.patterns || []).length > 0 && (
+              <>
+                <span className="rf-let-filed-lbl">Loops Kael has noticed</span>
+                <div className="rf-let-chips">
+                  {r.patterns.map((pt) => (
+                    <button key={pt} className="rf-let-chip rf-let-chip-loop" onClick={() => onOpenLoop && onOpenLoop(pt)}>
+                      <ArrowsClockwise size={11} weight="bold" />{pt}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+            {(r.tags || []).length > 0 && (
+              <>
+                <span className="rf-let-filed-lbl rf-let-filed-lbl2">Tagged</span>
+                <div className="rf-let-chips">
+                  {r.tags.map((t) => (
+                    <button key={t} className="rf-let-chip" onClick={() => onOpenTag && onOpenTag(t)}>{t}</button>
+                  ))}
+                </div>
+              </>
+            )}
+          </footer>
+        )}
         <div className="rf-let-sp" />
       </div>
 

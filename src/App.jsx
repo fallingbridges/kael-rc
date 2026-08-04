@@ -23,7 +23,7 @@ import PostOnboardingFlow from './screens/PostOnboardingFlow.jsx'
 import LandingPage from './screens/LandingPage.jsx'
 import ProgramPaywall from './screens/ProgramPaywall.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
-import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, Letter as ReflectLetter, LIBRARY as REFLECT_LIB, autoTone } from './screens/ReflectConcept.jsx'
+import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, Letter as ReflectLetter, PatternLesson as ReflectLoop, TagPage as ReflectTag, LIBRARY as REFLECT_LIB, autoTone } from './screens/ReflectConcept.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
@@ -370,6 +370,22 @@ export default function App() {
                 r={REFLECT_LIB.find((x) => x.id === reflectView.id) || REFLECT_LIB[0]}
                 onBack={() => setReflectView({ kind: 'home' })}
                 onChat={() => setReflectView({ kind: 'old', id: reflectView.id })}
+                onOpenLoop={(loop) => setReflectView({ kind: 'loop', loop, from: reflectView.id })}
+                onOpenTag={(t) => setReflectView({ kind: 'tag', tag: t, from: reflectView.id })}
+              />
+            ) : reflectView.kind === 'tag' ? (
+              <ReflectTag
+                tag={reflectView.tag}
+                seen={REFLECT_LIB.filter((x) => (x.tags || []).includes(reflectView.tag))}
+                onBack={() => setReflectView({ kind: 'letter', id: reflectView.from })}
+                onOpen={(id) => setReflectView({ kind: 'letter', id })}
+              />
+            ) : reflectView.kind === 'loop' ? (
+              <ReflectLoop
+                name={reflectView.loop}
+                seen={REFLECT_LIB.filter((x) => (x.patterns || []).includes(reflectView.loop))}
+                onBack={() => setReflectView({ kind: 'letter', id: reflectView.from })}
+                onOpen={(id) => setReflectView({ kind: 'letter', id })}
               />
             ) : (
               <ReflectRoom
