@@ -370,7 +370,6 @@ export default function App() {
                 r={REFLECT_LIB.find((x) => x.id === reflectView.id) || REFLECT_LIB[0]}
                 onBack={() => setReflectView({ kind: 'home' })}
                 onChat={() => setReflectView({ kind: 'old', id: reflectView.id })}
-                onOpenOther={(id) => setReflectView({ kind: 'letter', id })}
               />
             ) : (
               <ReflectRoom

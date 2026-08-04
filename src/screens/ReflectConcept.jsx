@@ -972,7 +972,7 @@ const rich = (t) => t.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean).map((s
   return <Fragment key={i}>{seg}</Fragment>
 })
 
-export function Letter({ r, name = NAME, onBack, onChat, onOpenOther }) {
+export function Letter({ r, name = NAME, onBack, onChat }) {
   const a = r.analysis
   if (!a) return null
   return (
@@ -1000,11 +1000,7 @@ export function Letter({ r, name = NAME, onBack, onChat, onOpenOther }) {
           <>
             <h2 className="rf-let-h">You have been here before</h2>
             {a.before.map((b) => (
-              <p className="rf-let-p" key={b.id}>
-                <button className="rf-let-recall" onClick={() => onOpenOther && onOpenOther(b.id)}>
-                  <em>{b.when}</em>, {b.line}
-                </button>
-              </p>
+              <p className="rf-let-p" key={b.id}><em>{b.when}</em>, {b.line}</p>
             ))}
           </>
         )}

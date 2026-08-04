@@ -13954,16 +13954,6 @@ svg {
   color: var(--ink); margin: 34px 0 15px;
 }
 
-/* a recalled night: still a sentence, only underlined */
-.rf-let-recall {
-  display: inline; padding: 0; border: none; background: none; cursor: pointer;
-  font: inherit; color: inherit; text-align: left;
-  text-decoration: underline; text-underline-offset: 3px;
-  text-decoration-color: color-mix(in srgb, var(--ink) 24%, transparent);
-}
-.rf-let-recall em { font-style: italic; }
-.rf-let-recall:active { text-decoration-color: color-mix(in srgb, var(--ink) 55%, transparent); }
-
 .rf-let-take { font-weight: 700; color: var(--ink); margin: 32px 0 28px; }
 .rf-let-sign {
   font-family: 'Newsreader', Georgia, serif; font-size: 16px;
