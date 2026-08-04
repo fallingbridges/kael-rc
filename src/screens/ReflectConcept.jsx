@@ -151,7 +151,7 @@ const PATTERN_NOTES = {
 /* the collection — living titles + one-liners, newest first. Nothing is ever
    "closed"; the most recent one just surfaces first (LIBRARY[0]), the same
    as every other reflection, only more recently touched. */
-const LIBRARY = [
+export const LIBRARY = [
   {
     id: 'restless', when: '2h ago',
     title: 'Why am I so restless lately?',
@@ -273,6 +273,142 @@ const QUERIES = [
 const KINDS = ['moods', 'people', 'topics']
 LIBRARY.forEach((r) => { r.tags = KINDS.flatMap((k) => r[k] || []) })
 
+/* what Kael sees — the analysis behind each reflection, written as a letter.
+   hook = the three card lines; it must pass the cover test: specific enough
+   that it could only be about this conversation. Tags live here now, not on
+   the home cards. */
+const ANALYSES = {
+  restless: {
+    hook: 'You are not behind. You are pacing yourself against a finish line you never chose, and the gap you keep feeling is borrowed, not real.',
+    open: [
+      'You came in restless and we did not solve it, but I think we found where it lives.',
+      'You said *I should be somewhere else. Not physically. Just further.* So I asked whose further it was.',
+    ],
+    noticed: [
+      'You answered in about a second. *Everyone’s, maybe.*',
+      'People who are genuinely behind can name who is ahead of them. You could not, and it did not seem to trouble you.',
+    ],
+    patternName: 'The comparison loop',
+    pattern: [
+      'You check your pace against a line someone else drew, then read the gap as failure. It never announces itself as comparison; it simply feels like the truth about you.',
+      'The measuring does keep you moving, and some part of you knows that. What it costs is that arriving never registers, because the line moves the moment you reach it.',
+    ],
+    before: [
+      { id: 'burnout', when: 'Four weeks ago', line: 'you watched the clock at work and called it tiredness.' },
+      { id: 'missme', when: 'Six weeks ago', line: 'you missed a lighter version of yourself.' },
+    ],
+    takeaway: '**Behind** needs a race to be true. Name the race, or put the word down.',
+    ps: 'If it comes back tonight, finish the sentence out loud: *I should be further than…* Whatever lands in that gap is the actual thing.',
+  },
+  dad: {
+    hook: 'Tuesday was not one comment. It was a rerun of a sentence you have been answering since you chose your college, and the anger is old mail arriving late.',
+    open: [
+      'Tuesday was not one comment. It was a rerun of a sentence you have been answering since you were eighteen.',
+      'You told me *he said I’ve become too busy for family, in front of everyone*, and the anger arrived before he had finished. That is not you overreacting.',
+    ],
+    noticed: [
+      'You told me what he said, where he said it, and who was in the room. You never told me what you said back.',
+      'I do not think you forgot. I think there was nothing, and that silence in your account is the same silence that was in the room.',
+    ],
+    patternName: 'The inheritance loop',
+    pattern: [
+      'A comment lands harder than its size because it is not the first time. You end up defending the whole history instead of answering the sentence in front of you.',
+      'Answering everything at once is how you make sure the old accusation never gets to stand. What it costs is the conversation actually available to you, with the man actually in the room.',
+    ],
+    before: [
+      { id: 'manager', when: 'A week ago', line: 'you filled another silence with a verdict about yourself.' },
+    ],
+    takeaway: 'You can answer the sentence without **re-fighting the decade**.',
+    ps: 'If it comes up again, you could ask him what he meant. He may not have an answer ready either, and that would tell you something.',
+  },
+  manager: {
+    hook: 'Four hours of silence, and you wrote the verdict yourself. It was not kind, and it was not hers. The blank page always gets your handwriting.',
+    open: [
+      'She read your message and said nothing, and by hour two the nothing had become a judgment with details.',
+      'You may well be right about her. The speed is what I keep coming back to.',
+    ],
+    noticed: [
+      'You knew the exact hour she opened it. Not roughly. Exactly.',
+      'That means you were watching, and the watching costs you more than the silence does.',
+    ],
+    patternName: 'The silence spiral',
+    pattern: [
+      'When someone goes quiet you fill the gap with your oldest fear rather than the likeliest fact. The likeliest fact is a meeting, a commute, a half-written reply.',
+      'Writing the verdict first means nobody can hand it to you. What it costs is that you serve the sentence for a crime nobody has charged you with.',
+    ],
+    before: [
+      { id: 'dad', when: 'Six days ago', line: 'the same reflex, in a louder room.' },
+    ],
+    takeaway: 'A blank is not a verdict. **Do not sign your name to it.**',
+    ps: 'Next time, note the hour you first check and the hour you check again. Those two numbers will tell you more than her message did.',
+  },
+  marriage: {
+    hook: 'You were not annoyed when Mom brought it up. That is the tell. Some part of you is genuinely asking, and it deserves a better answer than a reflex.',
+    open: [
+      'She raised it again, and what you brought me was not the asking.',
+      'It was your own reaction, or the lack of one. You said *the strange thing is I wasn’t even annoyed.*',
+    ],
+    noticed: [
+      'You called it the strange thing. Not strange that she asked. Strange that you did not mind.',
+      'Irritation had been the way you avoided the question, and this time it did not turn up for the job.',
+    ],
+    patternName: 'The inherited want',
+    pattern: [
+      'Two voices in one room, using the same words. One is what you want, one is what you were raised to want.',
+      'They are hard to tell apart because they were installed in the same years, by people you love. Annoyance was armour, and it coming off is not a small thing.',
+    ],
+    before: [
+      { id: 'missme', when: 'Six weeks ago', line: 'you were separating the real you from the expected one.' },
+    ],
+    takeaway: 'Want and expected can share a room. **Just know which one is talking.**',
+    ps: 'Finish *I want…* three different ways tonight and do not rank them. The one that embarrasses you slightly is usually yours.',
+  },
+  burnout: {
+    hook: 'You did not stop caring about work. You finished a chapter and kept sitting in the room. Clock-watching is what doneness feels like from the inside.',
+    open: [
+      'You brought this to me as burnout, and I am not sure that is what it is.',
+      'Burnout aches, and it takes things from you that you want back. What you described sounded flatter than that.',
+    ],
+    noticed: [
+      'You said *used to care* in the past tense, twice, without hesitating either time.',
+      'People in burnout usually say they cannot care right now. You said you do not, and I do not think you heard the difference.',
+    ],
+    patternName: 'Clock-watching',
+    pattern: [
+      'Interest drains out and time becomes the thing you manage instead of the work. Not dread exactly. More like absence.',
+      'Calling it burnout keeps every door open, because burnout only asks for rest. Doneness asks for a decision, and you have not wanted to price that yet.',
+    ],
+    before: [
+      { id: 'restless', when: 'This morning', line: 'the same restlessness, wearing work clothes.' },
+    ],
+    takeaway: 'Tired asks for rest. **Done asks for what is next.**',
+    ps: 'What would you actually miss if it ended on Friday? The honest list is usually short, and it is usually people.',
+  },
+  missme: {
+    hook: 'You are not grieving her because she is gone. You are grieving how easily she laughed before she knew what you know now.',
+    open: [
+      'A photograph from three years ago hurt more than a photograph should.',
+      'You said *she laughed so easily*, and you have been carrying that sentence all evening.',
+    ],
+    noticed: [
+      'You described her laugh and nothing else. Not the year, not who she was with, not what she was worried about.',
+      'I do not think you want that year back. I think you want the lightness, and you have quietly decided the two came as a set.',
+    ],
+    patternName: 'Grief wearing growth’s clothes',
+    pattern: [
+      'She laughed easily because she had not carried anything heavy yet. You have, and the weight did not replace her, it grew out of her.',
+      'Grieving her is gentler than adding up what it cost to become who you are. Grief asks nothing of you; an honest accounting would ask rather a lot.',
+    ],
+    before: [
+      { id: 'marriage', when: 'Two weeks ago', line: 'you were separating the real want from the inherited one.' },
+      { id: 'restless', when: 'This morning', line: 'measuring today against a version of you that does not exist.' },
+    ],
+    takeaway: 'Different laugh, same spine. **She is not gone; she is load-bearing.**',
+    ps: 'What would she admire about you now? Answer that one properly, not modestly.',
+  },
+}
+LIBRARY.forEach((r) => { r.analysis = ANALYSES[r.id] })
+
 const RESULTS = {
   'Times I felt burned out': ['burnout', 'restless'],
   'When did I first doubt this relationship?': ['marriage'],
@@ -365,7 +501,7 @@ function PatternLesson({ name, seen, onBack, onOpen }) {
 
 /* ── home — the collection ── */
 /* ── Row fitting ────────────────────────────────────────────────────────────
-   Tags get two lines, loops get one. Whatever spills past that collapses into
+   Tags and loops each get one line. Whatever spills past that collapses into
    a +N circle that opens the sheet. Chip widths are intrinsic, so we measure
    once with the full set rendered and then simulate the wrap; guessing by
    re-rendering would cost a render per candidate count. */
@@ -422,9 +558,9 @@ function useRowFit(items, rows, chipW) {
   return [ref, shown]
 }
 
-/* Facts about the entry. Tapping one filters the collection. Two lines, then +N. */
+/* Facts about the entry. Tapping one filters the collection. One line, then +N. */
 function TagRow({ tags, active, onPick, onMore }) {
-  const [ref, shown] = useRowFit(tags, 2, 29)
+  const [ref, shown] = useRowFit(tags, 1, 29)
   const hidden = tags.length - shown
   const stop = (fn) => ({
     onClick: (ev) => { ev.stopPropagation(); fn() },
@@ -483,7 +619,7 @@ function LoopRow({ loops, onPick, onMore }) {
   )
 }
 
-export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME }) {
+export function Home({ onNew, onOpen, onRead, analysing, lib = LIBRARY, promptTone, reflected, onInvite, onReopen, name = NAME }) {
   const [q, setQ] = useState('')
   const [picked, setPicked] = useState(null)
   const [focused, setFocused] = useState(false)
@@ -531,37 +667,70 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
 
   /* one card for every reflection. The ongoing one is the same object, only
      warmer, set larger, and closing on an arrow. */
-  const renderCard = (r, lead) => (
-    <button
-      key={r.id}
-      className={`rf-card${lead ? ' rf-card-lead' : ''}`}
-      style={{ '--mood': r.mood }}
-      onClick={() => onOpen(r.id)}
-    >
-      <span className="rf-card-ic" aria-hidden="true"><r.Icon size={lead ? 24 : 22} weight="duotone" /></span>
-      <span className="rf-card-body">
-        <span className="rf-card-top">
-          <span className="rf-card-meta">
-            <span className="rf-card-when">{r.when}</span>
+  /* The card. Title and time, two lines of what Kael made of it trailing
+     off mid-thought, the note link, and one way back into the conversation:
+     a quiet arrow on settled reflections, a full-width button on the one
+     still open. Everything above the button opens the note. */
+  const renderCard = (r, lead) => {
+    const a = r.analysis
+    const busy = analysing && analysing === r.id
+    const goRead = (e) => { e.stopPropagation(); if (!busy && onRead) onRead(r.id) }
+    const goChat = (e) => { e.stopPropagation(); onOpen(r.id) }
+
+    if (!a || !onRead) {
+      /* no note yet: the reflection's own line, and the card is the chat */
+      return (
+        <div key={r.id} role="button" tabIndex={0} className={`rf-card${lead ? ' rf-card-lead' : ''}`} style={{ '--mood': r.mood }} onClick={() => onOpen(r.id)}>
+          <span className="rf-card-ic" aria-hidden="true"><r.Icon size={lead ? 24 : 22} weight="duotone" /></span>
+          <span className="rf-card-body">
+            <span className="rf-card-top">
+              <span className="rf-card-meta"><span className="rf-card-when">{r.when}</span></span>
+              <span className="rf-card-title">{r.title}</span>
+            </span>
+            <span className="rf-card-line">{r.line}</span>
           </span>
-          <span className="rf-card-title">{r.title}</span>
+        </div>
+      )
+    }
+
+    return (
+      <div key={r.id} className={`rf-card${lead ? ' rf-card-lead' : ''}`} style={{ '--mood': r.mood }}>
+        {/* everything above the button opens the note; only the button talks */}
+        <span className="rf-card-ic" role="button" tabIndex={busy ? -1 : 0} aria-label="Read Kael’s note" onClick={goRead}><r.Icon size={lead ? 24 : 22} weight="duotone" /></span>
+        <span className="rf-card-body">
+          <span className="rfv-g-open" role="button" tabIndex={busy ? -1 : 0} onClick={goRead}>
+            <span className="rf-card-top">
+              <span className="rf-card-meta"><span className="rf-card-when">{r.when}</span></span>
+              <span className="rf-card-title">{r.title}</span>
+            </span>
+            {busy
+              ? <span className="rf-shim" aria-label="Kael is reading the conversation back"><i /><i /></span>
+              : <span className="rf-card-hook">{a.hook}</span>}
+          </span>
+          <span className="rfv-g-foot">
+            {busy ? (
+              <span className="rf-shim-cap"><Sparkle size={11} weight="fill" />Reading the conversation back…</span>
+            ) : (
+              <span className="rfv-g-read" role="button" tabIndex={0} onClick={goRead}><Sparkle size={12} weight="fill" />Read Kael’s note</span>
+            )}
+            {!lead && (
+              <span className="rfv-g-go" role="button" tabIndex={busy ? -1 : 0} onClick={goChat} aria-label="Continue this reflection">
+                <ArrowRight size={15} weight="bold" />
+              </span>
+            )}
+          </span>
+          {lead && (
+            <span className="rf-card-acts rfv-g-acts">
+              <span className="rf-act rf-act-main" role="button" tabIndex={0} onClick={goChat}>
+                Continue conversation<ArrowRight size={12} weight="bold" />
+              </span>
+            </span>
+          )}
         </span>
-        <span className="rf-card-line">{r.line}</span>
-        <span className="rf-card-tagrow">
-          <TagRow
-            tags={r.tags || []}
-            active={tag}
-            onPick={(t) => setTag(tag === t ? null : t)}
-            onMore={() => setSheet(r.id)}
-          />
-          <span className="rf-card-go"><ArrowRight size={lead ? 16 : 14} weight="bold" /></span>
-        </span>
-        {(r.patterns || []).length > 0 && (
-          <LoopRow loops={r.patterns} onPick={setPattern} onMore={() => setSheet(r.id)} />
-        )}
-      </span>
-    </button>
-  )
+      </div>
+    )
+  }
+
   return (
     <div className="rf-screen">
       <header className="rf-top">
@@ -787,6 +956,69 @@ export function Home({ onNew, onOpen, lib = LIBRARY, promptTone, reflected, onIn
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ── Kael's note. A letter: one column of prose, nothing but headings
+   between the paragraphs, emphasis by italic and bold only. No paragraph
+   runs past two sentences, because this is read on a phone at night. ── */
+
+/* the only markup the copy carries: *italic* for their words, **bold** for
+   the one line worth keeping */
+const rich = (t) => t.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean).map((seg, i) => {
+  if (seg.startsWith('**') && seg.endsWith('**')) return <b key={i}>{seg.slice(2, -2)}</b>
+  if (seg.startsWith('*') && seg.endsWith('*')) return <em key={i}>{seg.slice(1, -1)}</em>
+  return <Fragment key={i}>{seg}</Fragment>
+})
+
+export function Letter({ r, name = NAME, onBack, onChat, onOpenOther }) {
+  const a = r.analysis
+  if (!a) return null
+  return (
+    <div className="rf-screen rf-let">
+      <header className="rf-let-head">
+        <button className="rf-back" onClick={onBack} aria-label="Back"><ArrowLeft size={19} /></button>
+        <span className="rf-let-kicker">Kael’s note</span>
+        <span className="rf-let-when">{r.when}</span>
+      </header>
+
+      <div className="rf-let-scroll">
+        <h1 className="rf-let-title">{r.title}</h1>
+        <p className="rf-let-date">Tuesday, June 30</p>
+        <p className="rf-let-hi">{name},</p>
+
+        {a.open.map((t) => <p className="rf-let-p" key={t}>{rich(t)}</p>)}
+
+        <h2 className="rf-let-h">What I noticed</h2>
+        {a.noticed.map((t) => <p className="rf-let-p" key={t}>{rich(t)}</p>)}
+
+        <h2 className="rf-let-h">{a.patternName}</h2>
+        {a.pattern.map((t) => <p className="rf-let-p" key={t}>{rich(t)}</p>)}
+
+        {(a.before || []).length > 0 && (
+          <>
+            <h2 className="rf-let-h">You have been here before</h2>
+            {a.before.map((b) => (
+              <p className="rf-let-p" key={b.id}>
+                <button className="rf-let-recall" onClick={() => onOpenOther && onOpenOther(b.id)}>
+                  <em>{b.when}</em>, {b.line}
+                </button>
+              </p>
+            ))}
+          </>
+        )}
+
+        <p className="rf-let-take">{rich(a.takeaway)}</p>
+        <p className="rf-let-sign">— Kael</p>
+        <p className="rf-let-p rf-let-ps"><b>P.S.</b> {rich(a.ps)}</p>
+        <div className="rf-let-sp" />
+      </div>
+
+      <div className="rf-let-foot">
+        <button className="rf-let-cta" onClick={onChat}>Pick this back up<ArrowRight size={15} weight="bold" /></button>
+        <button className="rf-let-quiet" onClick={onBack}>Done for now</button>
+      </div>
     </div>
   )
 }

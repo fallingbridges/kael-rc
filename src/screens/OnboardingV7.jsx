@@ -13,7 +13,7 @@ import {
   resolveRead, answeredCount,
 } from '../obv7.js'
 import { Safety as IntroSafety, MOODS, THREAD } from './IntroConcept.jsx'
-import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, JourneyBody, OfferBody, SignupBody, DeclineBody, SavedBody } from './PrePaywall.jsx'
+import { GoalTiers, DifferenceBody, MechanismBody, PromiseBody, AllSetBody, WhyBody, HowBody, TonightBody, OfferBody, SignupBody, DeclineBody, SavedBody } from './PrePaywall.jsx'
 import { PlanSheet } from './ProgramPaywall.jsx'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -212,13 +212,14 @@ function Body(props) {
     case 'mechanism': return <MechanismBody coda={null} mark />
     case 'promise': return <PromiseBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} onSigned={(v) => props.set('promiseSigned', v)} onNext={props.onAdvance} />
     case 'allset': return <AllSetBody name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''} />
-    case 'journey': return (
-      <JourneyBody
+    case 'why': return <WhyBody />
+    case 'how': return <HowBody />
+    case 'tonight': return (
+      <TonightBody
         name={props.nm ? props.nm.charAt(0).toUpperCase() + props.nm.slice(1) : ''}
         why={props.answers.situationText || props.answers.situation || undefined}
         pattern={props.arch ? props.arch.name : undefined}
         glyph={props.arch ? props.arch.glyph : undefined}
-        goals={Array.isArray(props.answers.goal) && props.answers.goal.length ? proseList(props.answers.goal) : undefined}
       />
     )
     case 'offer': return <OfferBody onNext={props.onAdvance} onPlans={props.onPlans} />

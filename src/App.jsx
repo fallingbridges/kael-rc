@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import PhoneFrame from './components/PhoneFrame.jsx'
 import ComponentLibrary from './screens/ComponentLibrary.jsx'
@@ -11,6 +11,10 @@ import OnboardingV4 from './screens/OnboardingV4.jsx'
 import OnboardingV5 from './screens/OnboardingV5.jsx'
 import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
+import OnboardingV8 from './screens/OnboardingV8.jsx'
+import OnboardingV10 from './screens/OnboardingV10.jsx'
+import SessionV3 from './screens/SessionV3.jsx'
+import JourneyV2 from './screens/JourneyV2.jsx'
 import PrePaywall from './screens/PrePaywall.jsx'
 import TrialSteps from './screens/TrialSteps.jsx'
 import PremiumFlow from './screens/PremiumFlow.jsx'
@@ -19,11 +23,12 @@ import PostOnboardingFlow from './screens/PostOnboardingFlow.jsx'
 import LandingPage from './screens/LandingPage.jsx'
 import ProgramPaywall from './screens/ProgramPaywall.jsx'
 import CloseV8 from './screens/CloseV8.jsx'
-import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, autoTone } from './screens/ReflectConcept.jsx'
+import ReflectConcept, { Home as ReflectHome, Room as ReflectRoom, Letter as ReflectLetter, LIBRARY as REFLECT_LIB, autoTone } from './screens/ReflectConcept.jsx'
 import PaywallLab from './screens/PaywallLab.jsx'
 import ReflectionCards from './screens/ReflectionCards.jsx'
 import KaelDuo from './screens/KaelDuo.jsx'
 import IntroConcept from './screens/IntroConcept.jsx'
+import InsightConcept from './screens/InsightConcept.jsx'
 import JourneyConcept from './screens/JourneyConcept.jsx'
 import { Sparkle, Sun, Moon, Download, Grid, Close } from './components/Icons.jsx'
 import { MagnifyingGlass } from '@phosphor-icons/react'
@@ -33,7 +38,9 @@ const STUDIO_GROUPS = [
     id: 'product',
     name: 'Product',
     tabs: [
+      ['journey-v2', 'V2 Journey'],
       ['reflect', 'Reflect'],
+      ['insight-concept', 'Insight'],
       ['cardvariants', 'Card variants'],
       ['cards', 'Cards'],
       ['journey', 'Journey'],
@@ -45,6 +52,9 @@ const STUDIO_GROUPS = [
     id: 'onboarding',
     name: 'Onboarding',
     tabs: [
+      ['session-v3', 'V3 Session'],
+      ['onboarding-v10', 'V10 Therapy'],
+      ['onboarding-v8', 'V8 Session'],
       ['onboarding-v7', 'V7'],
       ['onboarding-v6', 'V6'],
       ['onboarding-v5', 'V5'],
@@ -110,6 +120,15 @@ export default function App() {
   )
   const showGroupOnTab = Boolean(q) || studioGroup === 'all'
   const [reflectView, setReflectView] = useState({ kind: 'home' })
+  /* which reflection's analysis is being rewritten right now (shown as a
+     shimmer on its card). Cleared on a timer: honest theatre for the demo,
+     a real generation callback later. */
+  const [reflectAnalysing, setReflectAnalysing] = useState(null)
+  useEffect(() => {
+    if (!reflectAnalysing) return undefined
+    const t = setTimeout(() => setReflectAnalysing(null), 5200)
+    return () => clearTimeout(t)
+  }, [reflectAnalysing])
   const [reflectTone, setReflectTone] = useState('auto') // preview the invitation card across the day
   const [doneTones, setDoneTones] = useState({}) // which time-windows already have a reflection → card collapses
   const [scale, setScale] = useState(0.72)
@@ -265,6 +284,14 @@ export default function App() {
                 <OnboardingV5 />
               ) : studioTab === 'onboarding-v6' ? (
                 <OnboardingV6 />
+              ) : studioTab === 'journey-v2' ? (
+                <JourneyV2 />
+              ) : studioTab === 'session-v3' ? (
+                <SessionV3 />
+              ) : studioTab === 'onboarding-v10' ? (
+                <OnboardingV10 />
+              ) : studioTab === 'onboarding-v8' ? (
+                <OnboardingV8 />
               ) : studioTab === 'onboarding-v7' ? (
                 <OnboardingV7 />
               ) : studioTab === 'prepaywall' ? (
@@ -283,6 +310,8 @@ export default function App() {
                 <ProgramPaywall />
               ) : studioTab === 'v8close' ? (
                 <CloseV8 />
+              ) : studioTab === 'insight-concept' ? (
+                <InsightConcept />
               ) : studioTab === 'reflect' ? (
                 <ReflectConcept />
               ) : studioTab === 'paywall' ? (
@@ -329,16 +358,30 @@ export default function App() {
               <ReflectHome
                 promptTone={reflectTone === 'auto' ? undefined : reflectTone}
                 reflected={!!doneTones[currentTone]}
+                analysing={reflectAnalysing}
                 onInvite={() => { setDoneTones((d) => ({ ...d, [currentTone]: true })); setReflectView({ kind: 'new' }) }}
                 onReopen={() => setReflectView({ kind: 'new' })}
                 onNew={() => setReflectView({ kind: 'new' })}
                 onOpen={(id) => setReflectView({ kind: 'old', id })}
+                onRead={(id) => setReflectView({ kind: 'letter', id })}
+              />
+            ) : reflectView.kind === 'letter' ? (
+              <ReflectLetter
+                r={REFLECT_LIB.find((x) => x.id === reflectView.id) || REFLECT_LIB[0]}
+                onBack={() => setReflectView({ kind: 'home' })}
+                onChat={() => setReflectView({ kind: 'old', id: reflectView.id })}
+                onOpenOther={(id) => setReflectView({ kind: 'letter', id })}
               />
             ) : (
               <ReflectRoom
                 key={reflectView.kind === 'old' ? `old-${reflectView.id}` : 'new'}
                 mode={reflectView}
-                onBack={() => setReflectView({ kind: 'home' })}
+                onBack={() => {
+                  /* leaving a conversation with new material: the analysis
+                     goes back to the desk for a moment */
+                  if (reflectView.kind === 'old') setReflectAnalysing(reflectView.id)
+                  setReflectView({ kind: 'home' })
+                }}
                 onNew={() => setReflectView({ kind: 'new' })}
               />
             )}

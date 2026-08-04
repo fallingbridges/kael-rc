@@ -5,6 +5,7 @@ import {
   Leaf, Waves, Mountains, Phone, Moon, Heart, ShieldCheck,
   Compass, Fingerprint, Spiral, Smiley, SmileySad, Medal, PenNib, Tag, BellSimple,
   LockSimpleOpen, Crown, Plant, MagnifyingGlass, Eye, Feather,
+  FlowerLotus, Robot, NotePencil, Armchair, ChatsCircle, Brain,
   AppleLogo, GoogleLogo, EnvelopeSimple, LockSimple, UserCirclePlus,
 } from '@phosphor-icons/react'
 
@@ -17,7 +18,7 @@ import {
    ────────────────────────────────────────────────────────────────────────── */
 
 const NAME = 'Maya'
-const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'journey', 'offer', 'signup', 'decline', 'saved']
+const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'why', 'how', 'tonight', 'offer', 'signup', 'decline', 'saved']
 
 /* each tier pairs the minutes with what they buy — the commitment sells its outcome */
 const GOALS = [
@@ -107,7 +108,9 @@ function Screen({ kind, ans, set, pickAuto, onNext }) {
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} onNext={onNext} />
     case 'allset': return <AllSetBody name={NAME} />
-    case 'journey': return <JourneyBody name={NAME} />
+    case 'why': return <WhyBody />
+    case 'how': return <HowBody />
+    case 'tonight': return <TonightBody name={NAME} why="I can’t stop overthinking" />
     case 'offer': return <OfferBody onNext={onNext} />
     case 'signup': return <SignupBody onNext={onNext} />
     case 'decline': return <DeclineBody onNext={onNext} />
@@ -370,47 +373,153 @@ const MILES = [
   { d: 'Day 30', t: 'The old reflex stops running the show' },
 ]
 const PTS = [[24, 122], [124, 108], [224, 64], [316, 26]]
-export function JourneyBody({ name = '' }) {
+/* Why Kael and not the others. The user standing here has already tried
+   things; naming them honestly is the credibility, and the answer is the
+   one property none of them have: it listens AND remembers. */
+export function WhyBody() {
+  /* pure typography: four quiet epitaphs, then the claim in display type.
+     No cards, no icons, no gadgets. The gravity is the argument. */
+  const OTHERS = [
+    'A meditation app plays you a track.',
+    'A chatbot forgets you by morning.',
+    'A journal never answers.',
+    'A therapist can see you Thursday, maybe.',
+  ]
+  return (
+    <div className="pp2 pp2-c pp2-why">
+      <span className="ov4-kicker">Why Kael</span>
+      <h1 className="pp2-title">You’ve probably<br />tried the others.</h1>
+      <div className="pp2-lad">
+        {OTHERS.map((t, k) => <p key={k} style={{ '--d': `${0.12 * k + 0.25}s` }}>{t}</p>)}
+      </div>
+      <p className="pp2-lad-turn">Kael listens,<br />and Kael remembers.</p>
+      <p className="pp2-lad-sub">Every session picks up exactly where your life left off.</p>
+    </div>
+  )
+}
+
+/* removed: the miniature-vignette version read as a toy */
+export function HowBody() {
+  const MOVES = [
+    { n: '1', t: 'You talk.', s: 'Two minutes mid-spiral, or twenty on a Sunday. Kael asks, you answer.' },
+    { n: '2', t: 'Kael remembers.', s: 'Your pattern, your people, your own words. Nothing re-explained, ever.' },
+    { n: '3', t: 'The loop gets caught.', s: 'Not named after. Caught during. That is the part that changes you.' },
+  ]
+  return (
+    <div className="pp2 pp2-c pp2-how">
+      <span className="ov4-kicker">How it works</span>
+      <h1 className="pp2-title">Three moves.</h1>
+      <div className="pp2-moves">
+        {MOVES.map((m, k) => (
+          <div key={m.n} className="pp2-move" style={{ '--d': `${0.14 * k + 0.25}s` }}>
+            <span className="pp2-move-n">{m.n}</span>
+            <div className="pp2-move-t">
+              <b>{m.t}</b>
+              <p>{m.s}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* What happens the second they pay: tonight, concretely, in their own
+   words. No program, no streak, nothing to fail. */
+export function TonightBody({ name = '', why, pattern, glyph: Glyph }) {
+  /* the product is sessions, so the proof of immediacy is a session: the
+     first page of Session One, already written, in their words. */
+  const trim = (t = '') => {
+    const v = String(t).trim()
+    return v.length > 44 ? `${v.slice(0, 44).replace(/\s+\S*$/, '')}…` : v
+  }
   return (
     <div className="pp2 pp2-c pp2-road">
-      <span className="ov4-kicker">The road ahead</span>
-      <h1 className="pp2-title">This is where<br />you’re headed{name ? `, ${name}` : ''}.</h1>
-      <div className="pp2-pathcard">
-        <p className="pp2-path-t">Your path to a calmer, steadier baseline.</p>
-        <svg className="pp2-path" viewBox="0 0 340 168" aria-hidden="true">
-          <defs>
-            <linearGradient id="pp2-path-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#c2a06a" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#c2a06a" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path fill="url(#pp2-path-fill)" stroke="none" d="M24,122 C58,118 94,114 124,108 C158,101 192,84 224,64 C252,48 290,32 316,26 L316,140 L24,140 Z" />
-          {PTS.slice(1).map(([x, y]) => <line key={x} className="pp2-path-drop" x1={x} y1={y + 12} x2={x} y2={140} />)}
-          <path className="pp2-path-own" d="M24,124 C120,120 220,113 316,104" />
-          <path className="pp2-path-kael" pathLength="1" d="M24,122 C58,118 94,114 124,108 C158,101 192,84 224,64 C252,48 290,32 316,26" />
-          {PTS.map(([x, y], k) => (
-            <g key={x} className="pp2-path-pt" style={{ '--d': `${0.3 * k + 0.55}s` }}>
-              <circle className="pp2-path-halo" cx={x} cy={y} r="8" />
-              <circle className="pp2-path-dot" cx={x} cy={y} r="4.5" />
-            </g>
-          ))}
-          <text className="pp2-path-lab" x="316" y="12" textAnchor="end">With Kael</text>
-          <text className="pp2-path-lab pp2-path-lab-own" x="316" y="90" textAnchor="end">On your own</text>
-          <line className="pp2-path-base" x1="8" y1="140" x2="332" y2="140" />
-          <text className="pp2-path-ax" x="30" y="162" textAnchor="middle">Today</text>
-          <text className="pp2-path-ax" x="124" y="162" textAnchor="middle">Day 3</text>
-          <text className="pp2-path-ax" x="224" y="162" textAnchor="middle">Day 7</text>
-          <text className="pp2-path-ax" x="308" y="162" textAnchor="middle">Day 30</text>
-        </svg>
-        <div className="pp2-miles">
-          {MILES.map((m, k) => (
-            <div key={m.d} className="pp2-mile" style={{ '--d': `${0.1 * k + 0.3}s` }}>
-              <span className="pp2-mile-day">{m.d}</span>
-              <p>{m.t}</p>
-            </div>
-          ))}
+      <span className="ov4-kicker">Then tonight</span>
+      <h1 className="pp2-title">Your first session<br />is already open{name ? `, ${name}` : ''}.</h1>
+
+      <div className="pp2-sesh">
+        <div className="pp2-sesh-head">
+          <span className="pp2-sesh-k">Session One · Tonight</span>
+          {Glyph && <span className="pp2-sesh-g"><Glyph size={16} weight="duotone" /></span>}
+        </div>
+        <p className="pp2-sesh-line">
+          {why ? `You told me “${trim(why).toLowerCase()}.” That is where we begin.` : 'You already told me where it hurts. That is where we begin.'}
+        </p>
+        <span className="pp2-sesh-sign">— Kael</span>
+      </div>
+
+      <p className="pp2-coda">No streak to keep, nothing to fail. Two minutes on a bad day counts double.</p>
+    </div>
+  )
+}
+
+export function JourneyBody({ name = '', why, pattern, glyph: Glyph, goals }) {
+  /* The road-ahead graph is gone on purpose: two fabricated curves with axis
+     labels read as fake data, and every quiz-funnel app shows the same one.
+     What convinces is a preview, not a promise: the product doing its job
+     tonight, addressed to this person's pattern, followed by the first week
+     day by day. The trial decision is a 7-day decision, so day 7 gets named
+     honestly, reminder included. */
+  const trim = (t = '') => {
+    const v = String(t).trim()
+    return v.length > 44 ? `${v.slice(0, 44).replace(/\s+\S*$/, '')}…` : v
+  }
+  const week = [
+    {
+      d: 'Tonight',
+      t: 'Your first real session',
+      s: why ? `Kael already knows where to start: “${trim(why).toLowerCase()}”` : 'Kael already knows where to start. You just told it.',
+    },
+    {
+      d: 'Tomorrow',
+      t: 'It picks up where you left off',
+      s: 'The next session opens with what you told it tonight. Nothing to re-explain.',
+    },
+    {
+      d: 'Day 3',
+      t: 'The first catch',
+      s: 'You open a session mid-spiral, and Kael names the loop while it is still running.',
+    },
+    {
+      d: 'Day 7',
+      t: 'You decide',
+      s: goals
+        ? `A week of sessions saved, pointed at ${goals}. Kael reminds you before the trial ends.`
+        : 'A week of sessions saved. Kael reminds you before the trial ends.',
+    },
+  ]
+  return (
+    <div className="pp2 pp2-c pp2-road">
+      <span className="ov4-kicker">What happens next</span>
+      <h1 className="pp2-title">Your first week{name ? `, ${name}` : ''}.</h1>
+
+      <div className="pp2-night" role="img" aria-label="A preview of tonight's check-in from Kael">
+        <span className="pp2-night-time">9:30</span>
+        <span className="pp2-night-day">Tonight</span>
+        <div className="pp2-notif">
+          <span className="pp2-notif-ic">{Glyph ? <Glyph size={19} weight="duotone" /> : <Sparkle size={17} weight="fill" />}</span>
+          <div className="pp2-notif-t">
+            <div className="pp2-notif-row"><b>Kael</b><span>now</span></div>
+            <p>{pattern ? `${pattern} has had a long day. Two minutes before it follows you to bed?` : 'Long day. Two minutes before it follows you to bed?'}</p>
+          </div>
         </div>
       </div>
+      <p className="pp2-notif-cap">Written for your pattern, at the hour it usually bites.</p>
+
+      <div className="pp2-week">
+        {week.map((m, k) => (
+          <div key={m.d} className="pp2-wk" style={{ '--d': `${0.12 * k + 0.35}s` }}>
+            <span className="pp2-wk-day">{m.d}</span>
+            <div className="pp2-wk-t">
+              <b>{m.t}</b>
+              <p>{m.s}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p className="pp2-coda">Day 30 is not a different you. It is the same loop, no longer in charge.</p>
     </div>
   )
 }
