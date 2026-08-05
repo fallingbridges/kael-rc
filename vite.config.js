@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { sessionApi } from './server/session.js'
 import { journeyApi } from './server/journey.js'
+import { v11Api } from './server/v11.js'
 
 export default defineConfig(({ mode }) => {
   /* '' prefix loads every var, not just VITE_ ones, so the key stays
@@ -12,7 +13,7 @@ export default defineConfig(({ mode }) => {
      silently swapped for a free one */
   const port = process.env.PORT ? Number(process.env.PORT) : undefined
   return {
-    plugins: [react(), sessionApi(env), journeyApi(env)],
+    plugins: [react(), sessionApi(env), journeyApi(env), v11Api(env)],
     server: { host: true, port, strictPort: Boolean(port) },
   }
 })

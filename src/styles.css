@@ -14016,3 +14016,488 @@ svg {
    carries none of the rules that separate an article's parts */
 .rf-tagpage .rf-lesson-head { border-bottom: none; padding-bottom: 4px; }
 .rf-tag-seen { border-top: none; padding-top: 0; margin-top: 10px; }
+
+/* ══ the gift, and the paywall ═══════════════════════════════════════════
+   Both use the house furniture (badge, kicker, title, moves, offer foot);
+   only the few pieces those screens do not already have live here. */
+/* the gift screen carries no container: the mark, the offer and the
+   acceptance, on the same paper as every other screen in the flow */
+.pp2-gift-seal {
+  display: grid; place-items: center; width: 66px; height: 66px;
+  margin-bottom: 22px; border-radius: 50%; color: var(--warm-proof);
+  background: color-mix(in srgb, var(--warm-proof) 13%, transparent);
+  animation: ov4-rise 0.6s var(--ease) both;
+}
+.pp2-gift .pp2-title { margin: 6px 0 0; font-size: 33px; line-height: 1.14; }
+.pp2-gift-rule {
+  display: block; width: 44px; height: 1px; margin: 22px auto;
+  background: color-mix(in srgb, var(--warm-proof) 42%, transparent);
+  animation: ov4-rise 0.6s var(--ease) 0.2s both;
+}
+.pp2-gift .tp-sub {
+  max-width: 300px; margin: 0 auto;
+  font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+  font-size: 17px; line-height: 1.62;
+}
+.pp2-gift .pp2-offer-foot { gap: 7px; padding-top: 18px; }
+.pp2-gift-cancel { font-size: 15.5px; font-weight: 700; color: var(--ink); margin: 0; }
+.pp2-gift-mission {
+  font-size: 12.5px; line-height: 1.55; margin: 0 0 10px; max-width: 320px;
+  color: color-mix(in srgb, var(--ink) 46%, transparent);
+}
+
+/* ── the paywall ─────────────────────────────────────────────────────────
+   The question, what a year of it buys, and the two ways to pay. No sub,
+   so the headline carries the top on its own and everything below gets the
+   room instead. Fits a phone with nothing to scroll. */
+.pp2-pw { text-align: center; }
+.pp2-pw-title {
+  font-family: var(--title); font-weight: 500; font-size: 29px; line-height: 1.15;
+  letter-spacing: -0.024em; color: var(--ink); margin: 8px 0 -5px;
+  animation: ov4-rise 0.5s var(--ease) 0.05s both;
+}
+/* the question, answered by the only number that makes $69.99 look small */
+.pp2-pw-sub {
+  font-size: 15px; line-height: 1.5; margin: 0 auto 13px; max-width: 300px;
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+  animation: ov4-rise 0.5s var(--ease) 0.09s both;
+}
+
+/* what the year buys */
+.pp2-pw-items { width: 100%; text-align: left; }
+.pp2-pw-items { display: flex; flex-direction: column; gap: 13px; }
+.pp2-pw-item {
+  display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: center;
+  animation: ov4-rise 0.5s var(--ease) var(--d, 0s) both;
+}
+.pp2-pw-item > span:last-child { font-size: 15px; line-height: 1.4; color: color-mix(in srgb, var(--ink) 78%, transparent); }
+.pp2-pw-tick {
+  width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; background: var(--warm-proof);
+}
+
+/* the two ways to pay */
+.pp2-pw .pp2-offer-foot { padding-top: 16px; gap: 10px; }
+.pp2-pw-plans { display: flex; width: 100%; gap: 10px; margin: 4px 0 0; }
+.pp2-pw-plan {
+  position: relative; flex: 1 1 0; min-width: 0; text-align: center; cursor: pointer;
+  padding: 16px 8px 13px; border-radius: 17px;
+  background: var(--surface); border: 1.5px solid var(--line-2);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), box-shadow 0.25s var(--ease), transform 0.15s var(--ease);
+}
+.pp2-pw-plan:active { transform: scale(0.985); }
+.pp2-pw-plan[data-on] {
+  border-color: var(--warm-proof);
+  background: color-mix(in srgb, var(--warm-proof) 6%, var(--surface));
+  box-shadow: 0 10px 26px -18px color-mix(in srgb, var(--warm-proof) 70%, transparent);
+}
+.pp2-pw-badge {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; padding: 3.5px 11px; border-radius: 999px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fff; background: var(--warm-proof);
+}
+.pp2-pw-plan-label { display: block; font-size: 13px; font-weight: 600; color: color-mix(in srgb, var(--ink) 62%, transparent); margin-bottom: 4px; }
+.pp2-pw-plan-price { display: block; white-space: nowrap; font-family: var(--title); font-size: 28px; font-weight: 500; letter-spacing: -0.024em; color: var(--ink); }
+.pp2-pw-plan-per { display: block; white-space: nowrap; font-size: 12px; color: color-mix(in srgb, var(--ink) 55%, transparent); margin-top: 4px; }
+.pp2-pw-plan-note { display: block; white-space: nowrap; font-size: 11.5px; color: color-mix(in srgb, var(--ink) 40%, transparent); margin-top: 2px; }
+
+.pp2-pw-trust {
+  display: inline-flex; align-items: center; gap: 8px; margin: 6px 0 0;
+  font-size: 12.5px; color: color-mix(in srgb, var(--ink) 60%, transparent);
+}
+.pp2-pw-trust svg { color: var(--warm-proof); }
+
+/* ══ V11 · SESSION ONE ═══════════════════════════════════════════════════
+   Kael's words type; the user's appear instantly. That asymmetry is the
+   whole trick: one side of the conversation is alive.
+
+   The arc (--arc, 0 to 1) warms the page as the session goes, so progress
+   is felt rather than counted. A counter would turn a conversation back
+   into a survey. */
+
+.v11-frame { position: relative; overflow: hidden; background: var(--paper); }
+.v11-wash {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 55% at 50% -8%,
+      color-mix(in srgb, var(--warm-proof) calc(var(--arc) * 16%), transparent), transparent 70%),
+    linear-gradient(180deg, transparent 55%,
+      color-mix(in srgb, var(--warm-proof) calc(var(--arc) * 7%), transparent));
+  transition: background 1.6s var(--ease);
+}
+
+.v11-head {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 16px 22px 8px;
+}
+.v11-brand { font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: color-mix(in srgb, var(--ink) 42%, transparent); }
+.v11-who { font-size: 11.5px; color: color-mix(in srgb, var(--ink) 34%, transparent); }
+
+.v11-stage { position: relative; z-index: 2; height: 100%; }
+.v11-in { height: 100%; animation: ov4-rise 0.5s var(--ease) both; }
+.v11-screen { display: flex; flex-direction: column; height: 100%; padding: 46px 22px 22px; }
+.v11-foot { display: flex; flex-direction: column; gap: 9px; padding-top: 14px; }
+
+.v11-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 16px; border: none; border-radius: 999px; cursor: pointer;
+  background: var(--invert-bg); color: var(--invert-ink);
+  font-size: 15px; font-weight: 650;
+  transition: transform 0.14s var(--ease), opacity 0.3s var(--ease);
+}
+.v11-cta:active { transform: translateY(1px) scale(0.99); }
+.v11-cta[data-wait] { opacity: 0.28; pointer-events: none; }
+
+.v11-kicker {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.v11-kicker svg { color: var(--warm-proof); }
+
+/* ── the conversation ── */
+.v11-chat { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; padding: 6px 0; scrollbar-width: none; }
+.v11-chat::-webkit-scrollbar { display: none; }
+.v11-row { display: flex; align-items: flex-end; gap: 8px; }
+.v11-av, .v11-av-ghost { width: 24px; height: 24px; flex: 0 0 24px; }
+.v11-av {
+  border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--invert-bg); color: var(--invert-ink);
+}
+.v11-bub { max-width: 86%; padding: 11px 15px; font-size: 15px; line-height: 1.55; margin: 0; animation: ov4-rise 0.36s var(--ease) both; }
+.v11-bub-k {
+  font-family: Charter, 'Bitstream Charter', Cambria, Georgia, serif;
+  color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line-2); border-radius: 4px 18px 18px 18px;
+}
+.v11-bub-dots { display: inline-flex; padding: 13px 16px; }
+.v11-bub-u {
+  align-self: flex-end; background: var(--invert-bg); color: var(--invert-ink);
+  border-radius: 18px 4px 18px 18px; font-weight: 500;
+}
+.v11-caret { display: inline-block; width: 1px; height: 0.95em; margin-left: 2px; background: currentColor; vertical-align: text-bottom; animation: v11-blink 0.9s steps(1) infinite; }
+@keyframes v11-blink { 50% { opacity: 0; } }
+.v11-dots { display: inline-flex; gap: 4px; }
+.v11-dots i { width: 5px; height: 5px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 38%, transparent); animation: v11-dot 1.1s ease-in-out infinite; }
+.v11-dots i:nth-child(2) { animation-delay: 0.15s; }
+.v11-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes v11-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+
+/* answers: full width, tappable, in their own voice */
+.v11-opts { display: flex; flex-direction: column; gap: 8px; padding: 10px 0 2px 32px; }
+.v11-opt {
+  text-align: left; padding: 13px 16px; border-radius: 14px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line-2);
+  color: var(--ink); font-size: 14.5px; font-weight: 500; line-height: 1.4;
+  animation: ov4-rise 0.36s var(--ease) var(--d, 0s) both;
+  transition: transform 0.12s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease), opacity 0.25s var(--ease);
+}
+.v11-opt:active { transform: scale(0.985); }
+.v11-opt[data-on] { background: var(--invert-bg); color: var(--invert-ink); border-color: transparent; font-weight: 600; }
+.v11-opt[data-dim] { opacity: 0.32; }
+/* the relief beat's three answers are short, so they sit in a row */
+.v11-opts-relief { flex-direction: row; flex-wrap: wrap; }
+.v11-opts-relief .v11-opt { flex: 1 1 auto; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+.v11-composer {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line-2);
+  border-radius: 999px; padding: 5px 5px 5px 17px;
+  transition: opacity 0.3s var(--ease);
+}
+.v11-composer[data-wait] { opacity: 0.4; pointer-events: none; }
+.v11-composer input {
+  flex: 1; border: none; background: none; outline: none;
+  font-size: 15px; color: var(--ink); font-family: inherit; font-style: normal;
+}
+.v11-composer input::placeholder { color: color-mix(in srgb, var(--ink) 34%, transparent); font-style: normal; }
+.v11-send {
+  width: 34px; height: 34px; flex: 0 0 34px; border: none; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--ink) 8%, transparent); color: color-mix(in srgb, var(--ink) 45%, transparent);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.12s var(--ease);
+}
+.v11-send[data-on] { background: var(--invert-bg); color: var(--invert-ink); }
+.v11-send:active { transform: scale(0.92); }
+
+/* ── the door ── */
+.v11-door { justify-content: flex-end; }
+.v11-door-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.v11-orb { position: relative; width: 92px; height: 92px; margin-bottom: 12px; }
+.v11-orb i {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 44% 40%, color-mix(in srgb, var(--warm-proof) 60%, transparent), transparent 68%);
+  animation: v11-breathe 6.5s ease-in-out infinite alternate;
+}
+.v11-orb i:nth-child(1) { filter: blur(20px); opacity: 0.7; animation-delay: -1.6s; }
+.v11-orb i:nth-child(2) { inset: 18%; filter: blur(8px); opacity: 0.85; animation-delay: -0.6s; }
+.v11-orb i:nth-child(3) { inset: 34%; filter: blur(1px); }
+@keyframes v11-breathe { from { transform: scale(0.88); } to { transform: scale(1.1); } }
+.v11-door-lines { display: flex; flex-direction: column; gap: 12px; max-width: 300px; }
+.v11-door-line { margin: 0; font-size: 15.5px; line-height: 1.6; color: color-mix(in srgb, var(--ink) 62%, transparent); }
+.v11-door-lead { font-family: var(--title); font-size: 26px; line-height: 1.22; letter-spacing: -0.02em; color: var(--ink); }
+
+/* ── the two facts ── */
+.v11-facts { display: flex; flex-direction: column; gap: 20px; padding: 18px 0 0 32px; }
+.v11-fact { animation: ov4-rise 0.4s var(--ease) var(--d, 0s) both; }
+.v11-fact-l { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: color-mix(in srgb, var(--ink) 40%, transparent); margin-bottom: 9px; }
+.v11-fact-opts { display: flex; flex-wrap: wrap; gap: 7px; }
+.v11-chip {
+  padding: 9px 15px; border-radius: 999px; cursor: pointer; font-size: 13.5px; font-weight: 550;
+  background: var(--surface); border: 1px solid var(--line-2); color: var(--ink);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.12s var(--ease);
+}
+.v11-chip:active { transform: scale(0.96); }
+.v11-chip[data-on] { background: var(--invert-bg); color: var(--invert-ink); border-color: transparent; }
+
+/* ── the noticing ── */
+.v11-notice-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.v11-notice-line {
+  margin: 0; font-family: var(--title); font-weight: 500;
+  font-size: 21px; line-height: 1.38; letter-spacing: -0.014em; color: var(--ink);
+}
+
+/* ── the note, written in front of them ── */
+.v11-note { padding-top: 44px; }
+.v11-note-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.v11-note-scroll::-webkit-scrollbar { display: none; }
+.v11-note-kicker { margin-bottom: 12px; }
+.v11-note-title {
+  font-family: var(--title); font-weight: 500; font-size: 26px; line-height: 1.2;
+  letter-spacing: -0.02em; color: var(--ink); margin: 0 0 16px;
+}
+.v11-note-hi, .v11-note-p {
+  font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+  font-size: 16px; line-height: 1.8; color: color-mix(in srgb, var(--ink) 86%, transparent);
+  margin: 0 0 17px;
+}
+.v11-note-p em { font-style: italic; color: var(--ink); }
+.v11-note-h {
+  font-family: var(--title); font-weight: 500; font-size: 18.5px; line-height: 1.3;
+  color: var(--ink); margin: 26px 0 9px;
+}
+.v11-note-sign { font-family: var(--title); font-size: 15px; color: color-mix(in srgb, var(--ink) 55%, transparent); margin: 20px 0 0; }
+.v11-note-wait { padding: 12px 0; }
+.v11-note-sp { height: 8px; }
+
+/* ── saved ── */
+.v11-saved-mark {
+  display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%;
+  background: color-mix(in srgb, var(--warm-proof) 16%, transparent); color: var(--warm-proof);
+  margin-bottom: 6px;
+}
+.v11-saved-t { font-family: var(--title); font-weight: 500; font-size: 28px; line-height: 1.18; letter-spacing: -0.022em; color: var(--ink); margin: 6px 0 0; }
+.v11-saved-s { font-size: 15px; line-height: 1.6; color: color-mix(in srgb, var(--ink) 58%, transparent); max-width: 290px; margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .v11-orb i { animation: none; }
+}
+
+/* the masthead. Kael's mark sits above whatever the session is called, and
+   the session is called whatever Kael has worked out it is about. Centred,
+   because it names the room the person is standing in. */
+.v11-head {
+  flex-direction: column; align-items: center; text-align: center; gap: 0;
+  padding: 16px 24px 12px;
+  transition: padding 0.5s var(--ease);
+}
+.v11-mark { display: block; width: 7px; height: 7px; margin-bottom: 11px; }
+.v11-mark i {
+  display: block; width: 100%; height: 100%; border-radius: 50%;
+  background: var(--warm-proof);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--warm-proof) 14%, transparent);
+}
+.v11-brand {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 38%, transparent);
+}
+.v11-head-id { animation: ov4-rise 0.55s var(--ease) both; max-width: 280px; }
+.v11-head-id h2 {
+  font-family: var(--title); font-weight: 500; font-size: 19px; line-height: 1.24;
+  letter-spacing: -0.018em; color: var(--ink); margin: 0;
+}
+.v11-head-id span {
+  display: block; margin-top: 4px; font-size: 12px; line-height: 1.4;
+  letter-spacing: 0.01em; color: color-mix(in srgb, var(--ink) 44%, transparent);
+}
+/* a hairline under the masthead once it carries a name, so the conversation
+   below reads as happening inside something */
+.v11-head[data-titled]::after {
+  content: ''; display: block; width: 34px; height: 1px; margin: 13px auto 0;
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.v11-screen { padding-top: 108px; }
+.v11-door { padding-top: 46px; }
+
+/* the thread: one screen, turn by turn, scrolling like the app's own chat */
+.v11-chatscreen { padding-top: 0; }
+.v11-thread {
+  flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 9px;
+  padding: 8px 0 4px; scrollbar-width: none; scroll-behavior: smooth;
+}
+.v11-thread::-webkit-scrollbar { display: none; }
+.v11-thread-sp { flex: 0 0 2px; }
+.v11-opts { padding-left: 32px; }
+.v11-opt-go { text-align: center; font-weight: 600; }
+/* the facts, answered inside the thread */
+.v11-facts {
+  margin-left: 32px; padding: 16px 16px 14px; border-radius: 16px;
+  background: var(--surface); border: 1px solid var(--line-2);
+  display: flex; flex-direction: column; gap: 16px;
+  animation: ov4-rise 0.4s var(--ease) both;
+}
+.v11-facts .v11-fact-l { margin-bottom: 8px; }
+.v11-fact-name { padding: 4px 4px 4px 14px; }
+.v11-fact-name input { font-size: 14.5px; padding: 8px 0; }
+.v11-facts-go { padding: 13px; font-size: 14.5px; }
+
+/* the masthead sits above the thread, and the thread scrolls under it
+   behind a matching veil rather than through it */
+.v11-head {
+  z-index: 5; background: var(--paper);
+  box-shadow: 0 10px 16px -12px color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.v11-chatscreen { padding-top: 0; }
+.v11-thread { padding-top: 96px; }
+.v11-head[data-titled] ~ .v11-chatscreen .v11-thread { padding-top: 124px; }
+.v11-av-ghost { width: 24px; height: 24px; flex: 0 0 24px; }
+
+
+
+/* ══ V12 · meeting Kael ══════════════════════════════════════════════════
+   One conversation across five screens. Kael's lines are chat bubbles with
+   the one square corner a bubble has; the answer sits under whatever it
+   just said. No logo lockups, no slides. */
+.v12-frame { position: relative; overflow: hidden; background: var(--paper); }
+.v12-screen { position: relative; display: flex; flex-direction: column; height: 100%; padding: 62px 22px 22px; }
+.v12-back {
+  position: absolute; top: 20px; left: 16px; z-index: 3;
+  width: 36px; height: 36px; display: grid; place-items: center;
+  background: none; border: none; cursor: pointer; color: var(--ink);
+}
+
+/* the conversation column */
+.v12-talk { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: none; }
+.v12-talk::-webkit-scrollbar { display: none; }
+.v12-talk-doors { justify-content: flex-start; }
+/* the meet screen keeps its mark and title above the bubble */
+.v12-hero { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 24px; }
+.v12-mark {
+  flex: 0 0 var(--s); width: var(--s); height: var(--s);
+  display: grid; place-items: center;
+  border-radius: calc(var(--s) * 0.30);
+  background: var(--invert-bg); color: var(--invert-ink);
+  font-family: var(--title); font-weight: 500;
+  font-size: calc(var(--s) * 0.52); line-height: 1;
+  /* the K's own side bearings sit it left and low, so it is nudged to the
+     optical centre rather than the geometric one */
+  padding: 0 0 calc(var(--s) * 0.02) calc(var(--s) * 0.045);
+}
+.v12-hero .v12-mark { margin-bottom: 18px; box-shadow: 0 10px 30px -18px rgba(20, 16, 12, 0.7); }
+.v12-title {
+  font-family: var(--title); font-weight: 500; font-size: 29px; line-height: 1.16;
+  letter-spacing: -0.024em; color: var(--ink); margin: 0;
+}
+
+/* the bubble: one sharp corner, the mark sitting inside it */
+.v12-bub {
+  display: flex; align-items: flex-start; gap: 11px;
+  align-self: flex-start; width: 100%; margin: 0;
+  padding: 14px 16px 15px 14px;
+  border-radius: 4px 18px 18px 18px;
+  background: var(--surface); border: 1px solid var(--line-2);
+  animation: ov4-rise 0.4s var(--ease) both;
+}
+.v12-bub-body { flex: 1; display: flex; flex-direction: column; gap: 11px; }
+.v12-bub p {
+  margin: 0; flex: 1;
+  font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+  font-size: 15.5px; line-height: 1.62; color: var(--ink);
+}
+.v12-bub-mark { margin-top: 1px; }
+.v12-bub-waiting { padding: 4px 0; }
+.v12-caret { display: inline-block; width: 1px; height: 0.95em; margin-left: 2px; background: currentColor; vertical-align: text-bottom; animation: v11-blink 0.9s steps(1) infinite; }
+.v12-dots { display: inline-flex; gap: 4px; }
+.v12-dots i { width: 5px; height: 5px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 34%, transparent); animation: v11-dot 1.1s ease-in-out infinite; }
+.v12-dots i:nth-child(2) { animation-delay: 0.15s; }
+.v12-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes v11-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+
+/* the answers */
+.v12-input {
+  width: 100%; margin-top: 18px; padding: 15px 18px; border-radius: 16px;
+  background: var(--surface); border: 1px solid var(--line-2);
+  font-family: var(--title); font-size: 20px; color: var(--ink); outline: none;
+  animation: ov4-rise 0.4s var(--ease) both;
+  transition: border-color 0.2s var(--ease);
+}
+.v12-input:focus { border-color: color-mix(in srgb, var(--warm-proof) 55%, transparent); }
+.v12-input::placeholder { font-family: var(--sans); font-size: 15px; color: color-mix(in srgb, var(--ink) 30%, transparent); }
+
+/* answers are full-width rows, the same shape as the doors, so every
+   choice in the flow is tapped the same way */
+.v12-chips { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.v12-chip {
+  width: 100%; text-align: left; padding: 15px 17px; border-radius: 15px; cursor: pointer;
+  font-size: 15px; font-weight: 500;
+  background: var(--surface); border: 1.5px solid var(--line-2); color: var(--ink);
+  animation: ov4-rise 0.38s var(--ease) var(--d, 0s) both;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.12s var(--ease);
+}
+.v12-chip:active { transform: scale(0.985); }
+.v12-chip[data-on] { background: var(--invert-bg); color: var(--invert-ink); border-color: transparent; }
+
+/* the doors, scrollable, one selected at a time */
+.v12-doors { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; padding-bottom: 4px; }
+.v12-door {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer;
+  padding: 13px 15px; border-radius: 15px;
+  background: var(--surface); border: 1.5px solid var(--line-2);
+  font-size: 15px; font-weight: 500; color: var(--ink);
+  animation: ov4-rise 0.38s var(--ease) var(--d, 0s) both;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), transform 0.12s var(--ease);
+}
+.v12-door:active { transform: scale(0.985); }
+.v12-door[data-on] {
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 4%, var(--surface));
+}
+.v12-door-ic {
+  flex: 0 0 34px; width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center;
+  color: var(--accent, var(--warm-proof));
+  background: color-mix(in srgb, var(--accent, var(--warm-proof)) 14%, transparent);
+}
+
+.v12-foot { flex: 0 0 auto; padding-top: 14px; }
+.v12-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 17px; border: none; border-radius: 999px; cursor: pointer;
+  background: var(--invert-bg); color: var(--invert-ink);
+  font-size: 15px; font-weight: 650;
+  transition: transform 0.14s var(--ease), opacity 0.3s var(--ease);
+}
+.v12-cta:active { transform: translateY(1px) scale(0.99); }
+.v12-cta[data-wait] { opacity: 0.26; pointer-events: none; }
+.v12-frame > .rf-screen { height: 100%; }
+
+/* the doors screen answers in their own words too */
+.v12-composer {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line-2);
+  border-radius: 999px; padding: 5px 5px 5px 17px;
+}
+.v12-composer input {
+  flex: 1; border: none; background: none; outline: none;
+  font-size: 15px; color: var(--ink); font-family: inherit;
+}
+.v12-composer input::placeholder { color: color-mix(in srgb, var(--ink) 32%, transparent); }
+.v12-send {
+  width: 36px; height: 36px; flex: 0 0 36px; border: none; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--ink) 8%, transparent); color: color-mix(in srgb, var(--ink) 45%, transparent);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.12s var(--ease);
+}
+.v12-send[data-on] { background: var(--invert-bg); color: var(--invert-ink); }
+.v12-send:active { transform: scale(0.92); }

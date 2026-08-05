@@ -6,7 +6,7 @@ import {
   Compass, Fingerprint, Spiral, Smiley, SmileySad, Medal, PenNib, Tag, BellSimple,
   LockSimpleOpen, Crown, Plant, MagnifyingGlass, Eye, Feather,
   FlowerLotus, Robot, NotePencil, Armchair, ChatsCircle, Brain,
-  AppleLogo, GoogleLogo, EnvelopeSimple, LockSimple, UserCirclePlus,
+  AppleLogo, GoogleLogo, EnvelopeSimple, LockSimple, UserCirclePlus, Gift, BellRinging, ArrowsClockwise, TreeStructure,
 } from '@phosphor-icons/react'
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ import {
    ────────────────────────────────────────────────────────────────────────── */
 
 const NAME = 'Maya'
-const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'why', 'how', 'tonight', 'offer', 'signup', 'decline', 'saved']
+const SCREENS = ['therapist', 'goal', 'difference', 'mechanism', 'promise', 'allset', 'gift', 'offer', 'signup', 'decline', 'saved']
 
 /* each tier pairs the minutes with what they buy — the commitment sells its outcome */
 const GOALS = [
@@ -57,7 +57,7 @@ export default function PrePaywall({ noanim = false }) {
   useEffect(() => () => clearTimeout(advanceRef.current), [])
 
   const ctaLabel = kind === 'difference' ? 'I want that' : kind === 'promise' ? 'I commit to myself' : kind === 'journey' ? 'I’m ready' : 'Continue'
-  const showFooter = !['therapist', 'goal', 'promise', 'offer', 'signup', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
+  const showFooter = !['therapist', 'goal', 'promise', 'gift', 'offer', 'signup', 'decline', 'saved'].includes(kind) // these advance themselves or own their CTA
   const ready = kind === 'goal' ? Boolean(ans.goal)
     : kind === 'promise' ? Boolean(ans.signed) : true
 
@@ -108,9 +108,7 @@ function Screen({ kind, ans, set, pickAuto, onNext }) {
     case 'mechanism': return <MechanismBody />
     case 'promise': return <PromiseBody name={NAME} onSigned={(v) => set('signed', v)} onNext={onNext} />
     case 'allset': return <AllSetBody name={NAME} />
-    case 'why': return <WhyBody />
-    case 'how': return <HowBody />
-    case 'tonight': return <TonightBody name={NAME} why="I can’t stop overthinking" />
+    case 'gift': return <GiftBody onNext={onNext} />
     case 'offer': return <OfferBody onNext={onNext} />
     case 'signup': return <SignupBody onNext={onNext} />
     case 'decline': return <DeclineBody onNext={onNext} />
@@ -526,21 +524,73 @@ export function JourneyBody({ name = '', why, pattern, glyph: Glyph, goals }) {
 
 /* 9 · the offer — the honest itinerary: how the trial works on a big gold
    rail, the full terms in display type, the exit stated, plans one tap away. */
-export function OfferBody({ onNext, onPlans }) {
+/* 9a · the gift — the argument is over, so this screen stops selling and
+   hands them the week. House furniture: badge, kicker, title, sub. */
+export function GiftBody({ onNext }) {
   return (
-    <div className="pp2 pp2-c pp2-offer pp2-paywall">
-      <h1 className="pp2-title pp2-title-lg">Continue with Kael.<br />Your first week is free.</h1>
-      <div className="pp2-review">
-        <span className="pp2-review-stars">{[0, 1, 2, 3, 4].map((k) => <Star key={k} size={15} weight="fill" />)}</span>
-        <p>“For the first time, I don’t feel<br />alone in my own head.”</p>
-      </div>
+    <div className="pp2 pp2-c pp2-gift">
+      {/* the offer sits in the middle of the screen; everything that belongs
+          to the decision sits with the button that makes it */}
+      <span className="pp2-gift-seal" aria-hidden="true"><Gift size={32} weight="duotone" /></span>
+      <span className="ov4-kicker">A week on us</span>
+      <h1 className="pp2-title">7 days to<br />meet yourself.</h1>
+      <span className="pp2-gift-rule" aria-hidden="true" />
+      <p className="tp-sub pp2-gift-sub">Whatever brought you here, you don’t have to carry it alone. For the next 7 days, talk to Kael whenever you need.</p>
       <div className="pp2-offer-foot">
-        <p className="pp2-freehead">Free for 7 days</p>
-        <p className="pp2-priceline">Then $69.99/year · $5.83/month</p>
-        {onPlans && <button className="pp2-seeplans" onClick={onPlans}>View all plans</button>}
-        <p className="pp2-trust"><ShieldCheck size={15} weight="fill" />No commitment. Cancel anytime.</p>
-        <button className="ov-cta" onClick={onNext}>Start my free week</button>
-        <div className="pp2-legal"><button>Restore</button><button>Terms</button><button>Privacy</button></div>
+        <p className="pp2-gift-cancel">Cancel anytime.</p>
+        <p className="pp2-gift-mission">Keep it only if it genuinely helps.</p>
+        <button className="ov-cta" onClick={onNext}>Accept the gift</button>
+      </div>
+    </div>
+  )
+}
+
+const PLANS = [
+  { id: 'year', label: 'Yearly', price: '$69.99', per: '$5.83 / month', note: 'Billed yearly', badge: 'Best value' },
+  { id: 'month', label: 'Monthly', price: '$16.99', per: '$0.57 / day', note: 'Billed monthly', badge: null },
+]
+/* what the app actually does, each stated as the thing it gets you. Generic
+   wellness lines are what a competitor can also print; these are not. */
+const WORTH = [
+  'A note from Kael after every session',
+  'Your loops named and explained',
+  'Every conversation remembered',
+  'Search your life, not just keywords',
+  'Exercises for when words run out',
+]
+
+export function OfferBody({ onNext, onPlans }) {
+  const [plan, setPlan] = useState('year')
+  const chosen = PLANS.find((p) => p.id === plan)
+  return (
+    <div className="pp2 pp2-c pp2-offer pp2-paywall pp2-pw">
+      <h1 className="pp2-pw-title">How much is your<br />mental health worth?</h1>
+      <p className="pp2-pw-sub">One therapy session costs more than a year with Kael.</p>
+
+      <div className="pp2-pw-items">
+        {WORTH.map((w, i) => (
+          <div className="pp2-pw-item" key={w} style={{ '--d': `${0.05 * i + 0.12}s` }}>
+            <span className="pp2-pw-tick"><Check size={12} weight="bold" /></span>
+            <span>{w}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="pp2-offer-foot">
+        <div className="pp2-pw-plans">
+          {PLANS.map((p) => (
+            <button key={p.id} className="pp2-pw-plan" data-on={plan === p.id || undefined} onClick={() => setPlan(p.id)}>
+              {p.badge && <span className="pp2-pw-badge">{p.badge}</span>}
+              <span className="pp2-pw-plan-label">{p.label}</span>
+              <span className="pp2-pw-plan-price">{p.price}</span>
+              <span className="pp2-pw-plan-per">{p.per}</span>
+              <span className="pp2-pw-plan-note">{p.note}</span>
+            </button>
+          ))}
+        </div>
+        <p className="pp2-pw-trust"><ShieldCheck size={15} weight="fill" />7 days free, then {chosen.price}. Cancel anytime.</p>
+        <button className="ov-cta" onClick={onNext}>Try for $0.00</button>
+        <div className="pp2-legal"><button>Restore Purchases</button><button>Terms</button><button>Privacy</button></div>
       </div>
     </div>
   )

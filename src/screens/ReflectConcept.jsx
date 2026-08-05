@@ -1118,6 +1118,16 @@ export function Room({ mode, onBack, onNew, name = NAME }) {
     }, 900)
   }
 
+  /* arriving from onboarding with a door already chosen: open straight into
+     the conversation rather than showing the picker again */
+  const seeded = useRef(false)
+  useEffect(() => {
+    if (mode.seed && !seeded.current) {
+      seeded.current = true
+      start(mode.seed)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   /* returning to an old room: Kael re-opens the thread with continuity */
   useEffect(() => {
     if (existing && !reopened) {

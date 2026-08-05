@@ -13,6 +13,8 @@ import OnboardingV6 from './screens/OnboardingV6.jsx'
 import OnboardingV7 from './screens/OnboardingV7.jsx'
 import OnboardingV8 from './screens/OnboardingV8.jsx'
 import OnboardingV10 from './screens/OnboardingV10.jsx'
+import OnboardingV11 from './screens/OnboardingV11.jsx'
+import OnboardingV12 from './screens/OnboardingV12.jsx'
 import SessionV3 from './screens/SessionV3.jsx'
 import JourneyV2 from './screens/JourneyV2.jsx'
 import PrePaywall from './screens/PrePaywall.jsx'
@@ -53,6 +55,8 @@ const STUDIO_GROUPS = [
     name: 'Onboarding',
     tabs: [
       ['session-v3', 'V3 Session'],
+      ['onboarding-v12', 'V12 Short'],
+      ['onboarding-v11', 'V11 Session One'],
       ['onboarding-v10', 'V10 Therapy'],
       ['onboarding-v8', 'V8 Session'],
       ['onboarding-v7', 'V7'],
@@ -288,6 +292,10 @@ export default function App() {
                 <JourneyV2 />
               ) : studioTab === 'session-v3' ? (
                 <SessionV3 />
+              ) : studioTab === 'onboarding-v12' ? (
+                <OnboardingV12 />
+              ) : studioTab === 'onboarding-v11' ? (
+                <OnboardingV11 />
               ) : studioTab === 'onboarding-v10' ? (
                 <OnboardingV10 />
               ) : studioTab === 'onboarding-v8' ? (

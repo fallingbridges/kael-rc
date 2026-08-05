@@ -85,7 +85,7 @@ export function Safety() {
         <span className="io-orb-ring io-orb-ring-2" />
         <span className="io-orb-core"><Sparkle size={28} weight="fill" /></span>
       </div>
-      <h1 className="io-title">Meet Kael,<br />your reflection guide.</h1>
+      <h1 className="io-title">Meet Kael,<br />your thinking partner.</h1>
       <div className="io-bubble">
         <span className="io-bubble-av"><Sparkle size={12} weight="fill" /></span>
         <p className="io-bubble-text">{typed}{typed.length < INTRO.length && <span className="io-caret" />}</p>

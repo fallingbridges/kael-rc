@@ -493,9 +493,9 @@ export const FLOW = [
   { id: 'notif', kind: 'notif', act: 4, title: 'Want Kael to check in gently?', sub: 'A quiet nudge when it helps, nothing more.', cta: 'Yes, check in on me', alt: 'Not now' },
   { id: 'promise', kind: 'promise', act: 4 }, // no cta — the held thumb commits and advances by itself
   { id: 'allset', kind: 'allset', act: 4, cta: 'Continue' },
-  { id: 'why', kind: 'why', act: 4, cta: 'Continue' },
-  { id: 'how', kind: 'how', act: 4, cta: 'Continue' },
-  { id: 'tonight', kind: 'tonight', act: 4, cta: 'I’m ready to begin' },
+  /* the handoff: the argument is made, so the last screen before the price
+     stops arguing and hands them the week */
+  { id: 'gift', kind: 'gift', act: 4 }, // owns its own CTA block
   /* the close — offer, then the decline ladder: a kinder price (once), then the
      open door. These three own their whole CTA blocks — no cta here. */
   { id: 'offer', kind: 'offer', act: 4 },
