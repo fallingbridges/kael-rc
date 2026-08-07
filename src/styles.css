@@ -14501,3 +14501,686 @@ svg {
 }
 .v12-send[data-on] { background: var(--invert-bg); color: var(--invert-ink); }
 .v12-send:active { transform: scale(0.92); }
+
+/* ============================================================
+   KAEL — the feed home (studio lab)
+
+   Home is the deck. Chrome is a thin identity row, the thread,
+   and the top of the first card showing under it.
+
+   The rule that holds the whole system together: colour and
+   sheen belong to what Kael offers, and the one dark object on
+   the screen is what belongs to them. Gold appears exactly once,
+   on the way back into their own thread.
+   ============================================================ */
+
+.kf-page { --kf-gold: #d8a340; --kf-gold-deep: #a4761c; --kf-r: 26px; }
+.kf-frame { position: relative; overflow: hidden; background: var(--paper); }
+.kf-screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.kf-rise { animation: kf-rise 0.62s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1)) both; animation-delay: var(--d, 0ms); }
+@keyframes kf-rise { from { opacity: 0; transform: translateY(14px) scale(0.986); } to { opacity: 1; transform: none; } }
+
+/* ---------- the greeting, kept from the app it is reskinning ---------- */
+.kf-top {
+  flex: none; display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; padding: 52px 20px 14px;
+}
+.kf-top-plain { padding-bottom: 14px; align-items: center; }
+.kf-page-title { font-family: var(--title); font-size: 30px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 0; }
+.kf-hello h1 {
+  margin: 0 0 3px; font-family: var(--title); font-size: 27px; line-height: 1.14;
+  font-weight: 600; letter-spacing: -0.024em; color: var(--ink);
+}
+.kf-hello span {
+  font-family: var(--sans); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3);
+}
+/* on the pages whose subtitle is a sentence rather than a date stamp, let it
+   read as one */
+.kf-top-plain .kf-hello span {
+  font-family: var(--serif); font-size: 14px; font-weight: 400;
+  letter-spacing: 0; text-transform: none; color: var(--ink-2);
+}
+/* section headings, set as display type so the feed has a visible spine
+   rather than a run of cards with a whisper between them */
+.kf-label {
+  display: block; margin: 10px 0 0; padding-left: 1px;
+  font-family: var(--title); font-size: 21px; font-weight: 600;
+  letter-spacing: -0.021em; color: var(--ink); text-wrap: pretty;
+}
+
+/* ---------- the scroller ---------- */
+.kf-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none;
+  padding: 4px 20px 0; display: flex; flex-direction: column; gap: 16px;
+}
+.kf-scroll::-webkit-scrollbar { display: none; }
+.kf-scroll > * { flex-shrink: 0; }
+/* the pill floats at 84px with a 50px body, so content has to end above
+   134px or the last card sits under it at the bottom of every tab */
+.kf-tail { height: 162px; }
+.kf-none { font-family: var(--sans); font-size: 14px; color: var(--ink-3); text-align: center; padding: 40px 0; }
+
+/* the diagonal light across every coloured surface */
+.kf-sheen {
+  position: absolute; inset: -30%; pointer-events: none;
+  background: linear-gradient(var(--a, 120deg),
+    transparent 28%,
+    rgba(255, 255, 255, 0.42) 41%,
+    rgba(255, 255, 255, 0.12) 54%,
+    transparent 66%);
+}
+
+/* ---------- the thread ----------
+   A reflection, wherever it turns up: pinned on home, or in a list in
+   Journey. It carries its own mood at full strength, which is what makes
+   it read as theirs rather than as one more thing the app is offering.
+   The note sits on a white plate inside it so the writing has a page. */
+.kf-thread {
+  position: relative; overflow: hidden; cursor: pointer;
+  border-radius: var(--kf-r); isolation: isolate;
+  background: linear-gradient(146deg,
+    color-mix(in srgb, var(--mood) 78%, var(--paper)),
+    color-mix(in srgb, var(--mood) 40%, var(--paper)) 64%,
+    color-mix(in srgb, var(--mood) 22%, var(--paper)) 100%);
+  box-shadow: 0 1px 2px rgba(28, 26, 22, 0.05), 0 16px 32px -24px rgba(28, 26, 22, 0.5);
+  transition: transform 0.16s var(--ease, ease);
+}
+.kf-thread .kf-sheen { opacity: 0.5; }
+.kf-thread:active { transform: scale(0.988); }
+.kf-thread-in { position: relative; z-index: 1; padding: 18px 18px 16px; }
+.kf-thread-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+.kf-thread-ic {
+  width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center;
+  background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--ink) 76%, var(--mood));
+}
+.kf-when {
+  font-family: var(--sans); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 48%, var(--mood));
+}
+/* the thread has to out-weigh anything in the deck below it, or the most
+   important object on the screen is the one that looks least important */
+.kf-thread-title {
+  font-family: var(--title); font-size: 30px; line-height: 1.12; font-weight: 600;
+  letter-spacing: -0.024em; color: var(--ink); margin: 0 0 15px; text-wrap: balance;
+}
+/* the pattern, named on the card. This is the whole argument for a
+   reflection carrying its note wherever it appears. */
+.kf-noticed {
+  border-radius: 16px; padding: 13px 15px 14px; margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+.kf-noticed p {
+  margin: 0; font-family: var(--serif); font-size: 14.5px; line-height: 1.52;
+  color: var(--ink);
+}
+/* the note block is the door to the note, so its label carries the mark and
+   the chevron rather than a link repeating itself underneath */
+.kf-noticed-lbl {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 7px;
+  font-family: var(--sans); font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 46%, var(--mood));
+}
+.kf-noticed-lbl > svg:first-child { color: var(--kf-gold-deep); }
+.kf-noticed-lbl > svg:last-child { margin-left: auto; letter-spacing: 0; }
+/* the same button the deck carries, so continuing a thread and starting one
+   look like the same kind of act */
+.kf-thread .kf-reflect { margin-top: 0; }
+
+/* ---------- the deck ---------- */
+.kf-card {
+  position: relative; overflow: hidden; border-radius: var(--kf-r); isolation: isolate;
+  background: linear-gradient(152deg,
+    color-mix(in srgb, var(--mood) 62%, var(--paper)),
+    color-mix(in srgb, var(--mood) 30%, var(--paper)) 62%,
+    color-mix(in srgb, var(--mood) 16%, var(--paper)) 100%);
+  box-shadow: 0 1px 2px rgba(28, 26, 22, 0.05), 0 14px 30px -24px rgba(28, 26, 22, 0.5);
+}
+.kf-card .kf-sheen { opacity: 0.72; }
+/* a poster needs margins. Tight padding is what made this read as a UI
+   row rather than as something worth screenshotting. */
+.kf-card-in {
+  position: relative; z-index: 1; padding: 21px 22px 20px;
+  display: flex; flex-direction: column; min-height: 326px;
+}
+.kf-cat {
+  display: block; margin-bottom: 16px;
+  font-family: var(--sans); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 52%, var(--mood));
+}
+.kf-ic {
+  width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center;
+  background: rgba(255, 255, 255, 0.5); color: color-mix(in srgb, var(--ink) 74%, var(--mood));
+  border: 1px solid rgba(255, 255, 255, 0.55); margin-bottom: 22px;
+}
+/* the card is one statement. It gets the whole face, and the buttons sit
+   at the foot as chrome, so a screenshot with them cropped is a poster.
+   The min-height keeps an eight word statement and a fourteen word one
+   looking like the same object in a scrolling deck. */
+/* the statement can run to more than one paragraph, so the block owns the
+   spacing and each paragraph just sits inside it */
+.kf-lines { margin-bottom: 34px; }
+.kf-line {
+  margin: 0 0 16px; font-family: var(--title); font-size: 32px; line-height: 1.2;
+  font-weight: 600; letter-spacing: -0.026em; color: var(--ink);
+  text-wrap: balance;
+}
+.kf-line:last-child { margin-bottom: 0; }
+/* the only action at the foot, pinned there so short and long statements
+   still put their button on the same line */
+.kf-reflect {
+  margin-top: auto;
+  width: 100%; height: 50px; border: none; cursor: pointer; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: #17160f; color: #f7f3e9;
+  font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -0.008em;
+  transition: transform 0.12s var(--ease, ease), opacity 0.2s ease;
+}
+.kf-reflect svg { color: var(--kf-gold); }
+.kf-reflect:active { transform: scale(0.977); }
+
+/* ---------- the pill: named, because a plus sign is a to-do verb ----------
+   It keeps its label at all times. The feed fades to paper beneath it, so a
+   card passing behind reads as ending rather than as being covered up. */
+.kf-fade {
+  position: absolute; left: 0; right: 0; bottom: 72px; height: 108px; z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--paper) 78%);
+}
+.kf-talk {
+  position: absolute; right: 18px; bottom: 84px; z-index: 6;
+  height: 50px; padding: 0 21px; border: none; cursor: pointer; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 9px; white-space: nowrap;
+  background: #17160f; color: #f7f3e9;
+  font-family: var(--sans); font-size: 14.5px; font-weight: 600; letter-spacing: -0.008em;
+  box-shadow: 0 2px 6px rgba(24, 22, 18, 0.2), 0 14px 30px -14px rgba(24, 22, 18, 0.7);
+  transition: transform 0.14s var(--ease, ease);
+}
+.kf-talk:active { transform: scale(0.95); }
+
+/* ---------- three tabs ---------- */
+.kf-nav {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 7;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  padding: 9px 0 26px;
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--line-2);
+}
+.kf-nav button {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; cursor: pointer; color: var(--ink-3);
+  font-family: var(--sans); font-size: 10.5px; font-weight: 500; letter-spacing: 0.005em;
+  transition: color 0.2s ease;
+}
+.kf-nav button[data-on] { color: var(--ink); font-weight: 600; }
+
+/* ---------- journey: the only place with a search box ----------
+   Home is for arriving, Journey is for looking for something, so search and
+   the tag and loop filters live here and nowhere else. */
+.kf-jsearch {
+  flex: none; display: flex; align-items: center; gap: 9px; margin: 0 20px 11px;
+  height: 42px; padding: 0 8px 0 14px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line-2); color: var(--ink-3);
+}
+.kf-jsearch input {
+  flex: 1; min-width: 0; border: none; background: none; outline: none;
+  font-family: var(--sans); font-size: 14px; color: var(--ink);
+}
+.kf-jsearch input::placeholder { color: var(--ink-3); }
+.kf-jsearch button {
+  width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; color: var(--ink-2);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.kf-chips {
+  flex: none; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none;
+  padding: 0 20px 12px;
+}
+.kf-chips::-webkit-scrollbar { display: none; }
+.kf-chip {
+  flex: none; height: 31px; padding: 0 13px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+  font-family: var(--sans); font-size: 12.5px; font-weight: 500; white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.kf-chip[data-on] { background: var(--invert-bg); border-color: var(--invert-bg); color: var(--invert-ink); }
+/* a loop is a place, not a label, so it carries the sparkle mark */
+.kf-chip-loop { font-style: italic; color: var(--ink); border-color: var(--line-strong); }
+
+
+/* ---------- you ---------- */
+.kf-set {
+  display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+  padding: 16px 17px; border-radius: 18px; border: 1px solid var(--line-2); background: var(--surface);
+  font-family: var(--sans); font-size: 14.5px; font-weight: 500; color: var(--ink);
+}
+.kf-set:active { transform: scale(0.99); }
+
+/* the room takes the whole frame when a thread is open */
+.kf-frame > .rf-screen { height: 100%; }
+
+
+
+/* ---------- the room ----------
+   Kael is not in a bubble. A bubble caps how long anything can be before it
+   looks absurd, and Kael sometimes writes at length, so Kael gets the page.
+   The user keeps a bubble on the right, and that asymmetry is the only
+   thing marking who is speaking. It is enough. */
+/* the room is a reading surface, not a chat window, so it sits on white the
+   way an article does rather than on the app's cream */
+.kf-room { background: var(--surface); }
+.kf-room-top {
+  flex: none; display: flex; align-items: center; gap: 10px;
+  padding: 24px 20px 11px; border-bottom: 1px solid var(--line-2);
+}
+.kf-room-back {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; color: var(--ink); background: none;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+.kf-room-back:active { transform: scale(0.9); }
+.kf-room-title { flex: 1; min-width: 0; text-align: center; padding-right: 34px; }
+.kf-room-title h1 {
+  margin: 0; font-family: var(--title); font-size: 17px; font-weight: 600;
+  letter-spacing: -0.018em; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.kf-room-title span {
+  display: block; font-family: var(--serif); font-size: 12.5px; color: var(--ink-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.kf-room-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none;
+  padding: 22px 22px 0;
+}
+.kf-room-scroll::-webkit-scrollbar { display: none; }
+.kf-room-tail { height: 20px; }
+
+/* the user, right and contained. Same face and size as Kael, because they
+   are two halves of one conversation, not a person talking to a system. */
+.kf-t-user {
+  /* hugs its content: a one word answer should not draw a full width bar */
+  width: fit-content; max-width: 80%;
+  margin: 0 0 24px auto; padding: 13px 17px 14px;
+  border-radius: 19px 19px 5px 19px;
+  background: var(--field); color: var(--ink);
+  font-family: var(--serif); font-size: 16px; line-height: 1.64;
+  letter-spacing: -0.003em;
+}
+
+/* Kael, full width and typographic */
+.kf-t-kael { margin: 0 0 30px; }
+/* the statement the card carried, restated as the answer's first move */
+.kf-t-lead {
+  margin: 0 0 18px; font-family: var(--title); font-size: 21px; line-height: 1.28;
+  font-weight: 600; letter-spacing: -0.022em; color: var(--ink); text-wrap: pretty;
+}
+.kf-t-lead + .kf-t-lead { margin-top: -8px; }
+.kf-t-h {
+  margin: 26px 0 10px; font-family: var(--title); font-size: 18px;
+  font-weight: 600; letter-spacing: -0.015em; color: var(--ink);
+}
+.kf-t-p {
+  margin: 0 0 14px; font-family: var(--serif); font-size: 16px; line-height: 1.64;
+  letter-spacing: -0.003em; color: var(--ink);
+}
+.kf-t-q {
+  margin: 22px 0 6px; padding-left: 15px;
+  border-left: 2px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  font-family: var(--title); font-size: 19px; line-height: 1.34;
+  font-weight: 600; letter-spacing: -0.018em; color: var(--ink);
+}
+.kf-t-dots { display: inline-flex; gap: 4px; padding: 6px 0; }
+.kf-t-dots i {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3);
+  animation: kf-bounce 1.1s infinite ease-in-out;
+}
+.kf-t-dots i:nth-child(2) { animation-delay: 0.15s; }
+.kf-t-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes kf-bounce { 0%, 60%, 100% { opacity: 0.28; } 30% { opacity: 1; } }
+.kf-caret {
+  display: inline-block; width: 2px; height: 0.95em; margin-left: 2px;
+  vertical-align: -0.12em; background: var(--kf-gold);
+  animation: kf-blink 1s steps(2, start) infinite;
+}
+@keyframes kf-blink { 50% { opacity: 0; } }
+
+/* ---------- the foot: suggestions, then a place to type ---------- */
+.kf-room-foot {
+  flex: none; padding: 12px 0 24px;
+  background: var(--surface);
+}
+/* offered under what Kael just said, as part of the thread. They wrap
+   rather than scroll, so nothing is hidden off the edge. */
+.kf-asks { display: flex; flex-wrap: wrap; gap: 8px; margin: -14px 0 30px; }
+.kf-ask-chip {
+  flex: none; height: 36px; padding: 0 15px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 13px; font-weight: 500; white-space: nowrap;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+.kf-ask-chip:active { transform: scale(0.96); }
+.kf-composer {
+  display: flex; align-items: center; gap: 8px; margin: 0 22px;
+  padding: 5px 5px 5px 17px; border-radius: 999px;
+  background: var(--paper); border: 1px solid var(--line-strong);
+}
+.kf-composer input {
+  flex: 1; min-width: 0; height: 42px; border: none; background: none; outline: none;
+  font-family: var(--sans); font-size: 14.5px; color: var(--ink);
+}
+.kf-composer input::placeholder { color: var(--ink-3); }
+.kf-composer button {
+  flex: none; width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink-3);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.12s var(--ease);
+}
+.kf-composer button[data-on] { background: #17160f; color: var(--kf-gold); }
+.kf-composer button:active { transform: scale(0.92); }
+
+
+
+
+.kf-note-back {
+  position: absolute; top: 22px; left: 14px; z-index: 4;
+  width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; color: #f7f3e9;
+  background: rgba(20, 18, 14, 0.32); backdrop-filter: blur(10px);
+  transition: transform 0.12s ease;
+}
+.kf-note-back:active { transform: scale(0.9); }
+
+/* ---------- the avatar, top right of home ---------- */
+.kf-avatar {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; margin-top: 2px;
+  background: var(--invert-bg); color: var(--invert-ink);
+  font-family: var(--sans); font-size: 13.5px; font-weight: 600; letter-spacing: 0.01em;
+  transition: transform 0.12s ease;
+}
+.kf-avatar:active { transform: scale(0.92); }
+
+
+/* ---------- you: what the app has actually counted ----------
+   Every number comes off the reflections rather than being invented, every
+   row goes somewhere, and the colours are the same mood palette the cards
+   use, so a loop looks the same here as it does anywhere else.
+
+   No streaks. Counting days somebody did not show up is a different
+   product with a different relationship to the person using it. */
+/* one strip, not three coloured blocks. Three saturated tiles read as a
+   fitness dashboard and put the colour in competition with the numbers,
+   which are the thing worth looking at. Colour survives in the icon chips
+   and nowhere else, so the figures lead. */
+.kf-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-radius: 22px; border: 1px solid var(--line-2); background: var(--surface);
+  overflow: hidden;
+}
+.kf-stats span {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 18px 6px 17px; border-left: 1px solid var(--line-2);
+  font-family: var(--sans); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+}
+.kf-stats span:first-child { border-left: none; }
+.kf-stats span[data-tint='a'] { --tint: var(--mood-overthinking); }
+.kf-stats span[data-tint='b'] { --tint: var(--mood-restless); }
+.kf-stats span[data-tint='c'] { --tint: var(--mood-hurt); }
+.kf-stats i {
+  display: grid; place-items: center; margin-bottom: 7px;
+  width: 30px; height: 30px; border-radius: 999px;
+  background: color-mix(in srgb, var(--tint) 26%, transparent);
+  color: color-mix(in srgb, var(--ink) 58%, var(--tint));
+}
+.kf-stats b {
+  font-family: var(--title); font-size: 31px; font-weight: 600; line-height: 1;
+  letter-spacing: -0.032em; color: var(--ink);
+}
+
+/* ---------- the mood ring ---------- */
+.kf-mood { display: flex; flex-direction: column; gap: 12px; }
+.kf-mood-in {
+  display: flex; align-items: center; gap: 16px; padding: 16px 16px 16px 6px;
+  border-radius: 22px; border: 1px solid var(--line-2); background: var(--surface);
+}
+.kf-ring { flex: none; width: 132px; height: 132px; }
+.kf-ring-n {
+  text-anchor: middle; font-family: var(--title); font-size: 26px; font-weight: 600;
+  letter-spacing: -0.02em; fill: var(--ink);
+}
+.kf-ring-l {
+  text-anchor: middle; font-family: var(--sans); font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; fill: var(--ink-3);
+}
+.kf-mood-key { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.kf-mood-item {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 5px 8px; border: none; border-radius: 10px; background: none; text-align: left;
+  transition: background 0.16s ease;
+}
+.kf-mood-item:active { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.kf-mood-item i { flex: none; width: 9px; height: 9px; border-radius: 3px; background: var(--hue); }
+.kf-mood-item span {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--sans); font-size: 13px; color: var(--ink);
+}
+.kf-mood-item b { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ink-3); }
+
+/* ---------- the counted lists, every row a door ---------- */
+.kf-stat-group { display: flex; flex-direction: column; gap: 11px; }
+.kf-stat-rows {
+  display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 22px; border: 1px solid var(--line-2); background: var(--surface);
+}
+.kf-stat-row {
+  display: flex; align-items: center; gap: 11px; cursor: pointer; text-align: left;
+  padding: 14px 15px; border: none; border-bottom: 1px solid var(--line-2);
+  background: none; transition: background 0.16s ease;
+}
+.kf-stat-row:last-child { border-bottom: none; }
+.kf-stat-row:active { background: color-mix(in srgb, var(--hue) 10%, transparent); }
+.kf-stat-dot { flex: none; width: 9px; height: 9px; border-radius: 3px; background: var(--hue); }
+.kf-stat-row span {
+  flex: none; max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--sans); font-size: 14px; color: var(--ink);
+}
+.kf-stat-bar {
+  flex: 1; height: 7px; border-radius: 999px; position: relative; overflow: hidden;
+  background: color-mix(in srgb, var(--hue) 13%, transparent);
+}
+.kf-stat-bar::after {
+  content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w);
+  border-radius: 999px; background: var(--hue);
+}
+.kf-stat-row b {
+  flex: none; min-width: 15px; text-align: right;
+  font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--ink-2);
+}
+.kf-stat-row svg { flex: none; color: var(--ink-3); }
+
+/* ---------- Kael's note ----------
+   Same analysis the app already writes, given the treatment the lesson used
+   to have. A colour banner off the reflection's own mood, then the letter
+   set as an article. Only the vessel changed. */
+.kf-kn { background: var(--paper); }
+.kf-kn-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.kf-kn-scroll::-webkit-scrollbar { display: none; }
+.kf-kn-hero {
+  position: relative; overflow: hidden; isolation: isolate;
+  padding: 72px 22px 26px;
+  background: linear-gradient(152deg,
+    color-mix(in srgb, var(--mood) 64%, var(--paper)),
+    color-mix(in srgb, var(--mood) 26%, var(--paper)) 72%,
+    var(--paper) 100%);
+}
+.kf-kn-hero .kf-sheen { opacity: 0.6; }
+.kf-kn-hero-in { position: relative; z-index: 1; }
+.kf-kn-kicker {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--sans); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 54%, var(--mood));
+}
+.kf-kn-kicker svg { color: var(--kf-gold); }
+.kf-kn-hero .kf-ic { margin: 14px 0 15px; }
+.kf-kn-h1 {
+  margin: 0 0 10px; font-family: var(--title); font-size: 29px; line-height: 1.13;
+  font-weight: 600; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance;
+}
+.kf-kn-date {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.11em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 50%, var(--mood));
+}
+.kf-kn-text { padding: 26px 22px 0; }
+/* the hook, set apart as the thing the whole note is arguing */
+.kf-kn-lead {
+  margin: 0 0 22px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--line-2);
+  font-family: var(--title); font-size: 20px; line-height: 1.32;
+  font-weight: 600; letter-spacing: -0.02em; color: var(--ink); text-wrap: pretty;
+}
+.kf-kn-text em { font-style: italic; }
+.kf-kn-text b { font-weight: 600; }
+/* the earlier reflections this one rhymes with, each a door back */
+.kf-kn-before {
+  display: flex; align-items: baseline; gap: 8px; width: 100%; cursor: pointer;
+  margin: 0 0 9px; padding: 13px 15px; border-radius: 16px; text-align: left;
+  border: 1px solid var(--line-2); background: var(--surface);
+  font-family: var(--serif); font-size: 14.5px; line-height: 1.5; color: var(--ink-2);
+  transition: transform 0.14s ease;
+}
+.kf-kn-before:active { transform: scale(0.99); }
+.kf-kn-before span {
+  flex: none; font-family: var(--sans); font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-3);
+}
+.kf-kn-before svg { margin-left: auto; flex: none; color: var(--ink-3); align-self: center; }
+.kf-kn-ps {
+  margin: 20px 0 0; padding: 15px 17px; border-radius: 18px;
+  background: color-mix(in srgb, var(--mood) 12%, transparent);
+  font-family: var(--serif); font-size: 15px; line-height: 1.6; color: var(--ink-2);
+}
+.kf-kn-filed { margin-top: 30px; display: flex; flex-direction: column; gap: 11px; }
+.kf-kn-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.kf-kn-chip {
+  height: 32px; padding: 0 13px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+  font-family: var(--sans); font-size: 12.5px; font-weight: 500;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+.kf-kn-chip:active { transform: scale(0.96); }
+/* a loop is a place, not a label */
+.kf-kn-chip-loop {
+  font-style: italic; color: var(--ink);
+  border-color: color-mix(in srgb, var(--mood) 42%, transparent);
+  background: color-mix(in srgb, var(--mood) 11%, var(--surface));
+}
+.kf-kn-tail { height: 132px; }
+.kf-kn-foot {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; padding: 16px 22px 30px;
+  background: linear-gradient(to bottom, transparent, var(--paper) 32%);
+}
+
+/* ---------- starting from nothing ----------
+   Full width rows, not pills: a pill looks like a filter, a row looks like
+   a sentence you could say. Six of them also fills a screen that was
+   otherwise seventy percent white. */
+.kf-start { display: flex; flex-direction: column; }
+/* warmer than an instruction, and it lowers the bar in two lines */
+.kf-start-open {
+  margin: 0 0 4px; font-family: var(--title); font-size: 21px; line-height: 1.24;
+  font-weight: 600; letter-spacing: -0.021em; color: var(--ink);
+}
+.kf-start-sub {
+  margin: 0 0 18px; font-family: var(--serif); font-size: 14.5px; color: var(--ink-3);
+}
+.kf-start-lbl {
+  display: block; margin: 2px 0 9px;
+  font-family: var(--title); font-size: 15.5px; font-weight: 600;
+  letter-spacing: -0.015em; color: var(--ink-2);
+}
+.kf-start-lbl + .kf-start-row { margin-top: 0; }
+.kf-start-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
+  margin-bottom: 8px; padding: 13px 16px; border-radius: 18px; text-align: left;
+  border: 1px solid var(--line-2); background: var(--paper);
+  transition: background 0.16s ease, transform 0.12s var(--ease, ease);
+}
+.kf-start-row:active { transform: scale(0.99); }
+.kf-start-row > svg { flex: none; margin-left: auto; color: var(--ink-3); }
+.kf-start-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.kf-start-body b {
+  font-family: var(--serif); font-size: 15.5px; line-height: 1.4; font-weight: 400;
+  color: var(--ink);
+}
+.kf-start-body i {
+  font-style: normal; font-family: var(--sans); font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3);
+}
+/* their own threads sit on a shelf, so all of them are reachable without a
+   vertical stack of unfinished business on the way in */
+.kf-start-shelf {
+  display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 -22px 16px; padding: 2px 0 4px 22px;
+  scroll-snap-type: x mandatory; scroll-padding-left: 22px;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+}
+.kf-start-shelf::-webkit-scrollbar { display: none; }
+.kf-start-shelf-end { flex: none; width: 36px; }
+.kf-start-tile {
+  scroll-snap-align: start; flex: none; width: 148px; cursor: pointer; text-align: left;
+  display: flex; flex-direction: column; padding: 12px 13px 13px; border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--mood) 34%, transparent);
+  background: color-mix(in srgb, var(--mood) 12%, var(--paper));
+  transition: transform 0.14s var(--ease, ease);
+}
+.kf-start-tile:active { transform: scale(0.968); }
+.kf-start-tile-ic {
+  width: 32px; height: 32px; border-radius: 11px; display: grid; place-items: center;
+  margin-bottom: 10px;
+  background: color-mix(in srgb, var(--mood) 26%, transparent);
+  color: color-mix(in srgb, var(--ink) 62%, var(--mood));
+}
+.kf-start-tile-when {
+  font-family: var(--sans); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 3px;
+}
+.kf-start-tile-title {
+  font-family: var(--title); font-size: 15px; line-height: 1.24; font-weight: 600;
+  letter-spacing: -0.017em; color: var(--ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* not knowing is the most common way anyone arrives, so it gets its own
+   door rather than an escape hatch. Kael leads from here. */
+.kf-start-lead {
+  display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;
+  margin-top: 6px; padding: 13px 16px; border-radius: 18px; text-align: left;
+  border: 1px solid color-mix(in srgb, var(--kf-gold) 40%, transparent);
+  background: color-mix(in srgb, var(--kf-gold) 9%, transparent);
+  transition: transform 0.12s var(--ease, ease);
+}
+.kf-start-lead:active { transform: scale(0.99); }
+.kf-start-lead > span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.kf-start-lead b {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--title); font-size: 16px; font-weight: 600;
+  letter-spacing: -0.017em; color: var(--ink);
+}
+.kf-start-lead b svg { color: var(--kf-gold-deep); }
+.kf-start-lead i {
+  font-style: normal; font-family: var(--serif); font-size: 13.5px; color: var(--ink-2);
+}
+.kf-start-lead > svg { flex: none; color: var(--ink-3); }

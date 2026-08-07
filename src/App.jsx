@@ -32,6 +32,7 @@ import KaelDuo from './screens/KaelDuo.jsx'
 import IntroConcept from './screens/IntroConcept.jsx'
 import InsightConcept from './screens/InsightConcept.jsx'
 import JourneyConcept from './screens/JourneyConcept.jsx'
+import FeedHome from './screens/FeedHome.jsx'
 import { Sparkle, Sun, Moon, Download, Grid, Close } from './components/Icons.jsx'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 
@@ -40,6 +41,7 @@ const STUDIO_GROUPS = [
     id: 'product',
     name: 'Product',
     tabs: [
+      ['feed-home', 'Feed home'],
       ['journey-v2', 'V2 Journey'],
       ['reflect', 'Reflect'],
       ['insight-concept', 'Insight'],
@@ -288,6 +290,8 @@ export default function App() {
                 <OnboardingV5 />
               ) : studioTab === 'onboarding-v6' ? (
                 <OnboardingV6 />
+              ) : studioTab === 'feed-home' ? (
+                <FeedHome />
               ) : studioTab === 'journey-v2' ? (
                 <JourneyV2 />
               ) : studioTab === 'session-v3' ? (
