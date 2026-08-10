@@ -33,6 +33,7 @@ import IntroConcept from './screens/IntroConcept.jsx'
 import InsightConcept from './screens/InsightConcept.jsx'
 import JourneyConcept from './screens/JourneyConcept.jsx'
 import FeedHome from './screens/FeedHome.jsx'
+import KaelLearn from './screens/KaelLearn.jsx'
 import { Sparkle, Sun, Moon, Download, Grid, Close } from './components/Icons.jsx'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 
@@ -41,6 +42,7 @@ const STUDIO_GROUPS = [
     id: 'product',
     name: 'Product',
     tabs: [
+      ['kael-learn', 'Learn (PRD)'],
       ['feed-home', 'Feed home'],
       ['journey-v2', 'V2 Journey'],
       ['reflect', 'Reflect'],
@@ -290,6 +292,8 @@ export default function App() {
                 <OnboardingV5 />
               ) : studioTab === 'onboarding-v6' ? (
                 <OnboardingV6 />
+              ) : studioTab === 'kael-learn' ? (
+                <KaelLearn />
               ) : studioTab === 'feed-home' ? (
                 <FeedHome />
               ) : studioTab === 'journey-v2' ? (

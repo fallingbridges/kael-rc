@@ -3,7 +3,7 @@ import {
   Brain, ChatCircleDots, ShieldCheck, Heart, Flame, Quotes, UsersThree,
   Lightning, Scales, Moon, Anchor, Compass, CloudRain, Path,
   MagnifyingGlass, ArrowRight, ArrowLeft, Sparkle, House, ClockCounterClockwise,
-  X, CaretRight, PaperPlaneTilt, Target, Hourglass, Handshake, Eye, Plant, UserCircle,
+  X, CaretRight, PaperPlaneTilt, Target, Hourglass, Handshake, Eye, Plant, UserCircle, Check, Flame as Streak,
 } from '@phosphor-icons/react'
 import { PatternLesson as ReflectLoop, TagPage as ReflectTag, LIBRARY } from './ReflectConcept.jsx'
 /* the long-form bodies. There is no lesson surface any more; this is what
@@ -302,7 +302,7 @@ function Thread({ r, i = 0, onRead, onChat }) {
         <h2 className="kf-thread-title">{r.title}</h2>
         {/* the note block is its own door, so it does not need a link
             underneath repeating what tapping it already does */}
-        {a && (
+        {a ? (
           <div className="kf-noticed">
             <span className="kf-noticed-lbl">
               <Sparkle size={11} weight="fill" />Kael’s note
@@ -310,7 +310,7 @@ function Thread({ r, i = 0, onRead, onChat }) {
             </span>
             <p>{a.hook}</p>
           </div>
-        )}
+        ) : null}
         <span className="kf-reflect" role="button" tabIndex={0}
           onClick={(e) => { e.stopPropagation(); onChat() }}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onChat() } }}>
@@ -321,64 +321,46 @@ function Thread({ r, i = 0, onRead, onChat }) {
   )
 }
 
-/* an idea from the deck. No number: nothing about an endless feed
-   should be counted.
-
-   Two ways out. Reflect is the filled one, because talking is the thing
-   worth doing and reading about yourself is the easier substitute.
-
-   The left button knows whether the lesson exists yet. Generate lesson
-   asks Kael to write one; once written it stays written, so the button
-   turns into a mark rather than another invitation. Still tappable, it
-   just stops competing with the cards nobody has opened. */
-function Idea({ c, i, onReflect }) {
+/* ── the shelf ──────────────────────────────────────────────────────────────
+   Two up, because a lesson is something you pick off a shelf rather than
+   scroll past. The tile does the prompting: most people do not know what
+   they need until it is put in front of them, which is the one thing a
+   prompt box can never do. It waits; this offers.
+   ────────────────────────────────────────────────────────────────────────── */
+function LessonTile({ c, i, done, onOpen }) {
   return (
-    <article className="kf-card kf-rise" style={{ '--mood': c.mood, '--d': `${Math.min(i, 6) * 44}ms` }}>
-      <Sheen a={116 + (i % 4) * 22} />
-      <div className="kf-card-in">
-        <span className="kf-cat">{c.cat}</span>
-        <span className="kf-ic"><c.Icon size={22} weight="duotone" /></span>
-        {/* one statement and nothing else. Crop the button off and this is a
-            poster. Split on a blank line so a statement that needs two beats
-            can have them without being jammed into one block. */}
-        <div className="kf-lines">
-          {c.line.split('\n\n').map((para, k) => (
-            k === 0
-              ? <h2 key={k} className="kf-line">{para}</h2>
-              : <p key={k} className="kf-line">{para}</p>
-          ))}
-        </div>
-        <button className="kf-reflect" onClick={() => onReflect(c)}>
-          <Sparkle size={15} weight="fill" />Unpack this
-        </button>
-      </div>
-    </article>
+    <button className="kf-tile kf-rise" style={{ '--mood': c.mood, '--d': `${Math.min(i, 8) * 40}ms` }}
+      onClick={() => onOpen(c)}>
+      <span className="kf-tile-art">
+        <Sheen a={124 + (i % 4) * 20} />
+        <c.Icon size={30} weight="duotone" />
+        {done && <i className="kf-tile-done"><Check size={11} weight="bold" /></i>}
+      </span>
+      <span className="kf-tile-in">
+        <span className="kf-tile-cat">{c.cat}</span>
+        <span className="kf-tile-title">{c.lesson}</span>
+      </span>
+    </button>
   )
 }
 
 /* ── the room ───────────────────────────────────────────────────────────────
-   One surface, and no lessons. Kael is not in a bubble, because a bubble
-   caps how long anything can be before it looks absurd, and Kael sometimes
-   needs to write at length. Full width prose instead, so two sentences and
-   eight paragraphs both look deliberate.
+   One surface, and no separate lesson page. Kael is not in a bubble, because
+   a bubble caps how long anything can be before it looks absurd, and a lesson
+   needs room. Full width prose instead.
 
    The user stays in a bubble on the right. That asymmetry is the only thing
    marking who is speaking, and it is enough.
 
-   The rule that keeps this from becoming a lecture: Kael goes long about
-   ideas and stays short about you. Tapping a card asks about an idea, so it
-   earns the whole piece. Everything after it is a conversation.
+   Kael goes long about an idea and stays short about you. Tapping a lesson
+   asks about an idea, so it earns the whole thing. Everything after is a
+   conversation, and the chips carry it: an example, a quiz, or their own
+   situation brought to the lesson.
    ────────────────────────────────────────────────────────────────────────── */
 
 const WORD_MS = 30
 
-/* what Kael offers after the long answer: follow-ups about the idea */
-const ASKS = [
-  'Give me an example',
-  'How do I practise this?',
-  'Where does this show up for me?',
-  'Turn this into a habit',
-]
+const ASKS = ['Give me an example', 'Quiz me', 'This happened to me…', 'How do I practise this?']
 
 /* and once it has turned personal, short questions that hand it back */
 const FOLLOW = [
@@ -389,17 +371,19 @@ const FOLLOW = [
   'What would change if that stopped being true?',
 ]
 
+const textOf = (b) => b.lead || b.h || b.q || b.sci || b.p
+
 const flatten = (blocks) => {
   let at = 0
   return blocks.map((b) => {
-    const kind = b.lead ? 'lead' : b.h ? 'h' : b.q ? 'q' : 'p'
-    const words = (b.lead || b.h || b.q || b.p).split(' ')
+    const kind = b.lead ? 'lead' : b.h ? 'h' : b.q ? 'q' : b.sci ? 'sci' : 'p'
+    const words = textOf(b).split(' ')
     const start = at
     at += words.length
-    return { kind, words, start }
+    return { kind, words, start, label: b.sciLabel }
   })
 }
-const countWords = (blocks) => blocks.reduce((n, b) => n + (b.lead || b.h || b.q || b.p).split(' ').length, 0)
+const countWords = (blocks) => blocks.reduce((n, b) => n + textOf(b).split(' ').length, 0)
 
 /* one of Kael's turns, streamed or already said */
 function KaelTurn({ blocks, shown }) {
@@ -407,8 +391,6 @@ function KaelTurn({ blocks, shown }) {
   const total = flat.reduce((n, b) => n + b.words.length, 0)
   const n = shown === undefined ? total : shown
   const done = n >= total
-  /* structure is the only signal for length: headings turn up when the
-     answer is genuinely long, and nothing announces it in advance */
   return (
     <div className="kf-t-kael">
       {flat.map((b, k) => {
@@ -419,6 +401,14 @@ function KaelTurn({ blocks, shown }) {
         if (b.kind === 'lead') return <p key={k} className="kf-t-lead">{text}{live && <i className="kf-caret" />}</p>
         if (b.kind === 'h') return <h2 key={k} className="kf-t-h">{text}</h2>
         if (b.kind === 'q') return <p key={k} className="kf-t-q">{text}{live && <i className="kf-caret" />}</p>
+        /* the evidence beat, set apart so it reads as a citation rather than
+           as Kael asserting something */
+        if (b.kind === 'sci') return (
+          <div key={k} className="kf-t-sci">
+            <span>{b.label}</span>
+            <p>{text}{live && <i className="kf-caret" />}</p>
+          </div>
+        )
         return <p key={k} className="kf-t-p">{text}{live && <i className="kf-caret" />}</p>
       })}
     </div>
@@ -573,11 +563,33 @@ function Talk({ mode, onBack, onThread }) {
     if (el) el.scrollTop = el.scrollHeight
   }, [turns, shown, live, chips])
 
+  /* a quiz turn: Kael asks, the answers are the chips, and every answer gets
+     a real reply rather than right or wrong. Learning, not testing. */
+  const quiz = useRef(null)
+  const askQuiz = () => {
+    const lesson = c && generateLesson(c.id)
+    if (!lesson || !lesson.quiz) return false
+    quiz.current = lesson.quiz
+    setTurns((t) => [...t, { who: 'user', text: 'Quiz me' }])
+    setChips([])
+    setTimeout(() => say([{ p: lesson.quiz.q }], lesson.quiz.options.map((o) => o.label)), 620)
+    return true
+  }
+
   const send = (text) => {
     if (!text.trim() || live) return
+    const answer = quiz.current && quiz.current.options.find((o) => o.label === text)
+    if (!answer) {
+      if ((text === 'Quiz me' || text === 'Quiz me again') && askQuiz()) return
+    }
     setTurns((t) => [...t, { who: 'user', text: text.trim() }])
     setDraft('')
     setChips([])
+    if (answer) {
+      quiz.current = null
+      setTimeout(() => say([{ p: answer.reply }], ['Quiz me again', 'This happened to me…']), 620)
+      return
+    }
     /* short from here on, because now they are talking about themselves */
     const q = FOLLOW[followAt.current % FOLLOW.length]
     followAt.current += 1
@@ -640,7 +652,7 @@ function Talk({ mode, onBack, onThread }) {
 }
 
 /* ── home ───────────────────────────────────────────────────────────────── */
-function Feed({ lib, onReflect, onRead, onChat, onSettings }) {
+function Feed({ lib, done, onReflect, onRead, onChat, onSettings }) {
   const ongoing = lib[0]
   return (
     <div className="kf-screen">
@@ -661,8 +673,12 @@ function Feed({ lib, onReflect, onRead, onChat, onSettings }) {
             <Thread r={ongoing} onRead={() => onRead(ongoing.id)} onChat={() => onChat(ongoing.id)} />
           </>
         )}
-        <Label>Tiny ideas to reflect on</Label>
-        {IDEAS.map((c, i) => <Idea key={c.id} c={c} i={i} onReflect={onReflect} />)}
+        <Label>Lessons for you</Label>
+        <div className="kf-grid">
+          {IDEAS.map((c, i) => (
+            <LessonTile key={c.id} c={c} i={i} done={done.includes(c.id)} onOpen={onReflect} />
+          ))}
+        </div>
         <div className="kf-tail" />
       </div>
 
@@ -761,6 +777,10 @@ function KaelNote({ r, onBack, onChat, onOpenLoop, onOpenTag, onOpenNote }) {
   const a = r.analysis
   if (!a) return null
   const tags = [...(r.moods || []), ...(r.people || []), ...(r.topics || [])]
+  /* the hook comes cheap, off a single exchange. The rest of the note waits
+     until there is enough to be worth reading, and saying so is better than
+     an empty page: it tells them something is being written for them. */
+  const pending = !(a.open && a.open.length)
   return (
     <div className="kf-screen kf-kn" style={{ '--mood': r.mood }}>
       <button className="kf-note-back" onClick={onBack} aria-label="Back"><ArrowLeft size={18} weight="bold" /></button>
@@ -777,6 +797,14 @@ function KaelNote({ r, onBack, onChat, onOpenLoop, onOpenTag, onOpenNote }) {
 
         <div className="kf-kn-text">
           <p className="kf-kn-lead">{rich(a.hook)}</p>
+
+          {pending && (
+            <div className="kf-kn-pending">
+              <h2>Still listening.</h2>
+              <p>That’s my first read on this one. I write the rest once there’s enough to be worth reading, so keep going and it will fill in as we talk.</p>
+            </div>
+          )}
+
           {(a.open || []).map((t, k) => <p key={`o${k}`} className="kf-t-p">{rich(t)}</p>)}
 
           {(a.noticed || []).length > 0 && <h2 className="kf-t-h">What I noticed</h2>}
@@ -870,7 +898,7 @@ function MoodRing({ rows, total }) {
   )
 }
 
-function You({ lib, onLoop, onTag }) {
+function You({ lib, done, onLoop, onTag }) {
   const tally = (key) => {
     const m = new Map()
     lib.forEach((r) => (r[key] || []).forEach((t) => m.set(t, (m.get(t) || 0) + 1)))
@@ -909,22 +937,40 @@ function You({ lib, onLoop, onTag }) {
         <div className="kf-hello"><h1>You</h1><span>What keeps coming back</span></div>
       </header>
       <div className="kf-scroll">
-        {/* three different things. A note count would just be the thread
-            count again, which makes a stat strip look padded. */}
+        {/* what has actually been done, not days you did not show up */}
         <div className="kf-stats kf-rise">
           <span data-tint="a">
-            <i><ChatCircleDots size={17} weight="duotone" /></i>
-            <b>{lib.length}</b>threads
+            <i><Streak size={17} weight="fill" /></i>
+            <b>5</b>day streak
           </span>
           <span data-tint="b">
+            <i><Check size={17} weight="bold" /></i>
+            <b>{done.length}</b>lessons
+          </span>
+          <span data-tint="c">
             <i><Path size={17} weight="duotone" /></i>
             <b>{loops.length}</b>loops
           </span>
-          <span data-tint="c">
-            <i><UsersThree size={17} weight="duotone" /></i>
-            <b>{people.length}</b>people
-          </span>
         </div>
+
+        {done.length > 0 && (
+          <section className="kf-stat-group kf-rise">
+            <span className="kf-label">What you’ve learnt</span>
+            <div className="kf-receipts">
+              {done.map((id) => {
+                const c = IDEAS.find((x) => x.id === id)
+                if (!c) return null
+                return (
+                  <div key={id} className="kf-receipt" style={{ '--mood': c.mood }}>
+                    <span className="kf-receipt-ic"><c.Icon size={16} weight="duotone" /></span>
+                    <span>{c.lesson}</span>
+                    <Check size={14} weight="bold" />
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {moods.length > 0 && (
           <section className="kf-mood kf-rise" style={{ '--d': '60ms' }}>
@@ -975,6 +1021,9 @@ export default function FeedHome() {
   const [tab, setTab] = useState('home')
   const [view, setView] = useState({ kind: 'feed' })
   const [roomKey, setRoomKey] = useState(0)
+  /* lessons taken. A lesson is written once, so opening it again shows the
+     same words rather than a fresh draft. */
+  const [done, setDone] = useState(['boundaries', 'burnout', 'comparison'])
   const lib = LIBRARY
   const byId = (id) => lib.find((r) => r.id === id) || lib[0]
 
@@ -982,6 +1031,7 @@ export default function FeedHome() {
      last week's heavy thread is jarring, and Kael can connect them in the
      note, which is a better place for that recognition to land. */
   const reflect = (c) => {
+    if (c && !done.includes(c.id)) setDone((d) => [c.id, ...d])
     setRoomKey((k) => k + 1)
     setView({ kind: 'room', mode: c ? { kind: 'card', idea: c } : { kind: 'new' } })
   }
@@ -1022,11 +1072,12 @@ export default function FeedHome() {
             />
           ) : (
             <>
-              {tab === 'home' && <Feed lib={lib} onReflect={reflect} onRead={openNote} onChat={chat} onSettings={() => setView({ kind: 'settings' })} />}
+              {tab === 'home' && <Feed lib={lib} done={done} onReflect={reflect} onRead={openNote} onChat={chat} onSettings={() => setView({ kind: 'settings' })} />}
               {tab === 'journey' && <Journey lib={lib} onRead={openNote} onChat={chat} />}
               {tab === 'you' && (
                 <You
                   lib={lib}
+                  done={done}
                   onLoop={(name) => setView({ kind: 'loop', loop: name, back: 'you' })}
                   onTag={(t) => setView({ kind: 'tag', tag: t, back: 'you' })}
                 />
